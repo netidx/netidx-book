@@ -115,4 +115,51 @@ a large organization to run a central 'root' resolver server cluster
 without needing to micro manage the delegation going on in various
 organizational units.
 
-### 
+I've focused on designing a scaleable architecture, but I should also
+mention that the resolver server itself is pretty fast, and uses a
+number of strategies to minimize memory use. It's entirely possible to
+put 100 million names in a single instance on a single machine with
+32 - 64 gig of ram. You get roughly 1 million names per gig of ram,
+assuming your paths aren't crazy long. I have not explicitly tested
+the resolve throughput, but given that it uses the same infrastructure
+as the publisher/subscriber (which I have tested), and what it's
+doing, I would not be at all surprised if you could support millions
+of resolutions per second per core (yes it will use all your cores).
+
+### Publisher/Subscriber Scale
+
+If the theme of taking lots of pages from lots of well established
+books and integrating them together has come through by this point
+then you've caught on to my design philosophy. In this section we're
+going to steal from protbuf, as that is essentially the model, if not
+the actual implementation, of the netidx wire protocols.
+
+In protobuf, each record is extensible and rather cleverly
+encoded. Each field in the record has a LEB128 Id, followed by a data
+value. This allows, for example, an older implementation of a protocol
+to talk to a server that has added some new fields without breaking
+anything.
+
+Netidx is almost entirely the same on the wire. The subscriber sends
+the name it wants to one of the publishers specified by the resolver
+server cluster. The publisher looks up that value, and responds with
+the id it will use in subsuquent messages, along with the current
+value. From then on updates to that value transmit only the id, which
+is LEB128 encoded, and the updated value. So on the wire, in terms of
+overhead, it looks very much like a protobuf record where the fields
+are exactly what the subscriber has requested, and nothing more. The
+overhead of sending an f64 can be as small as 2 bytes.
+
+Publisher and subscriber performance is fairly good, such that sending
+many millions of messages per second is possible. The per message
+overhead is on the order of about 70ns of wall clock time per message
+with kerberos encryption on (Skylake x86_64 8x5Ghz). Obviously that
+number depends on the exact hardware you're running on, and it depends
+on your workload batching well. A raw tcp socket, coded properly, will
+always be faster, the goal is that it won't be faster by enough that
+it's worth using.
+
+The subscriber library also implements zero copy decoding for strings
+and byte arrays, so it is possible to receive large binary encoded
+things quite efficiently (zero copy on the publisher side is harder,
+but maybe someday).
