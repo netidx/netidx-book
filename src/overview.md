@@ -186,16 +186,22 @@ mandatory for all parties of that transaction.
 
 When security is enabled you get the following guarantees,
 
-* Mutual Authentication, the publisher knows the subscriber is who
+* **Mutual Authentication**, the publisher knows the subscriber is who
   they claim to be, and the subscriber knows the publisher is who they
   claim to be. This applies for the resolver <-> subscriber, and
   resolver <-> publisher as well.
   
-* Confidentiality and Tamper detection, all messages are encrypted,
+* **Confidentiality** and Tamper detection, all messages are encrypted,
   and data cannot be altered undetected by a man in the middle.
 
-* Authorization, The user subscribing to a given data value is
+* **Authorization**, The user subscribing to a given data value is
   authorized to do so. The resolver servers maintain a permissions
   database specifying who is allowed to do what where in the
   tree. Thus the system administrator can centrally control who is
   allowed to publish and subscribe where.
+
+## Cross Platform
+
+While netidx is primarially developed on PPC64le linux, it is tested
+on aarch64, and x86_64 linux, Mac OS, and even Windows. It will
+probably work on many platforms I haven't tried.
