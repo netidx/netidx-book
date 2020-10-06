@@ -1,0 +1,9 @@
+[package]
+name = "code-examples"
+version = "0.1.0"
+authors = ["Eric Stokes <letaris@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+netidx = "0.4"
+anyhow = "1"

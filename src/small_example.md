@@ -1,0 +1,38 @@
+# A Small Example
+
+Suppose we have a small daemon that we run on many computers on our
+network, and it knows many things about them, and does many things. I
+won't specifiy exactly what it does or everything it knows because
+that's irrelevant to the example. However suppose one of the things it
+knows is the current CPU temperature of the machine it's running on,
+and we would like access to that data. We heard about this new netidx
+thing, and we'd like to try it out on this small and not very
+important case, what code do we need to add to our daemon, and what
+options do we have for using the data?
+
+We can modify our Cargo.toml to include netidx, and then add a small
+self contained module, publisher.rs
+
+``` rust
+use netidx::{
+    publisher::{Publisher, Value, BindCfg},
+    config::Config,
+    resolver::Auth,
+    path::Path,
+};
+use tokio::time;
+use std::time::Duration;
+
+// load the site cluster config. You can also just use a file.
+let cfg = Config::load_default()?;
+
+// no authentication (kerberos v5 is the other option)
+// listen on any unique address matching 192.168.0.0/16
+let publisher = Publisher::new(cfg, Auth::Anonymous, "192.168.0.0/16".parse()?).await?;
+
+let temp = publisher.publish(
+    Path::from("/hw/washu-chan/cpu-temp"),
+    Value::F32(get_cpu_temp())
+)?;
+publisher.flush(None).await?;
+```

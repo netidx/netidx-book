@@ -1,0 +1,25 @@
+use netidx::{
+    publisher::{Publisher, Val, Value, BindCfg},
+    config::Config,
+    resolver::Auth,
+    path::Path,
+};
+use tokio::time;
+use std::time::Duration;
+
+#[derive(Debug, Clone)]
+pub struct TempPub(Val);
+
+impl TempPub {
+// load the site cluster config. You can also just use a file.
+let cfg = Config::load_default()?;
+
+// no authentication (kerberos v5 is the other option)
+// listen on any unique address matching 192.168.0.0/16
+let publisher = Publisher::new(cfg, Auth::Anonymous, "192.168.0.0/16".parse()?).await?;
+
+let temp = publisher.publish(
+    Path::from("/hw/washu-chan/cpu-temp"),
+    Value::F32(get_cpu_temp())
+)?;
+publisher.flush(None).await?;
