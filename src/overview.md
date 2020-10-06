@@ -162,3 +162,40 @@ it's worth using.
 The subscriber library also implements zero copy decoding for strings
 and byte arrays, so it is possible to receive large binary encoded
 things quite efficiently.
+
+## Security
+
+Ah, the S word. No system remotely like netidx can be taken seriously
+without a plausable design for securing data against unauthorized
+access, interception, manipulation, etc.
+
+The heart of netidx security is Kerberos v5. There are a lot of
+systems I might have used, e.g. openssl + certificates, oauth +
+openssl, and I'm sure many others. The reason I chose to use Kerberos
+v5 is that most users who want to deploy netidx services already have
+Kerberos set up (even if they don't know it) in the form of Microsoft
+Active Directory, Samba ADS, Redhat Directory Server, or one of the
+many other compatible solutions.
+
+Security is optional. It's possible to deploy a netidx system with no
+security at all (and that might even be reasonable), and it's possible
+to deploy a system where some publishers require security, and some do
+not. If any of the three parties involved in a given transaction
+(publisher, resolver, subscriber) request security, then it's
+mandatory for all parties of that transaction.
+
+When security is enabled you get the following guarantees,
+
+* Mutual Authentication, the publisher knows the subscriber is who
+  they claim to be, and the subscriber knows the publisher is who they
+  claim to be. This applies for the resolver <-> subscriber, and
+  resolver <-> publisher as well.
+  
+* Confidentiality and Tamper detection, all messages are encrypted,
+  and data cannot be altered undetected by a man in the middle.
+
+* Authorization, The user subscribing to a given data value is
+  authorized to do so. The resolver servers maintain a permissions
+  database specifying who is allowed to do what where in the
+  tree. Thus the system administrator can centrally control who is
+  allowed to publish and subscribe where.
