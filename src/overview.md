@@ -161,5 +161,4 @@ it's worth using.
 
 The subscriber library also implements zero copy decoding for strings
 and byte arrays, so it is possible to receive large binary encoded
-things quite efficiently (zero copy on the publisher side is harder,
-but maybe someday).
+things quite efficiently.
