@@ -14,25 +14,62 @@ We can modify our Cargo.toml to include netidx, and then add a small
 self contained module, publisher.rs
 
 ``` rust
+use anyhow::Result;
 use netidx::{
-    publisher::{Publisher, Value, BindCfg},
     config::Config,
-    resolver::Auth,
     path::Path,
+    publisher::{Publisher, Val, Value},
+    resolver::Auth,
 };
-use tokio::time;
-use std::time::Duration;
 
-// load the site cluster config. You can also just use a file.
-let cfg = Config::load_default()?;
+#[derive(Clone)]
+pub struct HwPub {
+    publisher: Publisher,
+    cpu_temp: Val,
+}
 
-// no authentication (kerberos v5 is the other option)
-// listen on any unique address matching 192.168.0.0/16
-let publisher = Publisher::new(cfg, Auth::Anonymous, "192.168.0.0/16".parse()?).await?;
+impl HwPub {
+    pub async fn new(host: &str, current: f64) -> Result<HwPub> {
+        // load the site cluster config from the path in the
+        // environment variable NETIDX_CFG, or from
+        // dirs::config_dir()/netidx.json if the environment variable
+        // isn't specified, or from ~/.netidx.json if the previous
+        // file isn't present. Note this uses the cross platform dirs
+        // library, so yes, it does something reasonable on windows.
+        let cfg = Config::load_default()?;
 
-let temp = publisher.publish(
-    Path::from("/hw/washu-chan/cpu-temp"),
-    Value::F32(get_cpu_temp())
-)?;
-publisher.flush(None).await?;
+        // for this small service we don't need authentication
+        let auth = Auth::Anonymous;
+
+        // listen on any unique address matching 192.168.0.0/16. If
+        // our network was large and complex we might need to make
+        // this a passed in configuration option, but lets assume it's
+        // simple.
+        let publisher = Publisher::new(cfg, auth, "192.168.0.0/16".parse()?).await?;
+
+        // We're publishing stats about hardware here, so lets put it
+        // in /hw/hostname/cpu-temp, that way we keep everything nice
+        // and organized.
+        let path = Path::from(format!("/hw/{}/cpu-temp", host));
+        let cpu_temp = publisher.publish(path, Value::F64(current))?;
+        Ok(HwPub {
+            publisher,
+            cpu_temp,
+        })
+    }
+
+    pub async fn update(&self, current: f64) -> Result<()> {
+        // update the current cpu-temp
+        self.cpu_temp.update(Value::F64(current));
+
+        // flush the updated values out to subscribers
+        self.publisher.flush(None).await
+    }
+}
 ```
+
+Now all we would need to do is create a HwPub on startup, and call
+HwPub::update whenever we learn about a new cpu temperature value. Of
+course we also need to deploy a resolver server, and distribute a
+cluster config to each machine that needs one, that will be covered in
+the administration section.
