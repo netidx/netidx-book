@@ -192,9 +192,9 @@ actual over temp events.
 ## Or Maybe Shell is Not Your Jam
 
 It's entirely possible that the above solution gives you night sweats,
-or maybe your boss has an adversion to shell scripts, however hot you
-think your creation is. In that case it's perfectly possible (and
-probably more readable) do do the above in rust.
+or maybe bash arrays give your boss the shakes, however hot you think
+your creation is. In that case it's perfectly possible (and probably
+more readable) do do the above in rust.
 
 ``` rust
 
