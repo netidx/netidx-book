@@ -124,7 +124,7 @@ no indication that the over temp data comes from a separate process,
 on a separate machine, written by a separate person. It all just fits
 together seamlessly as if it was one application.
 
-Now I've made this seem great, but there are actually to problems
+Now I've made this seem great, but there are actually two problems
 here. The first is in fact exactly the same sentence as the last
 paragraph. There is no indication anywhere that this overtemp data is
 a dirty bash script possibly running on a developer workstation that
@@ -134,8 +134,9 @@ use them even if your data is not sensitive. If you don't, anyone can
 publish anything anywhere.
 
 The second problem is more serious, in that, the above code will not
-do quite what you might want it to do. You might, for example, want to
-write the following additional script.
+do quite what you might want it to do. Someone might, for example,
+want to write the following additional script (if that someone was
+you, you'd likely just add it to your script).
 
 ``` bash
 #! /bin/bash
@@ -149,15 +150,16 @@ done
 
 To ring a very loud alarm when an over temp event is detected. This
 would, in fact, work as expected, it just would not be as timely as
-you might want. The reason is that the subscriber practices linear
-backoff when it's instructed to subscribe to a path that doesn't
-exist. This is a good practice, in general it reduces the cost of
-mistakes on the entire system, but in this case it could result in
+the author might want. The reason is that the subscriber practices
+linear backoff when it's instructed to subscribe to a path that
+doesn't exist. This is a good practice, in general it reduces the cost
+of mistakes on the entire system, but in this case it could result in
 getting the alarm hours, or longer after you should. The good news is
 there is a simple solution, we need to publish all the paths from the
-start, but fill them will null until the event actually happens. That
-way the subscription will be successful right away, and the alarm will
-sound immediatly after the event is detected. So lets change the code ...
+start, but fill them will null until the event actually happens (and
+change the above code to ignore the null). That way the subscription
+will be successful right away, and the alarm will sound immediatly
+after the event is detected. So lets change the code ...
 
 ``` bash
 #! /bin/bash
@@ -192,9 +194,9 @@ actual over temp events.
 ## Or Maybe Shell is Not Your Jam
 
 It's entirely possible that the above solution gives you night sweats,
-or maybe bash arrays give your boss the shakes, however hot you think
-your creation is. In that case it's perfectly possible (and probably
-more readable) do do the above in rust.
+or maybe catting process substitutions makes your boss crosseyed,
+however hot you think your creation is. In that case it's perfectly
+possible (and probably more readable) do do the above in rust.
 
 ``` rust
 
