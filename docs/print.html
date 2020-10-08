@@ -491,27 +491,21 @@ overtemp-ts and overtemp for each one, and then using cat and the
 magic of process substitution we append to that the real time list of
 actual over temp events.</p>
 <h2><a class="header" href="#or-maybe-shell-is-not-your-jam" id="or-maybe-shell-is-not-your-jam">Or Maybe Shell is Not Your Jam</a></h2>
-<p>It's entirely possible that the above solution gives you night sweats,
-or maybe cating process substitutions makes your boss crosseyed,
-however hot you think your creation is. In that case it's perfectly
-possible (and probably more readable) do do the above in rust.</p>
+<p>It's entirely possible that thinking about the above solution makes
+you shiver and reinforces for you that nothing should ever be written
+in shell. In that case it's perfectly possible to do the same thing in
+rust.</p>
 <pre><pre class="playground"><code class="language-rust">use anyhow::Result;
 use futures::{channel::mpsc::channel, prelude::* };
 use netidx::{
     config::Config,
     path::Path,
-    publisher::{Publisher, Val, Value},
+    publisher::{self, Publisher, Value},
     resolver::Auth,
-    subscriber::{Dval, Event, SubId, Subscriber},
+    subscriber::{self, Event, SubId, Subscriber},
 };
 use chrono::prelude::*;
 use std::collections::HashMap;
-
-struct Temp {
-    _current: Dval,
-    timestamp: Val,
-    temperature: Val,
-}
 
 #[tokio::main]
 pub async fn main() -&gt; Result&lt;()&gt; {
@@ -520,6 +514,11 @@ pub async fn main() -&gt; Result&lt;()&gt; {
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
     let publisher = Publisher::new(config, auth, &quot;192.168.0.0/24&quot;.parse()?).await?;
     let (tx_current, mut rx_current) = channel(3);
+    struct Temp {
+        _current: subscriber::Dval, // we need to hang onto this reference
+        timestamp: publisher::Val,
+        temperature: publisher::Val,
+    }
     let temps = subscriber
         .resolver()
         .list(Path::from(&quot;/hw&quot;))
@@ -527,20 +526,21 @@ pub async fn main() -&gt; Result&lt;()&gt; {
         .drain(..)
         .filter_map(|path| path.split('/').nth(2).map(String::from))
         .map(|host| {
-            let _current = subscriber
+            let current = subscriber
                 .durable_subscribe(Path::from(format!(&quot;/hw/{}/cpu-temp&quot;, host)));
-            _current.updates(true, tx_current.clone());
+            current.updates(true, tx_current.clone());
             let timestamp = publisher
                 .publish(Path::from(format!(&quot;/hw/{}/overtemp-ts&quot;, host)), Value::Null)?;
             let temperature = publisher
                 .publish(Path::from(format!(&quot;/hw/{}/overtemp&quot;, host)), Value::Null)?;
-            Ok((_current.id(), Temp { _current, timestamp, temperature }))
+            Ok((current.id(), Temp { _current: current, timestamp, temperature }))
         })
         .collect::&lt;Result&lt;HashMap&lt;SubId, Temp&gt;&gt;&gt;()?;
+    publisher.flush(None).await?;
     while let Some(mut batch) = rx_current.next().await {
-        for (id, v) in batch.drain(..) {
-            match v {
-                Event::Unsubscribed =&gt; (), // Subscriber will resubscribe asap
+        for (id, ev) in batch.drain(..) {
+            match ev {
+                Event::Unsubscribed =&gt; (), // Subscriber will resubscribe automatically
                 Event::Update(v) =&gt; {
                     if let Some(temp) = v.cast_f64() {
                         if temp &gt; 75. {
@@ -557,6 +557,24 @@ pub async fn main() -&gt; Result&lt;()&gt; {
     Ok(())
 }
 </code></pre></pre>
+<p>This does almost exactly the same thing as the shell script, the only
+semantic difference being that it sends an actual DateTime value for
+the timestamp instead of a string, which would certainly make life
+easier for anyone using this data, not to mention it's more
+efficient. There is a little more setup and book keeping, but at 62
+lines it's hardly a massive program (and it's nearly 20% use
+statements).</p>
+<h2><a class="header" href="#but-i-just-want-to-look-at-it" id="but-i-just-want-to-look-at-it">But I Just Want to Look at It</a></h2>
+<p>Up to now we've covered using the data in various kinds of programs,
+but what if you just want to look at it. For that you have two
+choices, you can write a custom tool that presents your data exactly
+the way you want, or you can use the netidx browser. A custom tool
+will always give you more control, but the browser is designed to be
+pretty flexible, and it allows you to get to an ok looking solution
+really fast. In the case of the data we've been discussing in this
+chapter, you get something pretty nice to look at without doing
+anything at all.</p>
+<p><img src="small-example-table.png" alt="The Browser rendering a table" /></p>
 
                     </main>
 
