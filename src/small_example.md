@@ -7,7 +7,7 @@ that's irrelevant to the example. However suppose one of the things it
 knows is the current CPU temperature of the machine it's running on,
 and we would like access to that data. We heard about this new netidx
 thing, and we'd like to try it out on this small and not very
-important case, what code do we need to add to our daemon, and what
+important case. What code do we need to add to our daemon, and what
 options do we have for using the data?
 
 We can modify our Cargo.toml to include netidx, and then add a small
