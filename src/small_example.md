@@ -308,5 +308,10 @@ any) should be the default sort column. One can do this using the
 browser's built in view editor (or by editing some json), and one can
 publish the result into netidx such that the browser will
 automatically use your view definition when the user navigates to a
-specific place in the tree. The browser will be discussed in detail in
-a later chapter.
+specific place in the tree. There is a lot more that can be done wiht
+views and that will be discussed in detail in a later chapter.
+
+In the case where the browser does not find this 2 level regularity,
+for example if the current level nodes don't have any children, then
+it will draw a table with 1 column (the value) and a row for each
+node. This is called vector mode.
