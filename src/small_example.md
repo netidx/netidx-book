@@ -314,4 +314,36 @@ be done with views but that's for another chapter.
 In the case where the browser does not find this 2 level regularity,
 for example if the current level nodes don't have any children, then
 it will draw a table with 1 column (the value) and a row for each
-node. This is called vector mode.
+node. This is called vector mode. 
+
+If you're worried that this pattern recognition is expensive in cpu,
+bandwidth, and round trips, don't be. The resolver server pre computes
+tables, so it's just one call for the browser to retrieve that
+information for a given location.
+
+## Wrapping Up
+
+In this chapter we saw how we could add a bit of code to an existing
+system to expose some of it's data to netidx, and then get quite a bit
+of functionality out of that for not much work. I'd like to point out
+that all of the components we saw need not have been written by one
+person. In fact the people who write them didn't need to talk to each
+other in advance (or ever). Having worked in a large organization
+where netidx was deployed I found that it's often the case that
+someone publishes some interesting data, and then later on other
+people see it, do things with it, and publish those things, and after
+a while a very compelling application appears almost by magic. Of
+course once that happens it's often necessary to get those people
+together and talk about how to streamline their design, support the
+user base, etc, but that's a really good problem to have because it
+means value has been created. Many administrators deploying netidx
+might be tempted to lock it completely down so that only "production"
+applications are allowed to publish. It's important to think carefully
+about how to make sure production applications are always available,
+but even still we always included a place in the namespace where
+anyone could publish anything, because sometimes magic mushrooms grew
+there.
+
+In the next chapter I'll focus on an application written from scratch
+to use netidx as it's primary means of communication and control, and
+the browser as it's primary user interface.
