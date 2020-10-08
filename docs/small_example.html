@@ -167,7 +167,7 @@ that's irrelevant to the example. However suppose one of the things it
 knows is the current CPU temperature of the machine it's running on,
 and we would like access to that data. We heard about this new netidx
 thing, and we'd like to try it out on this small and not very
-important case, what code do we need to add to our daemon, and what
+important case. What code do we need to add to our daemon, and what
 options do we have for using the data?</p>
 <p>We can modify our Cargo.toml to include netidx, and then add a small
 self contained module, publisher.rs</p>
@@ -398,7 +398,7 @@ easier for anyone using this data, not to mention it's more
 efficient. There is a little more setup and book keeping, but at 62
 lines it's hardly a massive program (and it's nearly 20% use
 statements).</p>
-<h2><a class="header" href="#but-i-just-want-to-look-at-it" id="but-i-just-want-to-look-at-it">But I Just Want to Look at It</a></h2>
+<h2><a class="header" href="#but-i-just-want-to-look-at-my-data" id="but-i-just-want-to-look-at-my-data">But I Just Want to Look at My Data</a></h2>
 <p>Up to now we've covered using the data in various kinds of programs,
 but what if you just want to look at it. For that you have two
 choices, you can write a custom tool that presents your data exactly
@@ -409,6 +409,40 @@ really fast. In the case of the data we've been discussing in this
 chapter, you get something pretty nice to look at without doing
 anything at all.</p>
 <p><img src="small-example-table.png" alt="The Browser rendering a table" /></p>
+<p>So what's going on here, how did we get a nice looking table out of a
+tree? When asked to navigate to a path the browser looks for two kinds
+of regular structures, and will draw something appropriate based on
+it's findings. One kind is a tree where the 1st level children
+themselves have a regular set of children. By regular I mean, with the
+same name. In the example we have</p>
+<pre><code>/hw/um01-ta07-09/cpu-temp
+/hw/um01-ta07-09/overtemp-ts
+/hw/um01-ta07-09/overtemp
+</code></pre>
+<p>But all the 1st level nodes have the same children, so the pattern is,</p>
+<pre><code>/hw/${host}/cpu-temp
+/hw/${host}/overtemp-ts
+/hw/${host}/overtemp
+</code></pre>
+<p>The browser discovers that regularity, and elects to make a row for
+each $host, and a column for each child of $host. In our case, the
+data is perfectly regular, and so we end up with a fully populated
+table with 3 columns, and a row for each host.</p>
+<p>Perfect regularity is not a requirement. By default in order to be
+included as a column in the table a 2nd level child must be shared by
+at least 50% of the 1st level children (50% of the rows must have that
+column). However it is possible to manually configure which columns
+the browser should draw, what order they appear in, and even which (if
+any) should be the default sort column. One can do this using the
+browser's built in view editor (or by editing some json), and one can
+publish the result into netidx such that the browser will
+automatically use your view definition when the user navigates to a
+specific place in the tree. There is a lot more that can be done wiht
+views and that will be discussed in detail in a later chapter.</p>
+<p>In the case where the browser does not find this 2 level regularity,
+for example if the current level nodes don't have any children, then
+it will draw a table with 1 column (the value) and a row for each
+node. This is called vector mode.</p>
 
                     </main>
 
