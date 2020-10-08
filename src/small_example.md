@@ -259,7 +259,7 @@ efficient. There is a little more setup and book keeping, but at 62
 lines it's hardly a massive program (and it's nearly 20% use
 statements).
 
-## But I Just Want to Look at It
+## But I Just Want to Look at My Data
 
 Up to now we've covered using the data in various kinds of programs,
 but what if you just want to look at it. For that you have two
@@ -272,3 +272,41 @@ chapter, you get something pretty nice to look at without doing
 anything at all.
 
 ![The Browser rendering a table](small-example-table.png)
+
+So what's going on here, how did we get a nice looking table out of a
+tree? When asked to navigate to a path the browser looks for two kinds
+of regular structures, and will draw something appropriate based on
+it's findings. One kind is a tree where the 1st level children
+themselves have a regular set of children. By regular I mean, with the
+same name. In the example we have
+
+```
+/hw/um01-ta07-09/cpu-temp
+/hw/um01-ta07-09/overtemp-ts
+/hw/um01-ta07-09/overtemp
+```
+
+But all the 1st level nodes have the same children, so the pattern is,
+
+```
+/hw/${host}/cpu-temp
+/hw/${host}/overtemp-ts
+/hw/${host}/overtemp
+```
+
+The browser discovers that regularity, and elects to make a row for
+each $host, and a column for each child of $host. In our case, the
+data is perfectly regular, and so we end up with a fully populated
+table with 3 columns, and a row for each host.
+
+Perfect regularity is not a requirement. By default in order to be
+included as a column in the table a 2nd level child must be shared by
+at least 50% of the 1st level children (50% of the rows must have that
+column). However it is possible to manually configure which columns
+the browser should draw, what order they appear in, and even which (if
+any) should be the default sort column. One can do this using the
+browser's built in view editor (or by editing some json), and one can
+publish the result into netidx such that the browser will
+automatically use your view definition when the user navigates to a
+specific place in the tree. The browser will be discussed in detail in
+a later chapter.
