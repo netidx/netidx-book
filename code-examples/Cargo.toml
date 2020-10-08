@@ -5,5 +5,8 @@ authors = ["Eric Stokes <letaris@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+chrono = "0.4"
+tokio = { version = "0.2", features = ["full"] }
+futures = "0.3"
 netidx = "0.4"
 anyhow = "1"

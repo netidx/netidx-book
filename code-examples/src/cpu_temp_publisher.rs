@@ -25,11 +25,11 @@ impl HwPub {
         // for this small service we don't need authentication
         let auth = Auth::Anonymous;
 
-        // listen on any unique address matching 192.168.0.0/16. If
+        // listen on any unique address matching 192.168.0.0/24. If
         // our network was large and complex we might need to make
         // this a passed in configuration option, but lets assume it's
         // simple.
-        let publisher = Publisher::new(cfg, auth, "192.168.0.0/16".parse()?).await?;
+        let publisher = Publisher::new(cfg, auth, "192.168.0.0/24".parse()?).await?;
 
         // We're publishing stats about hardware here, so lets put it
         // in /hw/hostname/cpu-temp, that way we keep everything nice

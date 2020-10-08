@@ -116,27 +116,16 @@ netidx publisher --bind 192.168.0.0/24
 
 Now we've done something very interesting, we took some data out of
 netidx, did a computation on it, and published the result into the
-same namespace. Our /hw namespace now has additional useful data in it
-for each host. We can now subscribe to e.g. /hw/krusty/overtemp-ts and
-we will know when that machine last went over temperature. To a user
-looking at this namespace in the browser (more on that later) there is
-no indication that the over temp data comes from a separate process,
-on a separate machine, written by a separate person. It all just fits
-together seamlessly as if it was one application.
+same namespace. We can now subscribe to e.g. /hw/krusty/overtemp-ts
+and we will know when that machine last went over temperature. To a
+user looking at this namespace in the browser (more on that later)
+there is no indication that the over temp data comes from a separate
+process, on a separate machine, written by a separate person. It all
+just fits together seamlessly as if it was one application.
 
-Now I've made this seem great, but there are actually two problems
-here. The first is in fact exactly the same sentence as the last
-paragraph. There is no indication anywhere that this overtemp data is
-a dirty bash script possibly running on a developer workstation that
-is about to get switched off to install patches. That is why netidx
-has access controls on publishing, and that's why it's a good idea to
-use them even if your data is not sensitive. If you don't, anyone can
-publish anything anywhere.
-
-The second problem is more serious, in that, the above code will not
-do quite what you might want it to do. Someone might, for example,
-want to write the following additional script (if that someone was
-you, you'd likely just add it to your script).
+There is actually a problem here, in that, the above code will not do
+quite what you might want it to do. Someone might, for example, want
+to write the following additional script.
 
 ``` bash
 #! /bin/bash
@@ -149,13 +138,13 @@ done
 ```
 
 To ring a very loud alarm when an over temp event is detected. This
-would, in fact, work as expected, it just would not be as timely as
-the author might want. The reason is that the subscriber practices
-linear backoff when it's instructed to subscribe to a path that
-doesn't exist. This is a good practice, in general it reduces the cost
-of mistakes on the entire system, but in this case it could result in
-getting the alarm hours, or longer after you should. The good news is
-there is a simple solution, we need to publish all the paths from the
+would in fact work, it just would not be as timely as the author might
+expect. The reason is that the subscriber practices linear backoff
+when it's instructed to subscribe to a path that doesn't exist. This
+is a good practice, in general it reduces the cost of mistakes on the
+entire system, but in this case it could result in getting the alarm
+minutes, hours, or longer after you should. The good news is there is
+a simple solution, we just need to publish all the paths from the
 start, but fill them will null until the event actually happens (and
 change the above code to ignore the null). That way the subscription
 will be successful right away, and the alarm will sound immediatly
@@ -194,10 +183,70 @@ actual over temp events.
 ## Or Maybe Shell is Not Your Jam
 
 It's entirely possible that the above solution gives you night sweats,
-or maybe catting process substitutions makes your boss crosseyed,
+or maybe cating process substitutions makes your boss crosseyed,
 however hot you think your creation is. In that case it's perfectly
 possible (and probably more readable) do do the above in rust.
 
 ``` rust
+use anyhow::Result;
+use futures::{channel::mpsc::channel, prelude::* };
+use netidx::{
+    config::Config,
+    path::Path,
+    publisher::{Publisher, Val, Value},
+    resolver::Auth,
+    subscriber::{Dval, Event, SubId, Subscriber},
+};
+use chrono::prelude::*;
+use std::collections::HashMap;
 
+struct Temp {
+    _current: Dval,
+    timestamp: Val,
+    temperature: Val,
+}
+
+#[tokio::main]
+pub async fn main() -> Result<()> {
+    let config = Config::load_default()?;
+    let auth = Auth::Anonymous;
+    let subscriber = Subscriber::new(config.clone(), auth.clone())?;
+    let publisher = Publisher::new(config, auth, "192.168.0.0/24".parse()?).await?;
+    let (tx_current, mut rx_current) = channel(3);
+    let temps = subscriber
+        .resolver()
+        .list(Path::from("/hw"))
+        .await?
+        .drain(..)
+        .filter_map(|path| path.split('/').nth(2).map(String::from))
+        .map(|host| {
+            let _current = subscriber
+                .durable_subscribe(Path::from(format!("/hw/{}/cpu-temp", host)));
+            _current.updates(true, tx_current.clone());
+            let timestamp = publisher
+                .publish(Path::from(format!("/hw/{}/overtemp-ts", host)), Value::Null)?;
+            let temperature = publisher
+                .publish(Path::from(format!("/hw/{}/overtemp", host)), Value::Null)?;
+            Ok((_current.id(), Temp { _current, timestamp, temperature }))
+        })
+        .collect::<Result<HashMap<SubId, Temp>>>()?;
+    while let Some(mut batch) = rx_current.next().await {
+        for (id, v) in batch.drain(..) {
+            match v {
+                Event::Unsubscribed => (), // Subscriber will resubscribe asap
+                Event::Update(v) => {
+                    if let Some(temp) = v.cast_f64() {
+                        if temp > 75. {
+                            let tr = &temps[&id];
+                            tr.timestamp.update(Value::DateTime(Utc::now()));
+                            tr.temperature.update(Value::F64(temp));
+                        }
+                    }
+                }
+            }
+        }
+        publisher.flush(None).await?
+    }
+    Ok(())
+}
 ```
