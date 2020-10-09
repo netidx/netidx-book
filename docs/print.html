@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -407,7 +407,7 @@ to make this interaction easy, here's an example of how we might use
 the data.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
     if ((temp &gt; 75)); then
@@ -422,12 +422,12 @@ are too high, and then publish the temperature and the timestamp when
 it was observed.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
     if ((temp &gt; 75)); then
         echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
-        echo &quot;/hw/${pparts[2]}/overtemp/temp|f64|$temp&quot;
+        echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
     fi
 done | \
 netidx publisher --bind 192.168.0.0/24
@@ -445,7 +445,7 @@ quite what you might want it to do. Someone might, for example, want
 to write the following additional script.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'overtemp-ts$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/overtemp-ts|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
     ring-very-loud-alarm ${pparts[2]}
@@ -469,18 +469,18 @@ cat &lt;(
     netidx resolver list /hw | \
         while IFS='/' read -a pparts
         do
-            echo &quot;/hw/${pparts[2]}/overtemp-ts|string|null&quot;
-            echo &quot;/hw/${pparts[2]}/overtemp|string|null&quot;
+            echo &quot;/hw/${pparts[2]}/overtemp-ts|null&quot;
+            echo &quot;/hw/${pparts[2]}/overtemp|null&quot;
         done
 ) \
 &lt;(
-   netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+   netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
        while IFS='|' read path typ temp
        do
             IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
             if ((temp &gt; 75)); then
                 echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
-                echo &quot;/hw/${pparts[2]}/overtemp/temp|f64|$temp&quot;
+                echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
             fi
        done
 ) | netidx publisher --bind 192.168.0.0/24
@@ -637,6 +637,7 @@ there.</p>
 <p>In the next chapter I'll focus on an application written from scratch
 to use netidx as it's primary means of communication and control, and
 the browser as it's primary user interface.</p>
+<h1><a class="header" href="#a-complete-system" id="a-complete-system">A Complete System</a></h1>
 
                     </main>
 

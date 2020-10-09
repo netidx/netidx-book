@@ -4,11 +4,11 @@ cat <(
     netidx resolver list /bench | \
         while IFS='/' read -a pparts
         do
-            echo "/bench/${pparts[2]}/over75|string|null"
+            echo "/bench/${pparts[2]}/over75|null"
         done
 ) \
 <(
-    netidx subscriber $(netidx resolver list /bench/ | grep "0$") | \
+    netidx subscriber $(netidx resolver list /bench | sed -e 's|$|/0|') | \
         while IFS='|' read path typ temp
         do
             IFS='/' read -a pparts <<< $path

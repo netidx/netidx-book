@@ -85,7 +85,7 @@ the data.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     if ((temp > 75)); then
@@ -103,12 +103,12 @@ it was observed.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     if ((temp > 75)); then
         echo "/hw/${pparts[2]}/overtemp-ts|string|$(date)"
-        echo "/hw/${pparts[2]}/overtemp/temp|f64|$temp"
+        echo "/hw/${pparts[2]}/overtemp|f64|$temp"
     fi
 done | \
 netidx publisher --bind 192.168.0.0/24
@@ -130,7 +130,7 @@ to write the following additional script.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw/ | grep 'overtemp-ts$') | \
+netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/overtemp-ts|') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     ring-very-loud-alarm ${pparts[2]}
@@ -157,18 +157,18 @@ cat <(
     netidx resolver list /hw | \
         while IFS='/' read -a pparts
         do
-            echo "/hw/${pparts[2]}/overtemp-ts|string|null"
-            echo "/hw/${pparts[2]}/overtemp|string|null"
+            echo "/hw/${pparts[2]}/overtemp-ts|null"
+            echo "/hw/${pparts[2]}/overtemp|null"
         done
 ) \
 <(
-   netidx subscriber $(netidx resolver list /hw/ | grep 'cpu-temp$') | \
+   netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
        while IFS='|' read path typ temp
        do
             IFS='/' read -a pparts <<< "$path"
             if ((temp > 75)); then
                 echo "/hw/${pparts[2]}/overtemp-ts|string|$(date)"
-                echo "/hw/${pparts[2]}/overtemp/temp|f64|$temp"
+                echo "/hw/${pparts[2]}/overtemp|f64|$temp"
             fi
        done
 ) | netidx publisher --bind 192.168.0.0/24
