@@ -41,7 +41,7 @@ impl HwPub {
         // for this small service we don't need authentication
         let auth = Auth::Anonymous;
 
-        // listen on any unique address matching 192.168.0.0/16. If
+        // listen on any unique address matching 192.168.0.0/24. If
         // our network was large and complex we might need to make
         // this a passed in configuration option, but lets assume it's
         // simple.
