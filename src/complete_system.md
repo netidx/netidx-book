@@ -304,6 +304,34 @@ and is by no means finished. Another "limitation" to mention is since
 it's built with Gtk+ in Rust it's primarially a desktop application,
 though I have tested it on the pinephone under phosh, and even made a
 few changes to improve touch support. I will test it on the librem 5
-when mine arrives. It's on my list to build it on windows and MacOS,
-neither of which I anticipate being a problem. Android, and especially
-iOS versions will not happen, unless someone else wants to step up.
+when mine arrives, and it's on my list to build it on windows and
+MacOS. Android, and especially iOS versions will not happen, unless
+someone else wants to step up.
+
+## Wrapping Up
+
+In this chapter we saw how an application can be designed more or less
+from the start to communicate with the outside world using netidx. We
+didn't cover the opportunities for scripting our solar installation
+now that we can control it using netidx, but we certainly could do any
+of the nice things we did in the last chapter. Instead we saw how we
+could build a pretty nice looking and functional gui using browser
+custom views, and we got an introduction to the formula language. I
+want to point out that with our design having a gui in no way alters
+our ability to script and manipulate the system programatically.  It's
+important to recognize that building a bespoke system with a gui as
+complex as the browser view we built AND making it scriptable over the
+network in a discoverable, secure, and performant way is not an easy
+task, and usually isn't worth doing. However by using netidx we got it
+all for free, all we had to do was make our problem fit into netidxs'
+data model.
+
+One day I was reflecting on the browser after I had been working on it
+for many weeks, and it occurred to me that it is essentially
+implementing a distributed verion of the model view controller
+paradigm. The netidx data model is the model, the view is the widget
+tree and the layout properties, and the controller is the formula
+language expressions embedded in each widget. However in this version
+of MVC we get to reuse the model over the network, and it need not
+even run on the same computer, and I think that's pretty cool.
+
