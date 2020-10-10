@@ -25,8 +25,8 @@ has been around for a long time, predating having netidx working as an
 open source system (the closed version goes back over a decade, but
 for various reasons it will likely never be released), as such there
 is a vestigal web gui, and a local control socket interface (which is
-still used by command line tools). Full source code here,
-[solar](https://github.com/estokes/solar).
+still used by command line tools). Full source code
+[here](https://github.com/estokes/solar).
 
 The main loop takes commands from either the command socket, or the
 netidx publisher, and sends them via modbus to the charge controller, e.g.
@@ -111,10 +111,11 @@ global namespace, it fits perfectly well to imagine that we can write
 to those variables as well as read from them, publisher willing.
 
 Our program is going to publish three values for control,
-/solar/control/charging, /solar/control/load, and
-/solar/control/reset. These values will all be boolean, and they will
-be valid for both read and write. Here is the full code of the control
-section,
+/solar/control/charging (to control whether we are charging the
+batteries), /solar/control/load (to control whether the inverter is on
+or off), and /solar/control/reset (to trigger a controller
+reset). These values will all be boolean, and they will be valid for
+both read and write. Here is the full code of the control section,
 
 ```rust
 struct PublishedControl {
@@ -218,3 +219,78 @@ commands at my phone is not ideal, I'd like a gui. This is where
 custom browser views come in, here is the finished product,
 
 ![Solar GUI](solar-gui.png)
+
+A view definition can be published to the special value .view in a
+given directory (e.g. /solar/.view) so it will automatically render
+whenever the browser visits that directory, that's what we've done
+here. In fact we have our view definition in a file solar.view, and
+we're publishing it with the following shell script,
+
+``` bash
+netidx publisher -b 192.168.0.0/24 --spn svc/host@REALM <<EOF
+/solar/.view|string|$(cat ~/solar.view)
+EOF
+
+```
+
+This need not be on the same machine as the control program, as long
+as the user running the command has permission to publish under /solar
+it will work.
+
+Building the view in the first place can be done using design mode in
+the browser, the view can then be saved to a file or written directly
+to a netidx path.
+
+![Browser Design Mode](browser-design-mode.png)
+
+Design mode can be activated at any time with the toggle button in the
+upper left corner, to the left of save. It splits the window
+vertically into two panes, the gui on the right, and the view
+definition on the left. The view definition is visualized as a tree of
+widgets, with parents higher in the tree containing children, and each
+widget having a type. Notice that we've selected a toggle widget in
+the tree, and we can see that widget is highlighted blue in the gui,
+as we move the selection, the highlight will move, such that we always
+know what part of the actual gui we are changing. From a static
+picture it's not possible to see this, however the gui is fully
+functional in every way while design mode is activated, it isn't some
+"special" mode, what you see is exactly what you will get. This
+extends to changes, as we make changes the gui will reflect them
+immediatly, of course if we don't like a change we can simply press
+the undo button in the tool bar above the widget tree. 
+
+Now lets take a look at the bottom part of the view definition pane,
+we see the details of the widget we've selected, the toggle button. We
+see there are some layout properties hidden by an expander, every
+drawable widget has those, so lets leave them for later. Every widget
+that does something in the browser has one or more sources, and one or
+more sinks. Sources are where data comes in, and sinks are where data
+goes out. Sources are defined in a little domain specific language
+called the formula language, which will be specified in detail
+later. Sinks use the same syntax but have a different set of
+functions.
+
+Our toggle has two sources, and one sink. The enabled source just
+determines if the toggle is interactable, and in our case it's set to
+a function constant(bool, true), which always evaluates to
+Value::True. The other source, just called source, determines whether
+the toggle displays as on or off, and this one is set to
+load_path("/solar/control/charging"), which is a function that
+subscribes to the netidx path it's given and updates when the path
+updates. This ties the state of the toggle to the value of
+/solar/control/charging, when that value changes the toggle state
+changes. When the user clicks the toggle, either true or false is
+written to the sink which is defined as
+confirm(store_path("/solar/control/charging")). So what does this do?
+Well, store_path pretty obviously creates a sink that writes whatever
+value it receives to the specified path, confirm is more complex. It
+takes a sink as an argument, and returns a sink that asks the user to
+confirm every value it receives. If the user says yes, then it passes
+the value on to the passed in sink, in this case to load_path,
+otherwise it drops the value.
+
+There are many other useful formulas, and the goal is to make building
+simple guis like this dead easy, the majority of the work should be
+the layout, and moderatly complex guis should be possible. While this
+system is already pretty useful it is still under heavy development,
+and is by no means finished.
