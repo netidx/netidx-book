@@ -892,29 +892,41 @@ goes out. Sources are defined in a little domain specific language
 called the formula language, which will be specified in detail
 later. Sinks use the same syntax but have a different set of
 functions.</p>
+<p>The semantics of the formula language, and it's syntax, are meant to
+be very similar to formulas in a spreadsheet. Where instead of row/col
+notation, we use netidx paths to denote refs to other parts of the
+sheet. Sources update whenever something they ref updates, and sinks
+are updated, and may cause sources to update. And, that's all rather
+abstract, lets focus on our example.</p>
 <p>Our toggle has two sources, and one sink. The enabled source just
 determines if the toggle is interactable, and in our case it's set to
-a function constant(bool, true), which always evaluates to
-Value::True. The other source, just called source, determines whether
-the toggle displays as on or off, and this one is set to
-load_path(&quot;/solar/control/charging&quot;), which is a function that
-subscribes to the netidx path it's given and updates when the path
-updates. This ties the state of the toggle to the value of
-/solar/control/charging, when that value changes the toggle state
-changes. When the user clicks the toggle, either true or false is
-written to the sink which is defined as
-confirm(store_path(&quot;/solar/control/charging&quot;)). So what does this do?
-Well, store_path pretty obviously creates a sink that writes whatever
-value it receives to the specified path, confirm is more complex. It
-takes a sink as an argument, and returns a sink that asks the user to
-confirm every value it receives. If the user says yes, then it passes
-the value on to the passed in sink, in this case to load_path,
-otherwise it drops the value.</p>
+a function constant(bool, true), which creates a source that always
+evaluates to Value::True. The other source, just called source,
+determines whether the toggle displays as on or off, and this one is
+set to <code>load_path(&quot;/solar/control/charging&quot;)</code>, load_path is a function
+that creates a source that subscribes to the netidx path it's given
+and updates when the subscription updates. So this straightforwardly
+ties the state of the toggle to the value of /solar/control/charging,
+when that value changes the toggle state changes. When the user clicks
+the toggle, either true or false is written to the sink which is
+defined as <code>confirm(store_path(&quot;/solar/control/charging&quot;))</code>. So what
+does this do?  Well, store_path pretty obviously creates a sink that
+writes whatever value it receives to the specified path, confirm is
+more complex. It takes a sink as an argument, and returns a sink that
+asks the user to confirm every value it receives. If the user says
+yes, then it passes the value on to the passed in sink, in this case
+to load_path, otherwise it drops the value.</p>
 <p>There are many other useful formulas, and the goal is to make building
 simple guis like this dead easy, the majority of the work should be
 the layout, and moderatly complex guis should be possible. While this
 system is already pretty useful it is still under heavy development,
-and is by no means finished.</p>
+and is by no means finished. Another &quot;limitation&quot; to mention is since
+it's built with Gtk+ in Rust it's primarially a desktop application,
+though I have tested it on the pinephone under phosh, and even made a
+few changes to improve touch support. I will test it on the librem 5
+when mine arrives. It's on my list to build it on windows and MacOS,
+neither of which I anticipate being a problem. Android, and especially
+iOS versions will not happen, unless someone else wants to step up.</p>
 
                     </main>
 
