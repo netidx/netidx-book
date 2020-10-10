@@ -90,7 +90,7 @@ timer tick. e.g.
     ...
 ```
 
-These are all published under /solar/stats, there are a lot of them,
+These are all published under `/solar/stats`, there are a lot of them,
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
 log to a file, update netidx, flush netidx, loop.
@@ -111,9 +111,9 @@ global namespace, it fits perfectly well to imagine that we can write
 to those variables as well as read from them, publisher willing.
 
 Our program is going to publish three values for control,
-/solar/control/charging (to control whether we are charging the
-batteries), /solar/control/load (to control whether the inverter is on
-or off), and /solar/control/reset (to trigger a controller
+`/solar/control/charging` (to control whether we are charging the
+batteries), `/solar/control/load` (to control whether the inverter is on
+or off), and `/solar/control/reset` (to trigger a controller
 reset). These values will all be boolean, and they will be valid for
 both read and write. Here is the full code of the control section,
 
@@ -221,7 +221,7 @@ custom browser views come in, here is the finished product,
 ![Solar GUI](solar-gui.png)
 
 A view definition can be published to the special value .view in a
-given directory (e.g. /solar/.view) so it will automatically render
+given directory (e.g. `/solar/.view`) so it will automatically render
 whenever the browser visits that directory, that's what we've done
 here. In fact we have our view definition in a file solar.view, and
 we're publishing it with the following shell script,
@@ -234,7 +234,7 @@ EOF
 ```
 
 This need not be on the same machine as the control program, as long
-as the user running the command has permission to publish under /solar
+as the user running the command has permission to publish under `/solar`
 it will work.
 
 Building the view in the first place can be done using design mode in
@@ -279,13 +279,13 @@ abstract, lets focus on our example.
 
 Our toggle has two sources, and one sink. The enabled source just
 determines if the toggle is interactable, and in our case it's set to
-a function constant(bool, true), which creates a source that always
-evaluates to Value::True. The other source, just called source,
+a function `constant(bool, true)`, which creates a source that always
+evaluates to `Value::True`. The other source, just called source,
 determines whether the toggle displays as on or off, and this one is
 set to `load_path("/solar/control/charging")`, load_path is a function
 that creates a source that subscribes to the netidx path it's given
 and updates when the subscription updates. So this straightforwardly
-ties the state of the toggle to the value of /solar/control/charging,
+ties the state of the toggle to the value of `/solar/control/charging`,
 when that value changes the toggle state changes. When the user clicks
 the toggle, either true or false is written to the sink which is
 defined as `confirm(store_path("/solar/control/charging"))`. So what

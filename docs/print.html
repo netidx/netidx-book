@@ -727,7 +727,7 @@ timer tick. e.g.</p>
     ...
 <span class="boring">}
 </span></code></pre></pre>
-<p>These are all published under /solar/stats, there are a lot of them,
+<p>These are all published under <code>/solar/stats</code>, there are a lot of them,
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
 log to a file, update netidx, flush netidx, loop.</p>
@@ -746,9 +746,9 @@ documentation you might have noticed,</p>
 global namespace, it fits perfectly well to imagine that we can write
 to those variables as well as read from them, publisher willing.</p>
 <p>Our program is going to publish three values for control,
-/solar/control/charging (to control whether we are charging the
-batteries), /solar/control/load (to control whether the inverter is on
-or off), and /solar/control/reset (to trigger a controller
+<code>/solar/control/charging</code> (to control whether we are charging the
+batteries), <code>/solar/control/load</code> (to control whether the inverter is on
+or off), and <code>/solar/control/reset</code> (to trigger a controller
 reset). These values will all be boolean, and they will be valid for
 both read and write. Here is the full code of the control section,</p>
 <pre><pre class="playground"><code class="language-rust">
@@ -900,13 +900,13 @@ are updated, and may cause sources to update. And, that's all rather
 abstract, lets focus on our example.</p>
 <p>Our toggle has two sources, and one sink. The enabled source just
 determines if the toggle is interactable, and in our case it's set to
-a function constant(bool, true), which creates a source that always
-evaluates to Value::True. The other source, just called source,
+a function <code>constant(bool, true)</code>, which creates a source that always
+evaluates to <code>Value::True</code>. The other source, just called source,
 determines whether the toggle displays as on or off, and this one is
 set to <code>load_path(&quot;/solar/control/charging&quot;)</code>, load_path is a function
 that creates a source that subscribes to the netidx path it's given
 and updates when the subscription updates. So this straightforwardly
-ties the state of the toggle to the value of /solar/control/charging,
+ties the state of the toggle to the value of <code>/solar/control/charging</code>,
 when that value changes the toggle state changes. When the user clicks
 the toggle, either true or false is written to the sink which is
 defined as <code>confirm(store_path(&quot;/solar/control/charging&quot;))</code>. So what
