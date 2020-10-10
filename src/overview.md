@@ -10,7 +10,7 @@ essential goal.
 ## The Namespace
 
 Netidx values are published to a hierarcical tuple space. The
-structure of the names look just like filename, e.g.
+structure of the names look just like a filename, e.g.
 
     /apps/solar/stats/battery_sense_voltage
 
@@ -19,10 +19,10 @@ to a value, and have children. For example we might have,
 
     /apps/solar/stats/battery_sense_voltage/millivolts
 
-Where the .../battery_sense_voltage points to the number in volts, and
+Where the `.../battery_sense_voltage` points to the number in volts, and
 it's 'millivolts' child gives the same number in millivolts.
 
-Sometimes a name like .../battery_sense_voltage is published deep in
+Sometimes a name like `.../battery_sense_voltage` is published deep in
 the hierarchy and it's parents are just structure. Unlike the
 filesystem the resolver server will create and delete those structural
 containers automatically, there is no need to manually manage them.

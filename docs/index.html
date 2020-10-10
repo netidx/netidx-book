@@ -168,16 +168,16 @@ easy as possible while still being secure and performant is the
 essential goal.</p>
 <h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
 <p>Netidx values are published to a hierarcical tuple space. The
-structure of the names look just like filename, e.g.</p>
+structure of the names look just like a filename, e.g.</p>
 <pre><code>/apps/solar/stats/battery_sense_voltage
 </code></pre>
 <p>Is an example name. Unlike in a filesystem, in netidx a name may point
 to a value, and have children. For example we might have,</p>
 <pre><code>/apps/solar/stats/battery_sense_voltage/millivolts
 </code></pre>
-<p>Where the .../battery_sense_voltage points to the number in volts, and
+<p>Where the <code>.../battery_sense_voltage</code> points to the number in volts, and
 it's 'millivolts' child gives the same number in millivolts.</p>
-<p>Sometimes a name like .../battery_sense_voltage is published deep in
+<p>Sometimes a name like <code>.../battery_sense_voltage</code> is published deep in
 the hierarchy and it's parents are just structure. Unlike the
 filesystem the resolver server will create and delete those structural
 containers automatically, there is no need to manually manage them.</p>
