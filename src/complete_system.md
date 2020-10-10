@@ -20,12 +20,7 @@ adapter. The pi, called "solar", is connected to my wifi network and
 is joined to my samba ADS domain.
 
 The control program, then, is more or less a simple translation layer
-between the modbus interface of the Prostar and netidx. This system
-has been around for a long time, predating having netidx working as an
-open source system (the closed version goes back over a decade, but
-for various reasons it will likely never be released), as such there
-is a vestigal web gui, and a local control socket interface (which is
-still used by command line tools). Full source code
+between the modbus interface of the Prostar and netidx. Full source code
 [here](https://github.com/estokes/solar).
 
 The main loop takes commands from either the command socket, or the
