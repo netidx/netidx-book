@@ -2,7 +2,7 @@
 
 Suppose we have a small daemon that we run on many computers on our
 network, and it knows many things about them, and does many things. I
-won't specifiy exactly what it does or everything it knows because
+won't specify exactly what it does or everything it knows because
 that's irrelevant to the example. However suppose one of the things it
 knows is the current CPU temperature of the machine it's running on,
 and we would like access to that data. We heard about this new netidx
@@ -147,7 +147,7 @@ minutes, hours, or longer after you should. The good news is there is
 a simple solution, we just need to publish all the paths from the
 start, but fill them will null until the event actually happens (and
 change the above code to ignore the null). That way the subscription
-will be successful right away, and the alarm will sound immediatly
+will be successful right away, and the alarm will sound immediately
 after the event is detected. So lets change the code ...
 
 ``` bash

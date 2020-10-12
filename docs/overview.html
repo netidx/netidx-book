@@ -167,11 +167,11 @@ computer. There are a lot of details, but making that transaction as
 easy as possible while still being secure and performant is the
 essential goal.</p>
 <h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
-<p>Netidx values are published to a hierarcical tuple space. The
+<p>Netidx values are published to a hierarchical tuple space. The
 structure of the names look just like a filename, e.g.</p>
 <pre><code>/apps/solar/stats/battery_sense_voltage
 </code></pre>
-<p>Is an example name. Unlike in a filesystem, in netidx a name may point
+<p>Is an example name. Unlike in a file system, in netidx a name may point
 to a value, and have children. For example we might have,</p>
 <pre><code>/apps/solar/stats/battery_sense_voltage/millivolts
 </code></pre>
@@ -179,10 +179,10 @@ to a value, and have children. For example we might have,</p>
 it's 'millivolts' child gives the same number in millivolts.</p>
 <p>Sometimes a name like <code>.../battery_sense_voltage</code> is published deep in
 the hierarchy and it's parents are just structure. Unlike the
-filesystem the resolver server will create and delete those structural
+file system the resolver server will create and delete those structural
 containers automatically, there is no need to manually manage them.</p>
 <p>The term 'points to' is literal. In netidx the actual data is
-completely seperate from the names. The names are stored in the
+completely separate from the names. The names are stored in the
 resolver server cluster. Each name points to the ip address and port
 of the publisher that actually has the data.</p>
 <p>When a client wants to subscribe to the value pointed to by a name, it
@@ -198,21 +198,15 @@ infrastructure.</p>
 'value'.</p>
 <ul>
 <li>Every non structural name points to a value</li>
-<li>Every value immediatly delivers it's most recent value to new
-subscribers</li>
-<li>When a value is changed, every subscriber receives the new value</li>
-<li>No changes are ever dropped, and they arrive in the order they were
-made</li>
-<li>Changes to different values published by the same publisher arrive
-in the order they were made.</li>
+<li>Every new subscription immediately delivers it's most recent value</li>
+<li>When a value is updated, every subscriber receives the new value</li>
+<li>Updates arrive reliably and in the order the publisher made them
+(like a TCP stream)</li>
 <li>Everything has type 'Value', which is a primitive number, string,
 datetime, or byte array</li>
 </ul>
-<p>Every non structural name always has a value, and the value is always
-a primitive type. When you subscribe you get the most recent value,
-and after that you get updates in an ordered lossless stream.</p>
-<p>Since each value is a primitive, there isn't any 'structure', because
-the structure is in the namespace.</p>
+<p>Since each value is a primitive, the only structure is, by design, the
+hierarchical namespace.</p>
 <h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
 <h3><a class="header" href="#components" id="components">Components</a></h3>
 <p><img src="subscription-flow-components.png" alt="The Components" /></p>
@@ -255,7 +249,7 @@ returns a number of things to the subscriber for each path.
 <li>The addresses of all the publishers who are publishing that path</li>
 <li>The service principal names of those publishers</li>
 <li>The permissions the subscriber has to the path</li>
-<li>The authorization token, which is a SHA512 hash of the concatination of
+<li>The authorization token, which is a SHA512 hash of the concatenation of
 <ul>
 <li>A secret shared by the Resolver Cluster and the Publisher</li>
 <li>The path</li>
@@ -302,7 +296,7 @@ published the path.</li>
 <p>It then checks that it's constructed auth token matches the one the
 subscriber presented. Since the subscriber does not know the secret
 the publisher shared with the resolver server it is computationally
-infeasable for the subscriber to generate a valid hash value for an
+infeasible for the subscriber to generate a valid hash value for an
 arbitrary path or permissions, therefore checking this hash is an
 effective proof that the resolver cluster really gave the
 subscriber the permissions it is claiming to have.</p>
@@ -335,7 +329,7 @@ multiple machines in order to protect against a single machine outage,
 and also increase throughput. In netidx, the publisher itself is the
 primary, and as such it is responsible for replicating the names it
 publishes out to all the configured resolver servers. This makes the
-system very resiliant, as even if the entire resolver server cluster
+system very resilient, as even if the entire resolver server cluster
 goes down, the data isn't lost if the publishers are still alive. They
 will keep trying to republish their data with linear backoff until
 they are killed.</p>
@@ -343,7 +337,7 @@ they are killed.</p>
 to fit in even a large cluster of servers, then busy parts of the
 namespace can be delegated to 'child' server clusters. Readers
 familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is simliarly
+details not exactly the same. The administration overhead is similarly
 hierarchical, since each cluster config file must only know about it's
 immediate superior and immediate children. It's entirely possible for
 a large organization to run a central 'root' resolver server cluster
@@ -373,7 +367,7 @@ anything.</p>
 <p>Netidx is almost entirely the same on the wire. The subscriber sends
 the name it wants to one of the publishers specified by the resolver
 server cluster. The publisher looks up that value, and responds with
-the id it will use in subsuquent messages, along with the current
+the id it will use in subsequent messages, along with the current
 value. From then on updates to that value transmit only the id, which
 is LEB128 encoded, and the updated value. So on the wire, in terms of
 overhead, it looks very much like a protobuf record where the fields
@@ -382,9 +376,9 @@ overhead of sending an f64 can be as small as 2 bytes.</p>
 <p>Publisher and subscriber performance is fairly good, such that sending
 many millions of messages per second is possible. The per message
 overhead is on the order of about 70ns of wall clock time per message
-with kerberos encryption on (Skylake x86_64 8x5Ghz). Obviously that
+with kerberos encryption on (Skylake x86_64 8x5GHz). Obviously that
 number depends on the exact hardware you're running on, and it depends
-on your workload batching well. A raw tcp socket, coded properly, will
+on your workload batching well. A raw TCP socket, coded properly, will
 always be faster, the goal is that it won't be faster by enough that
 it's worth using.</p>
 <p>The subscriber library also implements zero copy decoding for strings
@@ -392,7 +386,7 @@ and byte arrays, so it is possible to receive large binary encoded
 things quite efficiently.</p>
 <h2><a class="header" href="#security" id="security">Security</a></h2>
 <p>Ah, the S word. No system remotely like netidx can be taken seriously
-without a plausable design for securing data against unauthorized
+without a plausible design for securing data against unauthorized
 access, interception, manipulation, etc.</p>
 <p>The heart of netidx security is Kerberos v5. There are a lot of
 systems I might have used, e.g. openssl + certificates, oauth +
@@ -428,8 +422,8 @@ allowed to publish and subscribe where.</p>
 </li>
 </ul>
 <h2><a class="header" href="#cross-platform" id="cross-platform">Cross Platform</a></h2>
-<p>While netidx is primarially developed on PPC64le linux, it is tested
-on aarch64, and x86_64 linux, Mac OS, and even Windows. It will
+<p>While netidx is primarily developed on PPC64le Linux, it is tested
+on aarch64, and x86_64 Linux, Mac OS, and even Windows. It will
 probably work on many platforms I haven't tried.</p>
 
                     </main>

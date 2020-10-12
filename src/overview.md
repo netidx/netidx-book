@@ -9,12 +9,12 @@ essential goal.
 
 ## The Namespace
 
-Netidx values are published to a hierarcical tuple space. The
+Netidx values are published to a hierarchical tuple space. The
 structure of the names look just like a filename, e.g.
 
     /apps/solar/stats/battery_sense_voltage
 
-Is an example name. Unlike in a filesystem, in netidx a name may point
+Is an example name. Unlike in a file system, in netidx a name may point
 to a value, and have children. For example we might have,
 
     /apps/solar/stats/battery_sense_voltage/millivolts
@@ -24,11 +24,11 @@ it's 'millivolts' child gives the same number in millivolts.
 
 Sometimes a name like `.../battery_sense_voltage` is published deep in
 the hierarchy and it's parents are just structure. Unlike the
-filesystem the resolver server will create and delete those structural
+file system the resolver server will create and delete those structural
 containers automatically, there is no need to manually manage them.
 
 The term 'points to' is literal. In netidx the actual data is
-completely seperate from the names. The names are stored in the
+completely separate from the names. The names are stored in the
 resolver server cluster. Each name points to the ip address and port
 of the publisher that actually has the data.
 
@@ -47,22 +47,15 @@ So I've said names point to values, but what exactly do I mean by a
 'value'.
 
 * Every non structural name points to a value
-* Every value immediatly delivers it's most recent value to new
-  subscribers
-* When a value is changed, every subscriber receives the new value
-* No changes are ever dropped, and they arrive in the order they were
-  made
-* Changes to different values published by the same publisher arrive
-  in the order they were made.
+* Every new subscription immediately delivers it's most recent value
+* When a value is updated, every subscriber receives the new value
+* Updates arrive reliably and in the order the publisher made them
+  (like a TCP stream)
 * Everything has type 'Value', which is a primitive number, string,
   datetime, or byte array
 
-Every non structural name always has a value, and the value is always
-a primitive type. When you subscribe you get the most recent value,
-and after that you get updates in an ordered lossless stream.
-
-Since each value is a primitive, there isn't any 'structure', because
-the structure is in the namespace.
+Since each value is a primitive, the only structure is, by design, the
+hierarchical namespace.
 
 ## Subscription Flow
 
@@ -110,7 +103,7 @@ components are involved.
    * The addresses of all the publishers who are publishing that path
    * The service principal names of those publishers
    * The permissions the subscriber has to the path
-   * The authorization token, which is a SHA512 hash of the concatination of
+   * The authorization token, which is a SHA512 hash of the concatenation of
      * A secret shared by the Resolver Cluster and the Publisher
      * The path
      * The permissions
@@ -148,7 +141,7 @@ components are involved.
    It then checks that it's constructed auth token matches the one the
    subscriber presented. Since the subscriber does not know the secret
    the publisher shared with the resolver server it is computationally
-   infeasable for the subscriber to generate a valid hash value for an
+   infeasible for the subscriber to generate a valid hash value for an
    arbitrary path or permissions, therefore checking this hash is an
    effective proof that the resolver cluster really gave the
    subscriber the permissions it is claiming to have.
@@ -186,7 +179,7 @@ multiple machines in order to protect against a single machine outage,
 and also increase throughput. In netidx, the publisher itself is the
 primary, and as such it is responsible for replicating the names it
 publishes out to all the configured resolver servers. This makes the
-system very resiliant, as even if the entire resolver server cluster
+system very resilient, as even if the entire resolver server cluster
 goes down, the data isn't lost if the publishers are still alive. They
 will keep trying to republish their data with linear backoff until
 they are killed.
@@ -195,7 +188,7 @@ Hierarchy is the second scaling strategy. When a system grows too big
 to fit in even a large cluster of servers, then busy parts of the
 namespace can be delegated to 'child' server clusters. Readers
 familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is simliarly
+details not exactly the same. The administration overhead is similarly
 hierarchical, since each cluster config file must only know about it's
 immediate superior and immediate children. It's entirely possible for
 a large organization to run a central 'root' resolver server cluster
@@ -230,7 +223,7 @@ anything.
 Netidx is almost entirely the same on the wire. The subscriber sends
 the name it wants to one of the publishers specified by the resolver
 server cluster. The publisher looks up that value, and responds with
-the id it will use in subsuquent messages, along with the current
+the id it will use in subsequent messages, along with the current
 value. From then on updates to that value transmit only the id, which
 is LEB128 encoded, and the updated value. So on the wire, in terms of
 overhead, it looks very much like a protobuf record where the fields
@@ -240,9 +233,9 @@ overhead of sending an f64 can be as small as 2 bytes.
 Publisher and subscriber performance is fairly good, such that sending
 many millions of messages per second is possible. The per message
 overhead is on the order of about 70ns of wall clock time per message
-with kerberos encryption on (Skylake x86_64 8x5Ghz). Obviously that
+with kerberos encryption on (Skylake x86_64 8x5GHz). Obviously that
 number depends on the exact hardware you're running on, and it depends
-on your workload batching well. A raw tcp socket, coded properly, will
+on your workload batching well. A raw TCP socket, coded properly, will
 always be faster, the goal is that it won't be faster by enough that
 it's worth using.
 
@@ -253,7 +246,7 @@ things quite efficiently.
 ## Security
 
 Ah, the S word. No system remotely like netidx can be taken seriously
-without a plausable design for securing data against unauthorized
+without a plausible design for securing data against unauthorized
 access, interception, manipulation, etc.
 
 The heart of netidx security is Kerberos v5. There are a lot of
@@ -289,6 +282,6 @@ When security is enabled you get the following guarantees,
 
 ## Cross Platform
 
-While netidx is primarially developed on PPC64le linux, it is tested
-on aarch64, and x86_64 linux, Mac OS, and even Windows. It will
+While netidx is primarily developed on PPC64le Linux, it is tested
+on aarch64, and x86_64 Linux, Mac OS, and even Windows. It will
 probably work on many platforms I haven't tried.
