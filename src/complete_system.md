@@ -194,7 +194,7 @@ making these writes permission to do them.
 
 For the basic day to day use case, that's all we need on the server
 side. The entire daemon uses 6.5 MB or ram, and almost no cpu, it
-could certianly run on a smaller device, though we depend on tokio,
+could certainly run on a smaller device, though we depend on tokio,
 which means we at least need a real OS under us (for now).
 
 The kerberos configuration for this service is also quite simple,
@@ -251,7 +251,7 @@ picture it's not possible to see this, however the gui is fully
 functional in every way while design mode is activated, it isn't some
 "special" mode, what you see is exactly what you will get. This
 extends to changes, as we make changes the gui will reflect them
-immediatly, of course if we don't like a change we can simply press
+immediately, of course if we don't like a change we can simply press
 the undo button in the tool bar above the widget tree. 
 
 Now lets take a look at the bottom part of the view definition pane,
@@ -293,10 +293,10 @@ to load_path, otherwise it drops the value.
 
 There are many other useful formulas, and the goal is to make building
 simple guis like this dead easy, the majority of the work should be
-the layout, and moderatly complex guis should be possible. While this
+the layout, and moderately complex guis should be possible. While this
 system is already pretty useful it is still under heavy development,
 and is by no means finished. Another "limitation" to mention is since
-it's built with Gtk+ in Rust it's primarially a desktop application,
+it's built with Gtk+ in Rust it's primarily a desktop application,
 though I have tested it on the pinephone under phosh, and even made a
 few changes to improve touch support. I will test it on the librem 5
 when mine arrives, and it's on my list to build it on windows and
@@ -313,7 +313,7 @@ of the nice things we did in the last chapter. Instead we saw how we
 could build a pretty nice looking and functional gui using browser
 custom views, and we got an introduction to the formula language. I
 want to point out that with our design having a gui in no way alters
-our ability to script and manipulate the system programatically.  It's
+our ability to script and manipulate the system pragmatically.  It's
 important to recognize that building a bespoke system with a gui as
 complex as the browser view we built AND making it scriptable over the
 network in a discoverable, secure, and performant way is not an easy
@@ -323,7 +323,7 @@ data model.
 
 One day I was reflecting on the browser after I had been working on it
 for many weeks, and it occurred to me that it is essentially
-implementing a distributed verion of the model view controller
+implementing a distributed version of the model view controller
 paradigm. The netidx data model is the model, the view is the widget
 tree and the layout properties, and the controller is the formula
 language expressions embedded in each widget. However in this version

@@ -209,6 +209,112 @@ datetime, or byte array</li>
 </ul>
 <p>Since each value is a primitive, the only structure is, by design, the
 hierarchical namespace.</p>
+<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
+<p>Netidx is meant to be a building block, and as such a lot of thought
+has gone into scale. There are multiple different parts of the system
+that need to scale. The resolver servers, being the only centralized
+piece of infrastructure, are perhaps the most important piece, though
+the publisher and subscriber also need to be fast or it won't be worth
+using.</p>
+<h3><a class="header" href="#resolver-server-scale" id="resolver-server-scale">Resolver Server Scale</a></h3>
+<p>The resolver servers implement two strategies to achieve
+scale. Replication is the first, one can deploy multiple replicas to
+multiple machines in order to protect against a single machine outage,
+and also increase throughput. In netidx, the publisher itself is the
+primary, and as such it is responsible for replicating the names it
+publishes out to all the configured resolver servers. This makes the
+system very resilient, as even if the entire resolver server cluster
+goes down, the data isn't lost if the publishers are still alive. They
+will keep trying to republish their data with linear backoff until
+they are killed.</p>
+<p>Hierarchy is the second scaling strategy. When a system grows too big
+to fit in even a large cluster of servers, then busy parts of the
+namespace can be delegated to 'child' server clusters. Readers
+familiar with DNS will recognize the basic strategy, though the
+details not exactly the same. The administration overhead is similarly
+hierarchical, since each cluster config file must only know about it's
+immediate superior and immediate children. It's entirely possible for
+a large organization to run a central 'root' resolver server cluster
+without needing to micro manage the delegation going on in various
+organizational units.</p>
+<p>I've focused on designing a scaleable architecture, but I should also
+mention that the resolver server itself is pretty fast, and uses a
+number of strategies to minimize memory use. It's entirely possible to
+put 100 million names in a single instance on a single machine with
+32 - 64 gig of ram. You get roughly 1 million names per gig of ram,
+assuming your paths aren't crazy long. I have not explicitly tested
+the resolve throughput, but given that it uses the same infrastructure
+as the publisher/subscriber (which I have tested), and what it's
+doing, I would not be at all surprised if you could support millions
+of resolutions per second per core (yes it will use all your cores).</p>
+<h3><a class="header" href="#publishersubscriber-scale" id="publishersubscriber-scale">Publisher/Subscriber Scale</a></h3>
+<p>If the theme of taking lots of pages from lots of well established
+books and integrating them together has come through by this point
+then you've caught on to my design philosophy. In this section we're
+going to steal from protbuf, as that is essentially the model, if not
+the actual implementation, of the netidx wire protocols.</p>
+<p>In protobuf, each record is extensible and rather cleverly
+encoded. Each field in the record has a LEB128 Id, followed by a data
+value. This allows, for example, an older implementation of a protocol
+to talk to a server that has added some new fields without breaking
+anything.</p>
+<p>Netidx is almost entirely the same on the wire. The subscriber sends
+the name it wants to one of the publishers specified by the resolver
+server cluster. The publisher looks up that value, and responds with
+the id it will use in subsequent messages, along with the current
+value. From then on updates to that value transmit only the id, which
+is LEB128 encoded, and the updated value. So on the wire, in terms of
+overhead, it looks very much like a protobuf record where the fields
+are exactly what the subscriber has requested, and nothing more. The
+overhead of sending an f64 can be as small as 2 bytes.</p>
+<p>Publisher and subscriber performance is fairly good, such that sending
+many millions of messages per second is possible. The per message
+overhead is on the order of about 70ns of wall clock time per message
+with kerberos encryption on (Skylake x86_64 8x5GHz). Obviously that
+number depends on the exact hardware you're running on, and it depends
+on your workload batching well. A raw TCP socket, coded properly, will
+always be faster, the goal is that it won't be faster by enough that
+it's worth using.</p>
+<p>The subscriber library also implements zero copy decoding for strings
+and byte arrays, so it is possible to receive large binary encoded
+things quite efficiently.</p>
+<h2><a class="header" href="#security" id="security">Security</a></h2>
+<p>Ah, the S word. No system remotely like netidx can be taken seriously
+without a plausible design for securing data against unauthorized
+access, interception, manipulation, etc.</p>
+<p>The heart of netidx security is Kerberos v5. There are a lot of
+systems I might have used, e.g. openssl + certificates, oauth +
+openssl, and I'm sure many others. The reason I chose to use Kerberos
+v5 is that most users who want to deploy netidx services already have
+Kerberos set up (even if they don't know it) in the form of Microsoft
+Active Directory, Samba ADS, Redhat Directory Server, or one of the
+many other compatible solutions.</p>
+<p>Security is optional. It's possible to deploy a netidx system with no
+security at all (and that might even be reasonable), and it's possible
+to deploy a system where some publishers require security, and some do
+not. If any of the three parties involved in a given transaction
+(publisher, resolver, subscriber) request security, then it's
+mandatory for all parties of that transaction.</p>
+<p>When security is enabled you get the following guarantees,</p>
+<ul>
+<li>
+<p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
+they claim to be, and the subscriber knows the publisher is who they
+claim to be. This applies for the resolver &lt;-&gt; subscriber, and
+resolver &lt;-&gt; publisher as well.</p>
+</li>
+<li>
+<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
+and data cannot be altered undetected by a man in the middle.</p>
+</li>
+<li>
+<p><strong>Authorization</strong>, The user subscribing to a given data value is
+authorized to do so. The resolver servers maintain a permissions
+database specifying who is allowed to do what where in the
+tree. Thus the system administrator can centrally control who is
+allowed to publish and subscribe where.</p>
+</li>
+</ul>
 <h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
 <h3><a class="header" href="#components" id="components">Components</a></h3>
 <p><img src="subscription-flow-components.png" alt="The Components" /></p>
@@ -317,112 +423,6 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.</p>
-<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
-<p>Netidx is meant to be a building block, and as such a lot of thought
-has gone into scale. There are multiple different parts of the system
-that need to scale. The resolver servers, being the only centralized
-piece of infrastructure, are perhaps the most important piece, though
-the publisher and subscriber also need to be fast or it won't be worth
-using.</p>
-<h3><a class="header" href="#resolver-server-scale" id="resolver-server-scale">Resolver Server Scale</a></h3>
-<p>The resolver servers implement two strategies to achieve
-scale. Replication is the first, one can deploy multiple replicas to
-multiple machines in order to protect against a single machine outage,
-and also increase throughput. In netidx, the publisher itself is the
-primary, and as such it is responsible for replicating the names it
-publishes out to all the configured resolver servers. This makes the
-system very resilient, as even if the entire resolver server cluster
-goes down, the data isn't lost if the publishers are still alive. They
-will keep trying to republish their data with linear backoff until
-they are killed.</p>
-<p>Hierarchy is the second scaling strategy. When a system grows too big
-to fit in even a large cluster of servers, then busy parts of the
-namespace can be delegated to 'child' server clusters. Readers
-familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is similarly
-hierarchical, since each cluster config file must only know about it's
-immediate superior and immediate children. It's entirely possible for
-a large organization to run a central 'root' resolver server cluster
-without needing to micro manage the delegation going on in various
-organizational units.</p>
-<p>I've focused on designing a scaleable architecture, but I should also
-mention that the resolver server itself is pretty fast, and uses a
-number of strategies to minimize memory use. It's entirely possible to
-put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. You get roughly 1 million names per gig of ram,
-assuming your paths aren't crazy long. I have not explicitly tested
-the resolve throughput, but given that it uses the same infrastructure
-as the publisher/subscriber (which I have tested), and what it's
-doing, I would not be at all surprised if you could support millions
-of resolutions per second per core (yes it will use all your cores).</p>
-<h3><a class="header" href="#publishersubscriber-scale" id="publishersubscriber-scale">Publisher/Subscriber Scale</a></h3>
-<p>If the theme of taking lots of pages from lots of well established
-books and integrating them together has come through by this point
-then you've caught on to my design philosophy. In this section we're
-going to steal from protbuf, as that is essentially the model, if not
-the actual implementation, of the netidx wire protocols.</p>
-<p>In protobuf, each record is extensible and rather cleverly
-encoded. Each field in the record has a LEB128 Id, followed by a data
-value. This allows, for example, an older implementation of a protocol
-to talk to a server that has added some new fields without breaking
-anything.</p>
-<p>Netidx is almost entirely the same on the wire. The subscriber sends
-the name it wants to one of the publishers specified by the resolver
-server cluster. The publisher looks up that value, and responds with
-the id it will use in subsequent messages, along with the current
-value. From then on updates to that value transmit only the id, which
-is LEB128 encoded, and the updated value. So on the wire, in terms of
-overhead, it looks very much like a protobuf record where the fields
-are exactly what the subscriber has requested, and nothing more. The
-overhead of sending an f64 can be as small as 2 bytes.</p>
-<p>Publisher and subscriber performance is fairly good, such that sending
-many millions of messages per second is possible. The per message
-overhead is on the order of about 70ns of wall clock time per message
-with kerberos encryption on (Skylake x86_64 8x5GHz). Obviously that
-number depends on the exact hardware you're running on, and it depends
-on your workload batching well. A raw TCP socket, coded properly, will
-always be faster, the goal is that it won't be faster by enough that
-it's worth using.</p>
-<p>The subscriber library also implements zero copy decoding for strings
-and byte arrays, so it is possible to receive large binary encoded
-things quite efficiently.</p>
-<h2><a class="header" href="#security" id="security">Security</a></h2>
-<p>Ah, the S word. No system remotely like netidx can be taken seriously
-without a plausible design for securing data against unauthorized
-access, interception, manipulation, etc.</p>
-<p>The heart of netidx security is Kerberos v5. There are a lot of
-systems I might have used, e.g. openssl + certificates, oauth +
-openssl, and I'm sure many others. The reason I chose to use Kerberos
-v5 is that most users who want to deploy netidx services already have
-Kerberos set up (even if they don't know it) in the form of Microsoft
-Active Directory, Samba ADS, Redhat Directory Server, or one of the
-many other compatible solutions.</p>
-<p>Security is optional. It's possible to deploy a netidx system with no
-security at all (and that might even be reasonable), and it's possible
-to deploy a system where some publishers require security, and some do
-not. If any of the three parties involved in a given transaction
-(publisher, resolver, subscriber) request security, then it's
-mandatory for all parties of that transaction.</p>
-<p>When security is enabled you get the following guarantees,</p>
-<ul>
-<li>
-<p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
-they claim to be, and the subscriber knows the publisher is who they
-claim to be. This applies for the resolver &lt;-&gt; subscriber, and
-resolver &lt;-&gt; publisher as well.</p>
-</li>
-<li>
-<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
-and data cannot be altered undetected by a man in the middle.</p>
-</li>
-<li>
-<p><strong>Authorization</strong>, The user subscribing to a given data value is
-authorized to do so. The resolver servers maintain a permissions
-database specifying who is allowed to do what where in the
-tree. Thus the system administrator can centrally control who is
-allowed to publish and subscribe where.</p>
-</li>
-</ul>
 <h2><a class="header" href="#cross-platform" id="cross-platform">Cross Platform</a></h2>
 <p>While netidx is primarily developed on PPC64le Linux, it is tested
 on aarch64, and x86_64 Linux, Mac OS, and even Windows. It will
@@ -931,7 +931,7 @@ library has already checked that the resolver server granted the user
 making these writes permission to do them.</p>
 <p>For the basic day to day use case, that's all we need on the server
 side. The entire daemon uses 6.5 MB or ram, and almost no cpu, it
-could certianly run on a smaller device, though we depend on tokio,
+could certainly run on a smaller device, though we depend on tokio,
 which means we at least need a real OS under us (for now).</p>
 <p>The kerberos configuration for this service is also quite simple,
 there is a service principal called svc_solar in samba ADS, and solar
@@ -977,7 +977,7 @@ picture it's not possible to see this, however the gui is fully
 functional in every way while design mode is activated, it isn't some
 &quot;special&quot; mode, what you see is exactly what you will get. This
 extends to changes, as we make changes the gui will reflect them
-immediatly, of course if we don't like a change we can simply press
+immediately, of course if we don't like a change we can simply press
 the undo button in the tool bar above the widget tree. </p>
 <p>Now lets take a look at the bottom part of the view definition pane,
 we see the details of the widget we've selected, the toggle button. We
@@ -1015,10 +1015,10 @@ yes, then it passes the value on to the passed in sink, in this case
 to load_path, otherwise it drops the value.</p>
 <p>There are many other useful formulas, and the goal is to make building
 simple guis like this dead easy, the majority of the work should be
-the layout, and moderatly complex guis should be possible. While this
+the layout, and moderately complex guis should be possible. While this
 system is already pretty useful it is still under heavy development,
 and is by no means finished. Another &quot;limitation&quot; to mention is since
-it's built with Gtk+ in Rust it's primarially a desktop application,
+it's built with Gtk+ in Rust it's primarily a desktop application,
 though I have tested it on the pinephone under phosh, and even made a
 few changes to improve touch support. I will test it on the librem 5
 when mine arrives, and it's on my list to build it on windows and
@@ -1033,7 +1033,7 @@ of the nice things we did in the last chapter. Instead we saw how we
 could build a pretty nice looking and functional gui using browser
 custom views, and we got an introduction to the formula language. I
 want to point out that with our design having a gui in no way alters
-our ability to script and manipulate the system programatically.  It's
+our ability to script and manipulate the system pragmatically.  It's
 important to recognize that building a bespoke system with a gui as
 complex as the browser view we built AND making it scriptable over the
 network in a discoverable, secure, and performant way is not an easy
@@ -1042,7 +1042,7 @@ all for free, all we had to do was make our problem fit into netidxs'
 data model.</p>
 <p>One day I was reflecting on the browser after I had been working on it
 for many weeks, and it occurred to me that it is essentially
-implementing a distributed verion of the model view controller
+implementing a distributed version of the model view controller
 paradigm. The netidx data model is the model, the view is the widget
 tree and the layout properties, and the controller is the formula
 language expressions embedded in each widget. However in this version
