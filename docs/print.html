@@ -195,6 +195,26 @@ succeeds, then the subscription succeeds, if they all fail then it
 doesn't. All the actual data flows from publishers to subscribers
 directly without ever going through any kind of centralized
 infrastructure.</p>
+<h2><a class="header" href="#whats-a-value" id="whats-a-value">What's a Value</a></h2>
+<p>So I've said names point to values, but what exactly do I mean by a
+'value'.</p>
+<ul>
+<li>Every non structural name points to a value</li>
+<li>Every value immediatly delivers it's most recent value to new
+subscribers</li>
+<li>When a value is changed, every subscriber receives the new value</li>
+<li>No changes are ever dropped, and they arrive in the order they were
+made</li>
+<li>Changes to different values published by the same publisher arrive
+in the order they were made.</li>
+<li>Everything has type 'Value', which is a primitive number, string,
+datetime, or byte array</li>
+</ul>
+<p>Every non structural name always has a value, and the value is always
+a primitive type. When you subscribe you get the most recent value,
+and after that you get updates in an ordered lossless stream.</p>
+<p>Since each value is a primitive, there isn't any 'structure', because
+the structure is in the namespace.</p>
 <h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
 <h3><a class="header" href="#components" id="components">Components</a></h3>
 <p><img src="subscription-flow-components.png" alt="The Components" /></p>
@@ -303,26 +323,6 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.</p>
-<h2><a class="header" href="#whats-a-value" id="whats-a-value">What's a Value</a></h2>
-<p>So I've said names point to values, but what exactly do I mean by a
-'value'.</p>
-<ul>
-<li>Every non structural name points to a value</li>
-<li>Every value immediatly delivers it's most recent value to new
-subscribers</li>
-<li>When a value is changed, every subscriber receives the new value</li>
-<li>No changes are ever dropped, and they arrive in the order they were
-made</li>
-<li>Changes to different values published by the same publisher arrive
-in the order they were made.</li>
-<li>Everything has type 'Value', which is a primitive number, string,
-datetime, or byte array</li>
-</ul>
-<p>So every non structural name always has a value, and the value is
-always a primitive type. When you subscribe you get the most recent
-value, and after that you get updates in an ordered lossless stream.</p>
-<p>Since each value is a primitive, there isn't any 'structure', because
-the structure is in the namespace.</p>
 <h2><a class="header" href="#scale" id="scale">Scale</a></h2>
 <p>Netidx is meant to be a building block, and as such a lot of thought
 has gone into scale. There are multiple different parts of the system

@@ -41,6 +41,29 @@ doesn't. All the actual data flows from publishers to subscribers
 directly without ever going through any kind of centralized
 infrastructure.
 
+## What's a Value
+
+So I've said names point to values, but what exactly do I mean by a
+'value'.
+
+* Every non structural name points to a value
+* Every value immediatly delivers it's most recent value to new
+  subscribers
+* When a value is changed, every subscriber receives the new value
+* No changes are ever dropped, and they arrive in the order they were
+  made
+* Changes to different values published by the same publisher arrive
+  in the order they were made.
+* Everything has type 'Value', which is a primitive number, string,
+  datetime, or byte array
+
+Every non structural name always has a value, and the value is always
+a primitive type. When you subscribe you get the most recent value,
+and after that you get updates in an ordered lossless stream.
+
+Since each value is a primitive, there isn't any 'structure', because
+the structure is in the namespace.
+
 ## Subscription Flow
 
 ### Components
@@ -145,29 +168,6 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.
-
-## What's a Value
-
-So I've said names point to values, but what exactly do I mean by a
-'value'.
-
-* Every non structural name points to a value
-* Every value immediatly delivers it's most recent value to new
-  subscribers
-* When a value is changed, every subscriber receives the new value
-* No changes are ever dropped, and they arrive in the order they were
-  made
-* Changes to different values published by the same publisher arrive
-  in the order they were made.
-* Everything has type 'Value', which is a primitive number, string,
-  datetime, or byte array
-
-So every non structural name always has a value, and the value is
-always a primitive type. When you subscribe you get the most recent
-value, and after that you get updates in an ordered lossless stream.
-
-Since each value is a primitive, there isn't any 'structure', because
-the structure is in the namespace.
 
 ## Scale
 
