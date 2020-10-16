@@ -1228,6 +1228,29 @@ cluster would be responsible for deciding what permissions file it
 should use. It certainly could use the same file, but the point is the
 clusters don't talk to each other about permissions (or really
 anything else actually).</p>
+<h3><a class="header" href="#groups" id="groups">Groups</a></h3>
+<p>You'll might have noticed I'm using AD style group names above, that's
+because my example setup uses Samba in ADS mode so I can test windows
+and unix clients on the same domain. The most important thing about
+the fact that I'm using Samba ADS and thus have the group names I have
+is that it doesn't matter. Groups are just strings to netidx, for a
+given user, whatever the <code>id</code> command would spit out for that user is
+what it's going to use for the set of groups the user is in (so that
+better match what's in your permissions file). You need to set up the
+resolver server machines such that they can properly resolve the set
+of groups every user who might use netidx is in.</p>
+<p>Luckily you only need to get this right on the machines that run
+resolver servers, because that's the only place group resolution
+happens in netidx. You're other client and server machines can be a
+screwed up and inconsistent as you want, as long as the resolver
+server machine agrees that I'm a member of &quot;RYU-OH\domain admins&quot; then
+whatever permissions to assign to that group in the permission file
+will apply to me.</p>
+<p>All the non resolver server machines need to be able to do is get
+Kerberos tickets. You don't even need to set them up to use Kerberos
+for authentication (but I highly recommend it, unless you really hate
+your users), you can just force people to type <code>kinit foo@BAR.COM</code>
+every 8 hours if you like.</p>
 
                     </main>
 
