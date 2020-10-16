@@ -4,7 +4,11 @@
 
 If you plan to use Kerberos make sure you have it set up properly,
 including your KDC, DNS, DHCP, etc. If you need help with kerberos I
-suggest [the O'rielly book](https://www.oreilly.com/library/view/kerberos-the-definitive/0596004036/).
+suggest the [O'REILLY
+book](https://www.oreilly.com/library/view/kerberos-the-definitive/0596004036/). If
+you want something free the [RedHat
+documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/)
+isn't too bad, though it is somewhat specific to their product.
 
 Problems with Kerberos/GSSAPI can often be diagnosed by setting
 `KRB5_TRACE=/dev/stderr`, and/or `RUST_LOG=debug`. GSSAPI errors can
@@ -211,6 +215,27 @@ cluster would be responsible for deciding what permissions file it
 should use. It certainly could use the same file, but the point is the
 clusters don't talk to each other about permissions (or really
 anything else actually).
+
+### Anonymous
+
+It's possible to give anonymous users permissions even on a Kerberos
+enabled system, and this could allow them to use whatever functions
+you deem non sensitive, subject to some limitations. There is no
+encryption. There is no tamper protection. There is no publisher ->
+subscriber authentication. Anonymous users can't subscribe to non
+anonymous publishers. Non anonymous users can't subscribe to anonymous
+publishers. You name anonymous "" in the permissions file, e.g.
+
+``` json
+"/tmp": {
+    "": "swlpd"
+}
+```
+
+Now `/tmp` is an anonymous free for all. If you have Kerberos
+deployed, it's probably not that useful to build such a hybrid system,
+because any anonymous publishers would not be usable by kerberos
+enabled users. It's mostly meant for very special cases.
 
 ### Groups
 
