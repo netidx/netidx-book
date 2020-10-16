@@ -60,7 +60,8 @@ default it is stored,
 - on MacOs: ~/Library/Application Support/netidx.json
 
 Since the dirs crate is used to discover these paths, they are locally
-configurable by OS specific means. 
+configurable by OS specific means. Everyone who will use netidx needs
+access to this file.
 
 ``` json
 {
@@ -263,3 +264,44 @@ Kerberos tickets. You don't even need to set them up to use Kerberos
 for authentication (but I highly recommend it, unless you really hate
 your users), you can just force people to type `kinit foo@BAR.COM`
 every 8 hours if you like.
+
+### Starting It
+
+Once you have all that together starting a resolver server is done
+from the `netidx` command line tool (`cargo install netidx-tools`). e.g.
+
+``` bash
+$ netidx resolver-server --permissions ./netidx-perms.json --id 0
+```
+
+By default the server will daemonize, include `-f` to prevent
+that. You can test that it's working by running,
+
+``` bash
+$ netidx resolver list /
+```
+
+Which should print nothing (since you have nothing published), but
+should not error, and should run quickly. You can use the command line
+publisher and subscriber to further test. In my case I can do,
+
+``` bash
+[eric@blackbird ~]$ netidx publisher --bind 192.168.0.0/24 --spn host/blackbird.ryu-oh.org@RYU-OH.ORG <<EOF
+/test|string|hello world
+EOF
+```
+
+and then I can subscribe using
+
+``` bash
+[eric@blackbird ~]$ netidx subscriber /test
+/test|string|hello world
+```
+
+you'll need to make sure you have permission, that you have a keytab
+you can read with that spn in it, etc. You may need to, for example,
+run the publisher and/or resolver server with
+
+`KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab`
+
+`KRB5_TRACE=/dev/stderr` can be useful in debugging these issues.

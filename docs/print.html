@@ -1101,7 +1101,8 @@ default it is stored,</p>
 <li>on MacOs: ~/Library/Application Support/netidx.json</li>
 </ul>
 <p>Since the dirs crate is used to discover these paths, they are locally
-configurable by OS specific means. </p>
+configurable by OS specific means. Everyone who will use netidx needs
+access to this file.</p>
 <pre><code class="language-json">{
     &quot;parent&quot;: null,
     &quot;children&quot;: [],
@@ -1271,6 +1272,31 @@ Kerberos tickets. You don't even need to set them up to use Kerberos
 for authentication (but I highly recommend it, unless you really hate
 your users), you can just force people to type <code>kinit foo@BAR.COM</code>
 every 8 hours if you like.</p>
+<h3><a class="header" href="#starting-it" id="starting-it">Starting It</a></h3>
+<p>Once you have all that together starting a resolver server is done
+from the <code>netidx</code> command line tool (<code>cargo install netidx-tools</code>). e.g.</p>
+<pre><code class="language-bash">$ netidx resolver-server --permissions ./netidx-perms.json --id 0
+</code></pre>
+<p>By default the server will daemonize, include <code>-f</code> to prevent
+that. You can test that it's working by running,</p>
+<pre><code class="language-bash">$ netidx resolver list /
+</code></pre>
+<p>Which should print nothing (since you have nothing published), but
+should not error, and should run quickly. You can use the command line
+publisher and subscriber to further test. In my case I can do,</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx publisher --bind 192.168.0.0/24 --spn host/blackbird.ryu-oh.org@RYU-OH.ORG &lt;&lt;EOF
+/test|string|hello world
+EOF
+</code></pre>
+<p>and then I can subscribe using</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx subscriber /test
+/test|string|hello world
+</code></pre>
+<p>you'll need to make sure you have permission, that you have a keytab
+you can read with that spn in it, etc. You may need to, for example,
+run the publisher and/or resolver server with</p>
+<p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
+<p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging these issues.</p>
 
                     </main>
 
