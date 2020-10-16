@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1048,6 +1048,186 @@ tree and the layout properties, and the controller is the formula
 language expressions embedded in each widget. However in this version
 of MVC we get to reuse the model over the network, and it need not
 even run on the same computer, and I think that's pretty cool.</p>
+<h1><a class="header" href="#administration" id="administration">Administration</a></h1>
+<h2><a class="header" href="#first-things-first" id="first-things-first">First Things First</a></h2>
+<p>If you plan to use Kerberos make sure you have it set up properly,
+including your KDC, DNS, DHCP, etc. If you need help with kerberos I
+suggest <a href="https://www.oreilly.com/library/view/kerberos-the-definitive/0596004036/">the O'rielly book</a>.</p>
+<p>Problems with Kerberos/GSSAPI can often be diagnosed by setting
+<code>KRB5_TRACE=/dev/stderr</code>, and/or <code>RUST_LOG=debug</code>. GSSAPI errors can
+sometimes be less than helpful, but usually the KRB5_TRACE is more
+informative.</p>
+<h2><a class="header" href="#resources-and-gotchas" id="resources-and-gotchas">Resources and Gotchas</a></h2>
+<p>Most installations need not devote massive resources to the resolver
+server, however you may want to use at least two instances on
+different machines or VMs for redundancy. Here are a few rules of
+thumb.</p>
+<ul>
+<li>Expect to use 1 GB of ram for every 1 million published values</li>
+<li>Read operations will use multiple CPU cores (1 core per client)</li>
+<li>Write operations use only 1 core and lock out reads (but take on the
+order of 100 ns. Work is planned to use all cores and reduce locking.)</li>
+<li>Be mindful of the maximum number of available file descriptors when
+setting max_connections.</li>
+</ul>
+<p>If you have, for example, a publisher that wants to publish 20 million
+names all at once then you may want to segment that off onto a child
+cluster (we'll get to how to do that) to prevent it from locking out
+reads for everyone on the main cluster for several minutes (Work is
+planned to make this problem better in the resolver server, but it can
+never be totally eliminated). A better strategy would be to not write
+such a publisher in the first place.</p>
+<p>The resolver server drops idle read client connections fairly quickly
+(configurable, recommended default 60 seconds), however if you have
+many thousands or tens of thousands of read clients that want to do a
+lot of reading simultaneously then you may need to raise the maximum
+number of file descriptors available, and/or deploy additional
+processes to avoid file descriptor exhaustion.</p>
+<p>As of this writing the resolver server only runs on Unix, and has only
+been extensively tested on Linux. There's no reason it couldn't run on
+Windows, it's just a matter of some work around group name resolution
+and service integration.</p>
+<h2><a class="header" href="#simple-example-configuration" id="simple-example-configuration">Simple Example Configuration</a></h2>
+<p>The netidx configuration file is the same for all the different
+components of the system, resolver, publisher, and subscriber. By
+default it is stored,</p>
+<ul>
+<li>on Linux: ~/.config/netidx.json</li>
+<li>on Windows: ~\AppData\Roaming\netidx.json</li>
+<li>on MacOs: ~/Library/Application Support/netidx.json</li>
+</ul>
+<p>Since the dirs crate is used to discover these paths, they are locally
+configurable by OS specific means. </p>
+<pre><code class="language-json">{
+    &quot;parent&quot;: null,
+    &quot;children&quot;: [],
+    &quot;pid_file&quot;: &quot;&quot;,
+    &quot;addrs&quot;: [&quot;192.168.0.1:4564&quot;],
+    &quot;max_connections&quot;: 768,
+    &quot;hello_timeout&quot;: 10,
+    &quot;reader_ttl&quot;: 60,
+    &quot;writer_ttl&quot;: 120,
+    &quot;auth&quot;: {
+        &quot;Krb5&quot;: {&quot;192.168.0.1:4564&quot;: &quot;netidx/washu-chan.ryu-oh.org@RYU-OH.ORG&quot;}
+    }
+}
+</code></pre>
+<p>Here's about the simplest possible Kerberos enabled
+configuration. I'll go through each field,</p>
+<ul>
+<li>parent: null unless this server has a parent, which I'll document later</li>
+<li>children: empty unless this server has children, which I'll document later</li>
+<li>pid_file: prefix to add to the pid file which will otherwise be
+e.g. 0.pid for the first server in the cluster, or 1.pid for the
+second, etc.</li>
+<li>addrs: The list of all resolver servers in this level of the
+cluster, e.g. not children or parents, just this level. When
+starting the server you must pass in an index into this array on the
+command line as --id to identify which server you want to start.</li>
+<li>max_connections: The maximum number of simultaneous connections to
+allow (both read and write) before starting to reject new
+connections.</li>
+<li>hello_timeout: The amount of time to wait for a client to say a
+proper hello before dropping the connection.</li>
+<li>reader_ttl: The amount of time, in seconds, to keep an idle read
+connection open.</li>
+<li>writer_ttl: The amount of time, in seconds, to wait for a publisher
+to heartbeat before deleting everything it has published. The
+publisher will send heartbeats at 1/2 this interval. e.g. 120 means
+publishers will heartbeat every minute. Processing a heartbeat does
+not take the write lock.</li>
+<li>auth: either &quot;Anonymous&quot;, or &quot;Krb5&quot;. If &quot;Krb5&quot;, then a service
+principal name should be included for every resolver server in the
+cluster. Each resolver server instance must have access to the
+corresponding SPN's key via a keytab or other means.</li>
+</ul>
+<p>When using Kerberos we also need a permissions file in order to run a
+resolver server, it's a separate file because it's not meant to be
+shared with everyone using the cluster.</p>
+<pre><code class="language-json">{
+    &quot;/&quot;: {
+        &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+    },
+    &quot;/solar&quot;: {
+	    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+    }
+}
+</code></pre>
+<p>In order to do the corresponding action in netidx a user must have
+that permission bit set, no bit, no action.</p>
+<p>Permission bits are computed starting from the root proceeding down
+the tree to the node being acted on. The bits are accumulated on the
+way down, and can also be removed at any point in the tree. Each bit
+is represented by a 1 character symbolic tag, e.g.</p>
+<ul>
+<li>!: Deny, changes the meaning of the following bits to deny the
+corresponding permission instead of grant it. Must be the first
+character of the permission string.</li>
+<li>s: Subscribe</li>
+<li>w: Write</li>
+<li>l: List</li>
+<li>p: Publish</li>
+<li>d: Publish default</li>
+</ul>
+<p>For example if I was subscribing to
+<code>/solar/stats/battery_sense_voltage</code> we would walk down the path from
+left to right and hit this permission first,</p>
+<pre><code class="language-json">&quot;/&quot;: {
+    &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+},
+</code></pre>
+<p>This applies to a Kerberos principal &quot;eric@RYU-OH.ORG&quot;, the resolver
+server will check the user principal name of the user making the
+request, and it will check all the groups that user is a member of,
+and if any of those are &quot;eric@RYU-OH.ORG&quot; then it will <code>or</code> the
+current permission set with &quot;swlpd&quot;. In this case this gives me
+permission to do anything I want in the whole tree (unless it is later
+denied). Next we would hit,</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+}
+</code></pre>
+<p>Which doesn't apply to me, and so would be ignored, and since there
+are no more permissions entries my effective permissions at
+<code>/solar/stats/battery_sense_voltage</code> are &quot;swlpd&quot;, and so I would be
+allowed to subscribe.</p>
+<p>Suppose however I changed the above entry,</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;eric@RYU-OH.ORG&quot;: &quot;!swl&quot;,
+}
+</code></pre>
+<p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
+that matches me, and we would remove the permission bits s, w, and l,
+leaving our effective permissions at
+<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;, since that doesn't give
+me the right to subscribe my request would be denied. We could, for
+example, do this by group instead.</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
+}
+</code></pre>
+<p>As you would expect, this deny permission will still apply to me
+because I am a member of the domain admins group. A slightly more
+subtle point is that permissions are accumulated. For example, if I am
+a member of two groups, and both groups have different bits denied,
+then all of those bits would be removed. e.g.</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
+    &quot;RYU-OH\enterprise admins&quot;: &quot;!pd&quot;,
+}
+</code></pre>
+<p>Now my effective permissions under <code>/solar</code> are empty, I can do
+nothing. Now, if I am a member of more than one group, and one denies
+permissions that the other grants the deny always takes precidence.</p>
+<p>Each server cluster is completely independent for permissions. If for
+example this cluster had a child cluster, the administrators of that
+cluster would be responsible for deciding what permissions file it
+should use. It certainly could use the same file, but the point is the
+clusters don't talk to each other about permissions (or really
+anything else actually).</p>
 
                     </main>
 
