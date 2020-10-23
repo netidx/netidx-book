@@ -353,7 +353,7 @@ faults so I clearly talk about different classes.
   between them is too slow. Whatever the cause, the publisher can
   handle this condition by providing a timeout to it's `flush`
   function. This will cause any subscriber that can't consume the
-  flushed batch within the specified timeout to be disconnected.  
+  flushed batch within the specified timeout to be disconnected.
 - Crash: Subscriber allows the library user to decide how to deal with
   a publisher crash. If the lower level `subscribe` function is used
   then on being disconnected unexpecetedly by the publisher all
