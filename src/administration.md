@@ -342,12 +342,18 @@ faults so I clearly talk about different classes.
 - Hang: Most hang situations are solved by heartbeats. Publisher sends
   a heartbeat to every subscriber that is connected to it every 5
   seconds. Subscriber disconnects if it doesn't reveive at least 1
-  message every 100 seconds. The sub case where there is some traffic
-  able to flow, just not enough, unfortunatly can't be detected on the
-  subscriber side, but the publisher can detect it and deal with it.
-  
+  message every 100 seconds.
+
   Once a hang is detected it is dealt with by disconnecting, and it
   essentially becomes a crash.
+  
+  The hang case that heartbeats don't solve is when data is flowing,
+  but not fast enough. This could have multiple causes e.g. the
+  subscriber is too slow, the publisher is too slow, or the link
+  between them is too slow. Whatever the cause, the publisher can
+  handle this condition by providing a timeout to it's `flush`
+  function. This will cause any subscriber that can't consume the
+  flushed batch within the specified timeout to be disconnected.  
 - Crash: Subscriber allows the library user to decide how to deal with
   a publisher crash. If the lower level `subscribe` function is used
   then on being disconnected unexpecetedly by the publisher all
