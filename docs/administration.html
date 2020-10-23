@@ -178,20 +178,22 @@ server, however you may want to use at least two instances on
 different machines or VMs for redundancy. Here are a few rules of
 thumb.</p>
 <ul>
-<li>Expect to use 1 GB of ram for every 1 million published values</li>
+<li>Expect to use 1 GiB of ram in the resolver server for every 1
+million published values</li>
 <li>Read operations will use multiple CPU cores (1 core per client)</li>
-<li>Write operations use only 1 core and lock out reads (but take on the
-order of 100 ns. Work is planned to use all cores and reduce locking.)</li>
-<li>Be mindful of the maximum number of available file descriptors when
-setting max_connections.</li>
+<li>Write operations use only 1 core and lock out reads (Work is planned
+to use all cores and reduce locking.)</li>
+<li>Be mindful of the maximum number of available file descriptors per
+process on the resolver server machine when setting max_connections.</li>
 </ul>
 <p>If you have, for example, a publisher that wants to publish 20 million
 names all at once then you may want to segment that off onto a child
 cluster (we'll get to how to do that) to prevent it from locking out
 reads for everyone on the main cluster for several minutes (Work is
 planned to make this problem better in the resolver server, but it can
-never be totally eliminated). A better strategy would be to not write
-such a publisher in the first place.</p>
+never be totally eliminated because publishers can always get
+bigger). A better strategy would be to not write such a publisher in
+the first place, but that may not be under your control.</p>
 <p>The resolver server drops idle read client connections fairly quickly
 (configurable, recommended default 60 seconds), however if you have
 many thousands or tens of thousands of read clients that want to do a
@@ -202,14 +204,14 @@ processes to avoid file descriptor exhaustion.</p>
 been extensively tested on Linux. There's no reason it couldn't run on
 Windows, it's just a matter of some work around group name resolution
 and service integration.</p>
-<h2><a class="header" href="#simple-example-configuration" id="simple-example-configuration">Simple Example Configuration</a></h2>
+<h2><a class="header" href="#example-configuration" id="example-configuration">Example Configuration</a></h2>
 <p>The netidx configuration file is the same for all the different
 components of the system, resolver, publisher, and subscriber. By
 default it is stored,</p>
 <ul>
 <li>on Linux: ~/.config/netidx.json</li>
 <li>on Windows: ~\AppData\Roaming\netidx.json</li>
-<li>on MacOs: ~/Library/Application Support/netidx.json</li>
+<li>on MacOS: ~/Library/Application Support/netidx.json</li>
 </ul>
 <p>Since the dirs crate is used to discover these paths, they are locally
 configurable by OS specific means. Everyone who will use netidx needs
@@ -408,6 +410,125 @@ you can read with that spn in it, etc. You may need to, for example,
 run the publisher and/or resolver server with</p>
 <p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
 <p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging these issues.</p>
+<h2><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h2>
+<p>As a system netidx depends on fault tolerant strategies in the
+subscriber, publisher, and resolver server in order to minimize
+downtime caused by a failure. Before I talk about the specific
+strategies used by each component I want to give a short taxonomy of
+faults so I clearly talk about different classes.</p>
+<ul>
+<li>Hang: Where a component of the system is not 'dead', but is no
+longer responding, or is so slow it may as well not be
+responding. IMHO this is the worst kind of failure. It can happen at
+many different layers, e.g.
+<ul>
+<li>You can simulate a hang by sending SIGSTOP to a unix process. It
+isn't dead, but it also won't do anything.</li>
+<li>A machine with a broken network card, such that most packets are
+rejected due to checsum errors, it's still on the network, but
+it's effective bandwidth is a tiny fraction of what it should be.</li>
+<li>A software bug causing a deadlock</li>
+<li>A malfunctioning IO device</li>
+</ul>
+</li>
+<li>Crash: A process or the machine it's running on crashes cleanly and
+completely.</li>
+<li>Bug: A semantic bug in the system that causes an effective end to
+service.</li>
+<li>Misconfiguration: An error in the configuration of the system that
+causes it not to work. e.g.
+<ul>
+<li>Resolver server addresses that are routeable by some clients and not others</li>
+<li>Wrong Kerberos SPNs</li>
+<li>Misconfigured Kerberos</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#subscriber--publisher" id="subscriber--publisher">Subscriber &amp; Publisher</a></h3>
+<ul>
+<li>
+<p>Hang: Most hang situations are solved by heartbeats. Publisher sends
+a heartbeat to every subscriber that is connected to it every 5
+seconds. Subscriber disconnects if it doesn't reveive at least 1
+message every 100 seconds. The sub case where there is some traffic
+able to flow, just not enough, unfortunatly can't be detected on the
+subscriber side, but the publisher can detect it and deal with it.</p>
+<p>Once a hang is detected it is dealt with by disconnecting, and it
+essentially becomes a crash.</p>
+</li>
+<li>
+<p>Crash: Subscriber allows the library user to decide how to deal with
+a publisher crash. If the lower level <code>subscribe</code> function is used
+then on being disconnected unexpecetedly by the publisher all
+subscriptions are notified and marked as dead. The library user is
+free to retry, which could (randomly) choose a different, working,
+publisher if one is available. The library user could also use
+<code>durable_subscribe</code> which will dilligently keep trying to
+resubscribe, with linear backoff, until it is successful.</p>
+</li>
+<li>
+<p>Bug: There's not much that can be done to mitigate a system breaking bug.</p>
+</li>
+<li>
+<p>Misconfiguration: Unfortunatly there isn't much that can be done to
+prevent misconfiguration. One thing that is done is that IP
+addresses are classified such that 127.0.0.1 doesn't end up in a
+resolver server that also hosts non local addresses.</p>
+</li>
+</ul>
+<h3><a class="header" href="#resolver" id="resolver">Resolver</a></h3>
+<ul>
+<li>Hang: Resolver clients deal with a resolver server hang with a
+dynamically computed timeout based on the number of requests in the
+batch. The rule is, minimum timeout 5 seconds or 10 microseconds per
+operation in the batch for reads or 30 microseconds per operation in
+the batch for writes, whichever is longer. So e.g. a 20 million item
+write batch would get 600 seconds to complete before a timeout. An
+expired timeout is treated as a connection failure, and so is
+handled the same way as a crash.</li>
+<li>Crash: Resolver clients deal with crashes differently depending on
+whether they are read or write connections.
+<ul>
+<li>Read Connections (Subscriber): Abandon the current connection, wait a random
+time between 1 and 4 seconds, and then go through the whole
+connection process again. That roughly entails taking the list of
+all servers, permuting it, and then connecting to each server in
+the list until one of them answers, says a proper hello, and
+successfully authenticates (if kerberos is on). For each batch a
+resolver client will do this abandon and reconnect dance 3 times,
+and then it will give up and return an error for that
+batch. Subsuquent batches will start over from the beginning. In a
+nutshell read clients will,
+<ul>
+<li>try every server 3 times in a random order</li>
+<li>only give up on a batch if every server is down or unable to answer</li>
+<li>remain in a good state to try new batches even if previous batches have failed</li>
+</ul>
+</li>
+<li>Write Connections (Publishers): Since write connections are
+responsible for replicating their data out to each resolver server
+they don't include some of the retry logic used in the read
+client. They do try to replicate each batch 3 times seperated by a
+1-4 second pause to each server in the cluster. If after 3 tries
+they still can't write to one of the servers then it is marked as
+degraded. The write client must send heartbeats periodically
+(configurable 1/2 writer_ttl), and it will try to replicate to a
+degraded server at each heartbeat interval. In a nutshell write clients,
+<ul>
+<li>try 3 times to write to each server</li>
+<li>try failed servers again each 1/2 <code>writer_ttl</code></li>
+<li>return success for a batch if at least 1 server accepts it </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Bug/Misconfig: There's really not much that can be done about either
+of these kinds of failures.</li>
+</ul>
+<p>One important consequence of the write client behavior is that in
+the event that all the resolver servers crash, as long as all the
+publishers are still running they will start republishing everything
+after a maximum of 1/2 <code>writer_ttl</code> has elapsed.</p>
 
                     </main>
 
