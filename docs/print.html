@@ -1067,11 +1067,12 @@ server, however you may want to use at least two instances on
 different machines or VMs for redundancy. Here are a few rules of
 thumb.</p>
 <ul>
-<li>Expect to use 1 GiB of ram in the resolver server for every 1
-million published values</li>
+<li>Expect to use 150 MiB of ram in the resolver server for every 1
+million published values.</li>
 <li>Read operations will use multiple CPU cores (1 core per client)</li>
-<li>Write operations use only 1 core and lock out reads (Work is planned
-to use all cores and reduce locking.)</li>
+<li>Write operations use only 1 core, however writes do not lock out
+reads, the server should remain available for reads even while a
+large write operation is in progress.</li>
 <li>Be mindful of the maximum number of available file descriptors per
 process on the resolver server machine when setting max_connections.</li>
 </ul>
