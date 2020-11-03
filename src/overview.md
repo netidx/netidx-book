@@ -1,11 +1,10 @@
 # Overview of Netidx
 
-Netidx, in a small nutshell, is a library, protocol, and server that
-facilitates publishing the value of a variable in one program on one
-computer and consuming it in another program on another
-computer. There are a lot of details, but making that transaction as
-easy as possible while still being secure and performant is the
-essential goal.
+Netidx is a library, protocol, and server that facilitates publishing
+the value of a variable in one program and consuming it in another
+program, possibly on another computer. There are a lot of details, but
+making that transaction as easy as possible, while still being secure
+and performant is the essential goal.
 
 ## The Namespace
 
@@ -14,18 +13,19 @@ structure of the names look just like a filename, e.g.
 
     /apps/solar/stats/battery_sense_voltage
 
-Is an example name. Unlike in a file system, in netidx a name may point
-to a value, and have children. For example we might have,
+Is an example name. Unlike a file name, a netidx name may point to a
+value, and also have children. So keeping the file analogy, it can be
+both a file and a directory. For example we might have,
 
     /apps/solar/stats/battery_sense_voltage/millivolts
 
-Where the `.../battery_sense_voltage` points to the number in volts, and
-it's 'millivolts' child gives the same number in millivolts.
+Where the `.../battery_sense_voltage` points to the number in volts,
+and it's 'millivolts' child gives the same number in millivolts.
 
-Sometimes a name like `.../battery_sense_voltage` is published deep in
-the hierarchy and it's parents are just structure. Unlike the
-file system the resolver server will create and delete those structural
-containers automatically, there is no need to manually manage them.
+Sometimes a name like `battery_sense_voltage` is published deep in the
+hierarchy and it's parents are just structure. Unlike the file system
+the resolver server will create and delete those structural containers
+automatically, there is no need to manually manage them.
 
 The term 'points to' is literal. In netidx the actual data is
 completely separate from the names. The names are stored in the
@@ -43,19 +43,19 @@ infrastructure.
 
 ## What's a Value
 
-So I've said names point to values, but what exactly do I mean by a
-'value'.
+Values are primitives, e.g. various kinds of number, strings,
+durations, timestamps, and byte arrays. Values don't have any inherent
+structure, but of course you can use byte arrays to publish anything
+that can be serialized, and since byte arrays are zero copy that is
+even quite efficient.
+
+Published values have some other properties as well,
 
 * Every non structural name points to a value
 * Every new subscription immediately delivers it's most recent value
 * When a value is updated, every subscriber receives the new value
 * Updates arrive reliably and in the order the publisher made them
   (like a TCP stream)
-* Everything has type 'Value', which is a primitive number, string,
-  datetime, or byte array
-
-Since each value is a primitive, the only structure is, by design, the
-hierarchical namespace.
 
 ## Scale
 
