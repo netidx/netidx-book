@@ -176,25 +176,22 @@ informative.</p>
 <p>Most installations need not devote massive resources to the resolver
 server, however you may want to use at least two instances on
 different machines or VMs for redundancy. Here are a few rules of
-thumb.</p>
+thumb/gotchas.</p>
 <ul>
-<li>Expect to use 300 MiB of ram in the resolver server for every 1
-million published values.</li>
-<li>Read operations will use multiple CPU cores (1 core per client)</li>
-<li>Write operations use only 1 core, however writes do not lock out
-reads, the server should remain available for reads even while a
-large write operation is in progress.</li>
+<li>Expect to use about 500 MiB of ram in the resolver server for every
+1 million published values.</li>
+<li>Both read and write operations should make use of all available
+logical processors on the machine in most cases. So, in the case you
+are hitting performance problems, try allocating more cores before
+taking more drastic segmentation steps.</li>
+<li>Even when the resolvers are very busy they should remain fair. Large
+batches of reads or writes are broken into smaller reasonably sized
+batches for each logical processor. These batches are then
+interleaved pseudo randomly to ensure that neither reads nor writes
+are starved.</li>
 <li>Be mindful of the maximum number of available file descriptors per
 process on the resolver server machine when setting max_connections.</li>
 </ul>
-<p>If you have, for example, a publisher that wants to publish 20 million
-names all at once then you may want to segment that off onto a child
-cluster (we'll get to how to do that) to prevent it from locking out
-reads for everyone on the main cluster for several minutes (Work is
-planned to make this problem better in the resolver server, but it can
-never be totally eliminated because publishers can always get
-bigger). A better strategy would be to not write such a publisher in
-the first place, but that may not be under your control.</p>
 <p>The resolver server drops idle read client connections fairly quickly
 (configurable, recommended default 60 seconds), however if you have
 many thousands or tens of thousands of read clients that want to do a

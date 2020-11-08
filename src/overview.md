@@ -66,7 +66,7 @@ piece of infrastructure, are perhaps the most important piece, though
 the publisher and subscriber also need to be fast or it won't be worth
 using.
 
-### Resolver Server Scale
+### Resolver Server
 
 The resolver servers implement two strategies to achieve
 scale. Replication is the first, one can deploy multiple replicas to
@@ -94,14 +94,14 @@ I've focused on designing a scaleable architecture, but I should also
 mention that the resolver server itself is pretty fast, and uses a
 number of strategies to minimize memory use. It's entirely possible to
 put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. You get roughly 1 million names per gig of ram,
+32 - 64 gig of ram. You get roughly 1 million names per 500 MB of ram,
 assuming your paths aren't crazy long. I have not explicitly tested
 the resolve throughput, but given that it uses the same infrastructure
 as the publisher/subscriber (which I have tested), and what it's
 doing, I would not be at all surprised if you could support millions
 of resolutions per second per core (yes it will use all your cores).
 
-### Publisher/Subscriber Scale
+### Publisher/Subscriber
 
 If the theme of taking lots of pages from lots of well established
 books and integrating them together has come through by this point
@@ -123,16 +123,16 @@ value. From then on updates to that value transmit only the id, which
 is LEB128 encoded, and the updated value. So on the wire, in terms of
 overhead, it looks very much like a protobuf record where the fields
 are exactly what the subscriber has requested, and nothing more. The
-overhead of sending an f64 can be as small as 2 bytes.
+overhead of sending an f64 can be as small as 2 additional bytes (so
+10 in total).
 
 Publisher and subscriber performance is fairly good, such that sending
 many millions of messages per second is possible. The per message
 overhead is on the order of about 70ns of wall clock time per message
-with kerberos encryption on (Skylake x86_64 8x5GHz). Obviously that
+with kerberos encryption on (Intel Core i7 7820X). Obviously that
 number depends on the exact hardware you're running on, and it depends
 on your workload batching well. A raw TCP socket, coded properly, will
-always be faster, the goal is that it won't be faster by enough that
-it's worth using.
+always be faster, the goal is to minimize the difference.
 
 The subscriber library also implements zero copy decoding for strings
 and byte arrays, so it is possible to receive large binary encoded
@@ -140,24 +140,28 @@ things quite efficiently.
 
 ## Security
 
-Ah, the S word. No system remotely like netidx can be taken seriously
-without a plausible design for securing data against unauthorized
-access, interception, manipulation, etc.
+No system like netidx can be taken seriously without a plausible
+design for securing data against unauthorized access, interception,
+manipulation, etc.
 
 The heart of netidx security is Kerberos v5. There are a lot of
 systems I might have used, e.g. openssl + certificates, oauth +
 openssl, and I'm sure many others. The reason I chose to use Kerberos
-v5 is that most users who want to deploy netidx services already have
-Kerberos set up (even if they don't know it) in the form of Microsoft
-Active Directory, Samba ADS, Redhat Directory Server, or one of the
-many other compatible solutions.
+v5 is that most users who I think might want to deploy netidx services
+already have Kerberos set up (even if they don't know it) in the form
+of Microsoft Active Directory, Samba ADS, Redhat Directory Server, or
+one of the many other compatible solutions.
 
-Security is optional. It's possible to deploy a netidx system with no
-security at all (and that might even be reasonable), and it's possible
-to deploy a system where some publishers require security, and some do
-not. If any of the three parties involved in a given transaction
-(publisher, resolver, subscriber) request security, then it's
-mandatory for all parties of that transaction.
+That said security is optional in netidx. It's possible to deploy a
+netidx system with no security at all, and it's possible to deploy a
+system where some publishers require security, and some do not. While
+it's possible to mix secured and non secured publishers on the same
+resolver cluster there are some restrictions. 
+
+* If a subscriber is configured with security, then it won't talk to
+  publishers that aren't.
+* If a publisher is configured with security, then it won't talk to a
+  subscriber that isn't.
 
 When security is enabled you get the following guarantees,
 
@@ -210,8 +214,7 @@ components are involved.
 ![Second Step](subscription-flow-step2.png)
 
 3. The Subscriber uses the service ticket to establish an encrypted
-   GSSAPI session with the Resolver Cluster. Note this GSSAPI session
-   will be cached for some time.
+   GSSAPI session with the Resolver Cluster.
 4. Using the session it just established sends a resolve request for
    the paths it wants to subscribe to. All traffic is encrypted using
    the session.
@@ -282,6 +285,6 @@ all data goes in the clear.
 
 ## Cross Platform
 
-While netidx is primarily developed on PPC64le Linux, it is tested
-on aarch64, and x86_64 Linux, Mac OS, and even Windows. It will
-probably work on many platforms I haven't tried.
+While netidx is primarily developed on Linux, it has been tested on
+Windows, and even Mac OS. It will probably work on many platforms I
+haven't tried.
