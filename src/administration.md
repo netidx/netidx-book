@@ -252,10 +252,10 @@ of groups every user who might use netidx is in.
 
 Luckily you only need to get this right on the machines that run
 resolver servers, because that's the only place group resolution
-happens in netidx. You're other client and server machines can be a
+happens in netidx. You're other client and server machines can be as
 screwed up and inconsistent as you want, as long as the resolver
 server machine agrees that I'm a member of "RYU-OH\domain admins" then
-whatever permissions to assign to that group in the permission file
+whatever permissions assigned to that group in the permission file
 will apply to me.
 
 All the non resolver server machines need to be able to do is get
