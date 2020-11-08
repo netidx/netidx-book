@@ -355,26 +355,27 @@ faults so I clearly talk about different classes.
   a publisher crash. If the lower level `subscribe` function is used
   then on being disconnected unexpecetedly by the publisher all
   subscriptions are notified and marked as dead. The library user is
-  free to retry, which could (randomly) choose a different, working,
-  publisher if one is available. The library user could also use
-  `durable_subscribe` which will dilligently keep trying to
-  resubscribe, with linear backoff, until it is successful.
-- Bug: There's not much that can be done to mitigate a system breaking bug.
-- Misconfiguration: Unfortunatly there isn't much that can be done to
-  prevent misconfiguration. One thing that is done is that IP
-  addresses are classified such that 127.0.0.1 doesn't end up in a
-  resolver server that also hosts non local addresses.
+  free to retry. The library user could also use `durable_subscribe`
+  which will dilligently keep trying to resubscribe, with linear
+  backoff, until it is successful. Regardless of whether you retry
+  manually or use `durable_subscribe` each retry will go through the
+  entire process again, so it will eventually try all the publishers
+  publishing a value, and it will pick up any new publishers that
+  appear in the resolver server.
 
 ### Resolver
 
 - Hang: Resolver clients deal with a resolver server hang with a
   dynamically computed timeout based on the number of requests in the
-  batch. The rule is, minimum timeout 5 seconds or 10 microseconds per
-  operation in the batch for reads or 30 microseconds per operation in
-  the batch for writes, whichever is longer. So e.g. a 20 million item
-  write batch would get 600 seconds to complete before a timeout. An
-  expired timeout is treated as a connection failure, and so is
-  handled the same way as a crash.
+  batch. The rule is, minimum timeout 15 seconds or 6 microseconds per
+  operation in the batch for reads or 12 microseconds per operation in
+  the batch for writes, whichever is longer. That timeout is a timeout
+  to get an answer, not to finish the batch. Since the resolver server
+  breaks large batches up into smaller ones, and answers each micro
+  batch when it's done, the timeout should not usually be hit if the
+  resolver is just very busy, since it will be sending back something
+  periodically for each micro batch. The intent is for the timeout to
+  trigger if the resolver is really hanging.
 - Crash: Resolver clients deal with crashes differently depending on
   whether they are read or write connections.
   - Read Connections (Subscriber): Abandon the current connection, wait a random
@@ -401,11 +402,9 @@ faults so I clearly talk about different classes.
     degraded server at each heartbeat interval. In a nutshell write clients,
      - try 3 times to write to each server
      - try failed servers again each 1/2 `writer_ttl`
-     - return success for a batch if at least 1 server accepts it 
-- Bug/Misconfig: There's really not much that can be done about either
-  of these kinds of failures.
+     - never fail a batch, just log an error and keep trying next 1/2 `writer_ttl`
 
-One important consequence of the write client behavior is that in
-the event that all the resolver servers crash, as long as all the
-publishers are still running they will start republishing everything
-after a maximum of 1/2 `writer_ttl` has elapsed.
+One important consequence of the write client behavior is that in the
+event all the resolver servers crash, when they come back up
+publishers will republishing everything after a maximum of 1/2
+`writer_ttl` has elapsed.
