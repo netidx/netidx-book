@@ -235,7 +235,7 @@ pub async fn main() -> Result<()> {
             match ev {
                 Event::Unsubscribed => (), // Subscriber will resubscribe automatically
                 Event::Update(v) => {
-                    if let Some(temp) = v.cast_f64() {
+                    if let Ok(temp) = v.cast_to::<f64>() {
                         if temp > 75. {
                             let tr = &temps[&id];
                             tr.timestamp.update(Value::DateTime(Utc::now()));
