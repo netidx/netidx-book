@@ -1,0 +1,590 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Administration - Introduction to Netidx</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li><li class="chapter-item expanded "><a href="administration.html" class="active"><strong aria-hidden="true">4.</strong> Administration</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Introduction to Netidx</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#administration" id="administration">Administration</a></h1>
+<h2><a class="header" href="#first-things-first" id="first-things-first">First Things First</a></h2>
+<p>If you plan to use Kerberos make sure you have it set up properly,
+including your KDC, DNS, DHCP, etc. If you need help with kerberos I
+suggest the <a href="https://www.oreilly.com/library/view/kerberos-the-definitive/0596004036/">O'REILLY
+book</a>. If
+you want something free the <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/">RedHat
+documentation</a>
+isn't too bad, though it is somewhat specific to their product.</p>
+<p>Problems with Kerberos/GSSAPI can often be diagnosed by setting
+<code>KRB5_TRACE=/dev/stderr</code>, and/or <code>RUST_LOG=debug</code>. GSSAPI errors can
+sometimes be less than helpful, but usually the KRB5_TRACE is more
+informative.</p>
+<h2><a class="header" href="#resources-and-gotchas" id="resources-and-gotchas">Resources and Gotchas</a></h2>
+<p>Most installations need not devote massive resources to the resolver
+server, however you may want to use at least two instances on
+different machines or VMs for redundancy. Here are a few rules of
+thumb/gotchas.</p>
+<ul>
+<li>Expect to use about 500 MiB of ram in the resolver server for every
+1 million published values.</li>
+<li>Both read and write operations should make use of all available
+logical processors on the machine in most cases. So, in the case you
+are hitting performance problems, try allocating more cores before
+taking more drastic segmentation steps.</li>
+<li>Even when the resolvers are very busy they should remain fair. Large
+batches of reads or writes are broken into smaller reasonably sized
+batches for each logical processor. These batches are then
+interleaved pseudo randomly to ensure that neither reads nor writes
+are starved.</li>
+<li>Be mindful of the maximum number of available file descriptors per
+process on the resolver server machine when setting max_connections.</li>
+</ul>
+<p>The resolver server drops idle read client connections fairly quickly
+(configurable, recommended default 60 seconds), however if you have
+many thousands or tens of thousands of read clients that want to do a
+lot of reading simultaneously then you may need to raise the maximum
+number of file descriptors available, and/or deploy additional
+processes to avoid file descriptor exhaustion.</p>
+<p>As of this writing the resolver server only runs on Unix, and has only
+been extensively tested on Linux. There's no reason it couldn't run on
+Windows, it's just a matter of some work around group name resolution
+and service integration.</p>
+<h2><a class="header" href="#example-configuration" id="example-configuration">Example Configuration</a></h2>
+<p>The netidx configuration file is the same for all the different
+components of the system, resolver, publisher, and subscriber. By
+default it is stored,</p>
+<ul>
+<li>on Linux: ~/.config/netidx.json</li>
+<li>on Windows: ~\AppData\Roaming\netidx.json</li>
+<li>on MacOS: ~/Library/Application Support/netidx.json</li>
+</ul>
+<p>Since the dirs crate is used to discover these paths, they are locally
+configurable by OS specific means. Everyone who will use netidx needs
+access to this file.</p>
+<pre><code class="language-json">{
+    &quot;parent&quot;: null,
+    &quot;children&quot;: [],
+    &quot;pid_file&quot;: &quot;&quot;,
+    &quot;addrs&quot;: [&quot;192.168.0.1:4564&quot;],
+    &quot;max_connections&quot;: 768,
+    &quot;hello_timeout&quot;: 10,
+    &quot;reader_ttl&quot;: 60,
+    &quot;writer_ttl&quot;: 120,
+    &quot;auth&quot;: {
+        &quot;Krb5&quot;: {&quot;192.168.0.1:4564&quot;: &quot;netidx/washu-chan.ryu-oh.org@RYU-OH.ORG&quot;}
+    }
+}
+</code></pre>
+<p>Here's about the simplest possible Kerberos enabled
+configuration. I'll go through each field,</p>
+<ul>
+<li>parent: null unless this server has a parent, which I'll document later</li>
+<li>children: empty unless this server has children, which I'll document later</li>
+<li>pid_file: prefix to add to the pid file which will otherwise be
+e.g. 0.pid for the first server in the cluster, or 1.pid for the
+second, etc.</li>
+<li>addrs: The list of all resolver servers in this level of the
+cluster, e.g. not children or parents, just this level. When
+starting the server you must pass in an index into this array on the
+command line as --id to identify which server you want to start.</li>
+<li>max_connections: The maximum number of simultaneous connections to
+allow (both read and write) before starting to reject new
+connections.</li>
+<li>hello_timeout: The amount of time to wait for a client to say a
+proper hello before dropping the connection.</li>
+<li>reader_ttl: The amount of time, in seconds, to keep an idle read
+connection open.</li>
+<li>writer_ttl: The amount of time, in seconds, to wait for a publisher
+to heartbeat before deleting everything it has published. The
+publisher will send heartbeats at 1/2 this interval. e.g. 120 means
+publishers will heartbeat every minute. Processing a heartbeat does
+not take the write lock.</li>
+<li>auth: either &quot;Anonymous&quot;, or &quot;Krb5&quot;. If &quot;Krb5&quot;, then a service
+principal name should be included for every resolver server in the
+cluster. Each resolver server instance must have access to the
+corresponding SPN's key via a keytab or other means.</li>
+</ul>
+<p>When using Kerberos we also need a permissions file in order to run a
+resolver server, it's a separate file because it's not meant to be
+shared with everyone using the cluster.</p>
+<pre><code class="language-json">{
+    &quot;/&quot;: {
+        &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+    },
+    &quot;/solar&quot;: {
+	    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+    }
+}
+</code></pre>
+<p>In order to do the corresponding action in netidx a user must have
+that permission bit set, no bit, no action.</p>
+<p>Permission bits are computed starting from the root proceeding down
+the tree to the node being acted on. The bits are accumulated on the
+way down, and can also be removed at any point in the tree. Each bit
+is represented by a 1 character symbolic tag, e.g.</p>
+<ul>
+<li>!: Deny, changes the meaning of the following bits to deny the
+corresponding permission instead of grant it. Must be the first
+character of the permission string.</li>
+<li>s: Subscribe</li>
+<li>w: Write</li>
+<li>l: List</li>
+<li>p: Publish</li>
+<li>d: Publish default</li>
+</ul>
+<p>For example if I was subscribing to
+<code>/solar/stats/battery_sense_voltage</code> we would walk down the path from
+left to right and hit this permission first,</p>
+<pre><code class="language-json">&quot;/&quot;: {
+    &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+},
+</code></pre>
+<p>This applies to a Kerberos principal &quot;eric@RYU-OH.ORG&quot;, the resolver
+server will check the user principal name of the user making the
+request, and it will check all the groups that user is a member of,
+and if any of those are &quot;eric@RYU-OH.ORG&quot; then it will <code>or</code> the
+current permission set with &quot;swlpd&quot;. In this case this gives me
+permission to do anything I want in the whole tree (unless it is later
+denied). Next we would hit,</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+}
+</code></pre>
+<p>Which doesn't apply to me, and so would be ignored, and since there
+are no more permissions entries my effective permissions at
+<code>/solar/stats/battery_sense_voltage</code> are &quot;swlpd&quot;, and so I would be
+allowed to subscribe.</p>
+<p>Suppose however I changed the above entry,</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;eric@RYU-OH.ORG&quot;: &quot;!swl&quot;,
+}
+</code></pre>
+<p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
+that matches me, and we would remove the permission bits s, w, and l,
+leaving our effective permissions at
+<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;, since that doesn't give
+me the right to subscribe my request would be denied. We could, for
+example, do this by group instead.</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
+}
+</code></pre>
+<p>As you would expect, this deny permission will still apply to me
+because I am a member of the domain admins group. A slightly more
+subtle point is that permissions are accumulated. For example, if I am
+a member of two groups, and both groups have different bits denied,
+then all of those bits would be removed. e.g.</p>
+<pre><code class="language-json">&quot;/solar&quot;: {
+    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
+    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
+    &quot;RYU-OH\enterprise admins&quot;: &quot;!pd&quot;,
+}
+</code></pre>
+<p>Now my effective permissions under <code>/solar</code> are empty, I can do
+nothing. Now, if I am a member of more than one group, and one denies
+permissions that the other grants the deny always takes precidence.</p>
+<p>Each server cluster is completely independent for permissions. If for
+example this cluster had a child cluster, the administrators of that
+cluster would be responsible for deciding what permissions file it
+should use. It certainly could use the same file, but the point is the
+clusters don't talk to each other about permissions (or really
+anything else actually).</p>
+<h3><a class="header" href="#anonymous" id="anonymous">Anonymous</a></h3>
+<p>It's possible to give anonymous users permissions even on a Kerberos
+enabled system, and this could allow them to use whatever functions
+you deem non sensitive, subject to some limitations. There is no
+encryption. There is no tamper protection. There is no publisher -&gt;
+subscriber authentication. Anonymous users can't subscribe to non
+anonymous publishers. Non anonymous users can't subscribe to anonymous
+publishers. You name anonymous &quot;&quot; in the permissions file, e.g.</p>
+<pre><code class="language-json">&quot;/tmp&quot;: {
+    &quot;&quot;: &quot;swlpd&quot;
+}
+</code></pre>
+<p>Now <code>/tmp</code> is an anonymous free for all. If you have Kerberos
+deployed, it's probably not that useful to build such a hybrid system,
+because any anonymous publishers would not be usable by kerberos
+enabled users. It's mostly meant for very special cases.</p>
+<h3><a class="header" href="#groups" id="groups">Groups</a></h3>
+<p>You'll might have noticed I'm using AD style group names above, that's
+because my example setup uses Samba in ADS mode so I can test windows
+and unix clients on the same domain. The most important thing about
+the fact that I'm using Samba ADS and thus have the group names I have
+is that it doesn't matter. Groups are just strings to netidx, for a
+given user, whatever the <code>id</code> command would spit out for that user is
+what it's going to use for the set of groups the user is in (so that
+better match what's in your permissions file). You need to set up the
+resolver server machines such that they can properly resolve the set
+of groups every user who might use netidx is in.</p>
+<p>Luckily you only need to get this right on the machines that run
+resolver servers, because that's the only place group resolution
+happens in netidx. You're other client and server machines can be as
+screwed up and inconsistent as you want, as long as the resolver
+server machine agrees that I'm a member of &quot;RYU-OH\domain admins&quot; then
+whatever permissions assigned to that group in the permission file
+will apply to me.</p>
+<p>All the non resolver server machines need to be able to do is get
+Kerberos tickets. You don't even need to set them up to use Kerberos
+for authentication (but I highly recommend it, unless you really hate
+your users), you can just force people to type <code>kinit foo@BAR.COM</code>
+every 8 hours if you like.</p>
+<h3><a class="header" href="#starting-it" id="starting-it">Starting It</a></h3>
+<p>Once you have all that together starting a resolver server is done
+from the <code>netidx</code> command line tool (<code>cargo install netidx-tools</code>). e.g.</p>
+<pre><code class="language-bash">$ netidx resolver-server --permissions ./netidx-perms.json --id 0
+</code></pre>
+<p>By default the server will daemonize, include <code>-f</code> to prevent
+that. You can test that it's working by running,</p>
+<pre><code class="language-bash">$ netidx resolver list /
+</code></pre>
+<p>Which should print nothing (since you have nothing published), but
+should not error, and should run quickly. You can use the command line
+publisher and subscriber to further test. In my case I can do,</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx publisher --bind 192.168.0.0/24 --spn host/blackbird.ryu-oh.org@RYU-OH.ORG &lt;&lt;EOF
+/test|string|hello world
+EOF
+</code></pre>
+<p>and then I can subscribe using</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx subscriber /test
+/test|string|hello world
+</code></pre>
+<p>you'll need to make sure you have permission, that you have a keytab
+you can read with that spn in it, etc. You may need to, for example,
+run the publisher and/or resolver server with</p>
+<p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
+<p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging these issues.</p>
+<h2><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h2>
+<p>As a system netidx depends on fault tolerant strategies in the
+subscriber, publisher, and resolver server in order to minimize
+downtime caused by a failure. Before I talk about the specific
+strategies used by each component I want to give a short taxonomy of
+faults so I clearly talk about different classes.</p>
+<ul>
+<li>Hang: Where a component of the system is not 'dead', but is no
+longer responding, or is so slow it may as well not be
+responding. IMHO this is the worst kind of failure. It can happen at
+many different layers, e.g.
+<ul>
+<li>You can simulate a hang by sending SIGSTOP to a unix process. It
+isn't dead, but it also won't do anything.</li>
+<li>A machine with a broken network card, such that most packets are
+rejected due to checsum errors, it's still on the network, but
+it's effective bandwidth is a tiny fraction of what it should be.</li>
+<li>A software bug causing a deadlock</li>
+<li>A malfunctioning IO device</li>
+</ul>
+</li>
+<li>Crash: A process or the machine it's running on crashes cleanly and
+completely.</li>
+<li>Bug: A semantic bug in the system that causes an effective end to
+service.</li>
+<li>Misconfiguration: An error in the configuration of the system that
+causes it not to work. e.g.
+<ul>
+<li>Resolver server addresses that are routeable by some clients and not others</li>
+<li>Wrong Kerberos SPNs</li>
+<li>Misconfigured Kerberos</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#subscriber--publisher" id="subscriber--publisher">Subscriber &amp; Publisher</a></h3>
+<ul>
+<li>
+<p>Hang: Most hang situations are solved by heartbeats. Publisher sends
+a heartbeat to every subscriber that is connected to it every 5
+seconds. Subscriber disconnects if it doesn't reveive at least 1
+message every 100 seconds.</p>
+<p>Once a hang is detected it is dealt with by disconnecting, and it
+essentially becomes a crash.</p>
+<p>The hang case that heartbeats don't solve is when data is flowing,
+but not fast enough. This could have multiple causes e.g. the
+subscriber is too slow, the publisher is too slow, or the link
+between them is too slow. Whatever the cause, the publisher can
+handle this condition by providing a timeout to it's <code>flush</code>
+function. This will cause any subscriber that can't consume the
+flushed batch within the specified timeout to be disconnected.</p>
+</li>
+<li>
+<p>Crash: Subscriber allows the library user to decide how to deal with
+a publisher crash. If the lower level <code>subscribe</code> function is used
+then on being disconnected unexpecetedly by the publisher all
+subscriptions are notified and marked as dead. The library user is
+free to retry. The library user could also use <code>durable_subscribe</code>
+which will dilligently keep trying to resubscribe, with linear
+backoff, until it is successful. Regardless of whether you retry
+manually or use <code>durable_subscribe</code> each retry will go through the
+entire process again, so it will eventually try all the publishers
+publishing a value, and it will pick up any new publishers that
+appear in the resolver server.</p>
+</li>
+</ul>
+<h3><a class="header" href="#resolver" id="resolver">Resolver</a></h3>
+<ul>
+<li>Hang: Resolver clients deal with a resolver server hang with a
+dynamically computed timeout based on the number of requests in the
+batch. The rule is, minimum timeout 15 seconds or 6 microseconds per
+operation in the batch for reads or 12 microseconds per operation in
+the batch for writes, whichever is longer. That timeout is a timeout
+to get an answer, not to finish the batch. Since the resolver server
+breaks large batches up into smaller ones, and answers each micro
+batch when it's done, the timeout should not usually be hit if the
+resolver is just very busy, since it will be sending back something
+periodically for each micro batch. The intent is for the timeout to
+trigger if the resolver is really hanging.</li>
+<li>Crash: Resolver clients deal with crashes differently depending on
+whether they are read or write connections.
+<ul>
+<li>Read Connections (Subscriber): Abandon the current connection, wait a random
+time between 1 and 4 seconds, and then go through the whole
+connection process again. That roughly entails taking the list of
+all servers, permuting it, and then connecting to each server in
+the list until one of them answers, says a proper hello, and
+successfully authenticates (if kerberos is on). For each batch a
+resolver client will do this abandon and reconnect dance 3 times,
+and then it will give up and return an error for that
+batch. Subsuquent batches will start over from the beginning. In a
+nutshell read clients will,
+<ul>
+<li>try every server 3 times in a random order</li>
+<li>only give up on a batch if every server is down or unable to answer</li>
+<li>remain in a good state to try new batches even if previous batches have failed</li>
+</ul>
+</li>
+<li>Write Connections (Publishers): Since write connections are
+responsible for replicating their data out to each resolver server
+they don't include some of the retry logic used in the read
+client. They do try to replicate each batch 3 times seperated by a
+1-4 second pause to each server in the cluster. If after 3 tries
+they still can't write to one of the servers then it is marked as
+degraded. The write client must send heartbeats periodically
+(configurable 1/2 writer_ttl), and it will try to replicate to a
+degraded server at each heartbeat interval. In a nutshell write clients,
+<ul>
+<li>try 3 times to write to each server</li>
+<li>try failed servers again each 1/2 <code>writer_ttl</code></li>
+<li>never fail a batch, just log an error and keep trying next 1/2 <code>writer_ttl</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>One important consequence of the write client behavior is that in the
+event all the resolver servers crash, when they come back up
+publishers will republishing everything after a maximum of 1/2
+<code>writer_ttl</code> has elapsed.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="complete_system.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="complete_system.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
