@@ -15,9 +15,9 @@ ion batteries arranged in series/parallel to make a 24 volt nominal
 inverter. As the power is quite reliable where I live I often use it
 to charge my plug in hybrid car. The Prostar MPPT controller has a
 serial port over which it talks modbus, and I've connected a raspberry
-pi 3 running bog standard raspbian to that port using a usb to serial
-adapter. The pi, called "solar", is connected to my wifi network and
-is joined to my samba ADS domain.
+pi 3 running raspbian to that port using a usb to serial adapter. The
+pi, called "solar", is connected to my wifi network and is joined to
+my samba ADS domain.
 
 The control program, then, is more or less a simple translation layer
 between the modbus interface of the Prostar and netidx. Full source code
@@ -268,7 +268,7 @@ functions.
 The semantics of the formula language, and it's syntax, are meant to
 be very similar to formulas in a spreadsheet. Where instead of row/col
 notation, we use netidx paths to denote refs to other parts of the
-sheet. Sources update whenever something they ref updates, and sinks
+"sheet". Sources update whenever something they ref updates, and sinks
 are updated, and may cause sources to update. And, that's all rather
 abstract, lets focus on our example.
 
@@ -280,28 +280,27 @@ determines whether the toggle displays as on or off, and this one is
 set to `load_path("/solar/control/charging")`, load_path is a function
 that creates a source that subscribes to the netidx path it's given
 and updates when the subscription updates. So this straightforwardly
-ties the state of the toggle to the value of `/solar/control/charging`,
-when that value changes the toggle state changes. When the user clicks
-the toggle, either true or false is written to the sink which is
-defined as `confirm(store_path("/solar/control/charging"))`. So what
-does this do?  Well, store_path pretty obviously creates a sink that
-writes whatever value it receives to the specified path, confirm is
-more complex. It takes a sink as an argument, and returns a sink that
-asks the user to confirm every value it receives. If the user says
-yes, then it passes the value on to the passed in sink, in this case
-to load_path, otherwise it drops the value.
+ties the state of the toggle to the value of
+`/solar/control/charging`, when that value changes the toggle state
+changes. When the user clicks the toggle, either true or false is
+written to the sink which is defined as
+`confirm(store_path("/solar/control/charging"))`. So what does this
+do?  Well, store_path creates a sink that writes whatever value it
+receives to the specified path, confirm is more complex. It takes a
+sink as an argument, and returns a sink that asks the user to confirm
+every value it receives. If the user says yes, then it passes the
+value on to the passed in sink, in this case to load_path, otherwise
+it drops the value.
 
 There are many other useful formulas, and the goal is to make building
-simple guis like this dead easy, the majority of the work should be
-the layout, and moderately complex guis should be possible. While this
+simple guis like this easy, the majority of the work should be the
+layout, and moderately complex guis should be possible. While this
 system is already pretty useful it is still under heavy development,
 and is by no means finished. Another "limitation" to mention is since
-it's built with Gtk+ in Rust it's primarily a desktop application,
-though I have tested it on the pinephone under phosh, and even made a
-few changes to improve touch support. I will test it on the librem 5
-when mine arrives, and it's on my list to build it on windows and
-MacOS. Android, and especially iOS versions will not happen, unless
-someone else wants to step up.
+it's built with Gtk+ it's primarily a desktop application, though I
+have tested it on the pinephone phosh, and even made a few changes to
+improve touch support. Android, and especially iOS versions will not
+happen, unless someone else wants to step up.
 
 ## Wrapping Up
 
@@ -313,20 +312,9 @@ of the nice things we did in the last chapter. Instead we saw how we
 could build a pretty nice looking and functional gui using browser
 custom views, and we got an introduction to the formula language. I
 want to point out that with our design having a gui in no way alters
-our ability to script and manipulate the system pragmatically.  It's
+our ability to script and manipulate the system programatically. It's
 important to recognize that building a bespoke system with a gui as
 complex as the browser view we built AND making it scriptable over the
 network in a discoverable, secure, and performant way is not an easy
 task, and usually isn't worth doing. However by using netidx we got it
-all for free, all we had to do was make our problem fit into netidxs'
-data model.
-
-One day I was reflecting on the browser after I had been working on it
-for many weeks, and it occurred to me that it is essentially
-implementing a distributed version of the model view controller
-paradigm. The netidx data model is the model, the view is the widget
-tree and the layout properties, and the controller is the formula
-language expressions embedded in each widget. However in this version
-of MVC we get to reuse the model over the network, and it need not
-even run on the same computer, and I think that's pretty cool.
-
+for free once we made our problem fit into netidxs' data model.

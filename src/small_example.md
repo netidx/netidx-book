@@ -58,7 +58,7 @@ impl HwPub {
         })
     }
 
-    pub async fn update(&self, current: f64) -> Result<()> {
+    pub async fn update(&self, current: f64) {
         // update the current cpu-temp
         self.cpu_temp.update(Value::F64(current));
 
@@ -85,7 +85,7 @@ the data.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
+netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     if ((temp > 75)); then
@@ -103,7 +103,7 @@ it was observed.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
+netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     if ((temp > 75)); then
@@ -130,7 +130,7 @@ to write the following additional script.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/overtemp-ts|') | \
+netidx subscriber $(netidx resolver list '/hw/*/overtemp-ts') | \
 while IFS='|' read path typ temp; do
     IFS='/' read -a pparts <<< "$path"
     ring-very-loud-alarm ${pparts[2]}
@@ -162,7 +162,7 @@ cat <(
         done
 ) \
 <(
-   netidx subscriber $(netidx resolver list /hw | sed -e 's|$|/cpu-temp|') | \
+   netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
        while IFS='|' read path typ temp
        do
             IFS='/' read -a pparts <<< "$path"
@@ -229,7 +229,7 @@ pub async fn main() -> Result<()> {
             Ok((current.id(), Temp { _current: current, timestamp, temperature }))
         })
         .collect::<Result<HashMap<SubId, Temp>>>()?;
-    publisher.flush(None).await?;
+    publisher.flush(None).await;
     while let Some(mut batch) = rx_current.next().await {
         for (id, ev) in batch.drain(..) {
             match ev {
@@ -245,7 +245,7 @@ pub async fn main() -> Result<()> {
                 }
             }
         }
-        publisher.flush(None).await?
+        publisher.flush(None).await
     }
     Ok(())
 }
@@ -341,8 +341,7 @@ might be tempted to lock it completely down so that only "production"
 applications are allowed to publish. It's important to think carefully
 about how to make sure production applications are always available,
 but even still we always included a place in the namespace where
-anyone could publish anything, because sometimes magic mushrooms grew
-there.
+anyone could publish anything.
 
 In the next chapter I'll focus on an application written from scratch
 to use netidx as it's primary means of communication and control, and
