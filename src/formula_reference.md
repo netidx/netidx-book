@@ -81,10 +81,10 @@ an update. consider the source defined by,
 any(constant(u64, 42), load_path("/foo/bar"), load_path("/foo/baz"))
 ```
 
-Initially it's value will be u64:42. If "/foo/baz" updates but
-"/foo/bar" does not, then it's value will be the value of
-"/foo/baz". If both "/foo/bar" and "/foo/baz" update then it's value
-will be the value of "/foo/bar".
+Initially it's value will be u64:42. If `"/foo/baz"` updates but
+`"/foo/bar"` does not, then it's value will be the value of
+`"/foo/baz"`. If both `"/foo/bar"` and `"/foo/baz"` update then it's
+value will be the value of `"/foo/bar"`.
 
 # all
 
@@ -99,8 +99,8 @@ arguments are equal. Consider,
 all(constant(u64, 11), load_path("/volume"))
 ```
 
-If "/volume" is not 11 then no matter how it changes all will not have
-a value, however as soon as "/volume" goes to 11 then the value of all
+If `"/volume"` is not 11 then no matter how it changes all will not have
+a value, however as soon as `"/volume"` goes to 11 then the value of all
 will be u64:11.
 
 # sum
@@ -145,7 +145,7 @@ error if any argument has an incompatible type.
 divide(load_path("/volume"), constant(u32, 2), load_path("/additional_divisor"))
 ```
 
-First divides "/volume" by 2 and then divides it by
+First divides `"/volume"` by 2 and then divides it by
 "/additional_divisor".
 
 # mean
@@ -177,10 +177,14 @@ e.g.
 min(constant(u64, 42), load_path("/volume"))
 ```
 
-produces the value of "/volume" if it is less than or equal to 42,
+produces the value of `"/volume"` if it is less than or equal to 42,
 otherwise it produces 42.
 
 # max
+
+```
+max(Source, ..., Source) -> Source
+```
 
 Creates a source who's value is the value of it's largest argument, or
 an error if it's arguments are incompatible types.
@@ -192,4 +196,133 @@ max(constant(u64, 5), load_path("/volume"))
 
 produces the value of "/volume" if it is greater than or equal to 5,
 otherwise it produces 5.
+
+# and
+
+```
+and(Source, ..., Source) -> Source
+```
+
+Creates a source who's value is true if all it's arguments are true,
+and false otherwise (including if any argument is not a boolean).
+
+e.g.
+```
+and(load_path("/cake"), load_path("/diet"))
+```
+
+Would produce false.
+
+# or
+
+```
+or(Source, ..., Source) -> Source
+```
+
+Creates a source who's value is true if any of it's arguments are
+true.
+
+e.g.
+```
+or(load_path("/cake"), load_path("/death"))
+```
+
+Would produce true.
+
+# not
+
+```
+not(Source) -> Source
+```
+
+Creates a source who's value is false if it's argument is true, true
+if it's argument is false, or error if it's argument is not a boolean.
+
+e.g.
+```
+not(load_path("/solar/control/charging"))
+```
+
+true if the battery is not charging.
+
+# cmp
+
+```
+cmp(Source, Source, Source) -> Source
+```
+
+Creates a source who's value is the result of performing the
+comparison specified by it's first argument on it's second and third
+arguments. The following comparisons are supported,
+
+- eq: true if the arguments are equal
+- lt: true if the first argument is less than the second one
+- lte: true if the first argument is less than or equal to the second one
+- gt: true if the first argument is greater than the second one
+- gte: true if the first argument is greater than or equal to the second one
+
+e.g.
+```
+cmp(constant(string, "lt"), load_path("/volume"), constant(u64, 11))
+```
+
+is true if the volumen is less than 11, false otherwise.
+
+# if
+
+```
+if(Source, Source, Source) -> Source
+```
+
+Creates a source who's value is the value of it's second argument if
+it's first argument is true, and it's third argument otherwise.
+
+e.g.
+```
+if(
+    cmp(constant(string, "lt"), load_path("/volume"), constant(u64, 11)),
+    load_path("/normal_amp"),
+    load_path("/this_one_goes_to_11")
+)
+```
+
+if "/volume" is less than 11 then the value is `"/normal_amp"`,
+otherwise the value is `"/this_one_goes_to_11"`.
+
+# filter
+
+```
+filter(Source, Source) -> Source
+```
+
+Creates a source who's value is the value of the second argument if
+the first argument is true, and nothing if it is false.
+
+e.g.
+```
+filter(
+    cmp(constant(string, "gte"), load_path("/volume"), constant(u64, 11)),
+    load_path("/this_one_goes_to_11")
+)
+```
+
+Produces `"/this_one_goes_to_11"` if volume is 11 or higher, otherwise
+nothing. Is it even worth listening to an amp that doesn't go to 11?
+
+# cast
+
+```
+cast(Source, Source) -> Source
+```
+
+Creates a source who's value is the value of it's second argument
+changed into the type specified by it's first argument, or an error if
+the transformation is not possible.
+
+e.g.
+```
+cast(constant(string, "f32"), load_path("/volume"))
+```
+
+Changes volume into a single precision float if possible.
 
