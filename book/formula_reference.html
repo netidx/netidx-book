@@ -1,0 +1,462 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Formula Reference - Introduction to Netidx</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li class="chapter-item expanded "><a href="formula_reference.html" class="active"><strong aria-hidden="true">5.</strong> Formula Reference</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Introduction to Netidx</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#types" id="types">Types</a></h1>
+<p>Types correspond to the netidx value type, and are used in various
+places in formulas. Type names are,</p>
+<ul>
+<li>u32: unsigned 4 byte integer</li>
+<li>v32: unsigned leb128 encoded integer</li>
+<li>i32: signed 4 byte integer</li>
+<li>z32: signed leb128 zig-zag encoded integer</li>
+<li>u64: unsigned 8 byte integer</li>
+<li>v64: unsigned leb128 encoded integer</li>
+<li>i64: signed 8 byte integer</li>
+<li>z64: signed leb128 zig-zag encoded integer</li>
+<li>f32: single precision floating point number</li>
+<li>f64: double precision floating point number</li>
+<li>bool: boolean</li>
+<li>string: unicode string</li>
+<li>bytes: byte array</li>
+<li>result: ok or error:description of error</li>
+</ul>
+<h1><a class="header" href="#constant" id="constant">constant</a></h1>
+<pre><code>constant(type, value) -&gt; Source
+or
+constant(null) -&gt; Source
+</code></pre>
+<p>Creates a constant source that always has the specified type and
+value. There is an addional special form used to produce null.</p>
+<p>e.g.</p>
+<pre><code># always 42
+constant(u64, 42) 
+
+# always &quot;hello world&quot;
+constant(string, &quot;hello world&quot;)
+</code></pre>
+<h1><a class="header" href="#load_var" id="load_var">load_var</a></h1>
+<pre><code>load_var(name) -&gt; Source
+</code></pre>
+<p>Creates a source that references an internal variable. The source will
+update when the variable updates. If the variable does not exist, then
+the source will be Null.</p>
+<p>e.g.</p>
+<pre><code># references the internal variable foo
+load_var(foo)
+</code></pre>
+<h1><a class="header" href="#load_path" id="load_path">load_path</a></h1>
+<pre><code>load_path(path) -&gt; Source
+</code></pre>
+<p>Creates a source the subscribes to the specified netidx path and who's
+value is the value of the subscription.</p>
+<p>e.g.</p>
+<pre><code>load_path(&quot;/some/path/in/netidx&quot;)
+</code></pre>
+<h1><a class="header" href="#any" id="any">any</a></h1>
+<pre><code>any(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of the first argument with
+an update. consider the source defined by,</p>
+<pre><code>any(constant(u64, 42), load_path(&quot;/foo/bar&quot;), load_path(&quot;/foo/baz&quot;))
+</code></pre>
+<p>Initially it's value will be u64:42. If <code>&quot;/foo/baz&quot;</code> updates but
+<code>&quot;/foo/bar&quot;</code> does not, then it's value will be the value of
+<code>&quot;/foo/baz&quot;</code>. If both <code>&quot;/foo/bar&quot;</code> and <code>&quot;/foo/baz&quot;</code> update then it's
+value will be the value of <code>&quot;/foo/bar&quot;</code>.</p>
+<h1><a class="header" href="#all" id="all">all</a></h1>
+<pre><code>all(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is only defined if the values of all it's
+arguments are equal. Consider,</p>
+<pre><code>all(constant(u64, 11), load_path(&quot;/volume&quot;))
+</code></pre>
+<p>If <code>&quot;/volume&quot;</code> is not 11 then no matter how it changes all will not have
+a value, however as soon as <code>&quot;/volume&quot;</code> goes to 11 then the value of all
+will be u64:11.</p>
+<h1><a class="header" href="#sum" id="sum">sum</a></h1>
+<pre><code>sum(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the sum of the values of all it's
+arguments, or an error if they don't have compatible types.</p>
+<p>e.g.</p>
+<pre><code>sum(constant(u32, 1), constant(u32, 2), constant(u32, 5), load_path(&quot;/counter&quot;))
+</code></pre>
+<h1><a class="header" href="#product" id="product">product</a></h1>
+<pre><code>product(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the produt of the values of all it's
+arguments, or an error if they don't have compatible types.</p>
+<p>e.g. </p>
+<pre><code>product(constant(u32, 2), constant(u32, 2))
+</code></pre>
+<h1><a class="header" href="#divide" id="divide">divide</a></h1>
+<pre><code>divide(Source, Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of the first argument
+divided by the values of subsuquent arguments successively, or an
+error if any argument has an incompatible type.</p>
+<pre><code>divide(load_path(&quot;/volume&quot;), constant(u32, 2), load_path(&quot;/additional_divisor&quot;))
+</code></pre>
+<p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
+&quot;/additional_divisor&quot;.</p>
+<h1><a class="header" href="#mean" id="mean">mean</a></h1>
+<pre><code>mean(Source) -&gt; Source
+</code></pre>
+<p>Creates a source that computes the average of it's argument over time.</p>
+<p>e.g.</p>
+<pre><code>mean(load_path(&quot;/volume&quot;))
+</code></pre>
+<p>Would produce the average volume over the observed time period.</p>
+<h1><a class="header" href="#min" id="min">min</a></h1>
+<pre><code>min(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of it's smallest argument,
+or an error if it's arguments are incompatible types.</p>
+<p>e.g.</p>
+<pre><code>min(constant(u64, 42), load_path(&quot;/volume&quot;))
+</code></pre>
+<p>produces the value of <code>&quot;/volume&quot;</code> if it is less than or equal to 42,
+otherwise it produces 42.</p>
+<h1><a class="header" href="#max" id="max">max</a></h1>
+<pre><code>max(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of it's largest argument, or
+an error if it's arguments are incompatible types.</p>
+<p>e.g.</p>
+<pre><code>max(constant(u64, 5), load_path(&quot;/volume&quot;))
+</code></pre>
+<p>produces the value of &quot;/volume&quot; if it is greater than or equal to 5,
+otherwise it produces 5.</p>
+<h1><a class="header" href="#and" id="and">and</a></h1>
+<pre><code>and(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is true if all it's arguments are true,
+and false otherwise (including if any argument is not a boolean).</p>
+<p>e.g.</p>
+<pre><code>and(load_path(&quot;/cake&quot;), load_path(&quot;/diet&quot;))
+</code></pre>
+<p>Would produce false.</p>
+<h1><a class="header" href="#or" id="or">or</a></h1>
+<pre><code>or(Source, ..., Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is true if any of it's arguments are
+true.</p>
+<p>e.g.</p>
+<pre><code>or(load_path(&quot;/cake&quot;), load_path(&quot;/death&quot;))
+</code></pre>
+<p>Would produce true.</p>
+<h1><a class="header" href="#not" id="not">not</a></h1>
+<pre><code>not(Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is false if it's argument is true, true
+if it's argument is false, or error if it's argument is not a boolean.</p>
+<p>e.g.</p>
+<pre><code>not(load_path(&quot;/solar/control/charging&quot;))
+</code></pre>
+<p>true if the battery is not charging.</p>
+<h1><a class="header" href="#cmp" id="cmp">cmp</a></h1>
+<pre><code>cmp(Source, Source, Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the result of performing the
+comparison specified by it's first argument on it's second and third
+arguments. The following comparisons are supported,</p>
+<ul>
+<li>eq: true if the arguments are equal</li>
+<li>lt: true if the first argument is less than the second one</li>
+<li>lte: true if the first argument is less than or equal to the second one</li>
+<li>gt: true if the first argument is greater than the second one</li>
+<li>gte: true if the first argument is greater than or equal to the second one</li>
+</ul>
+<p>e.g.</p>
+<pre><code>cmp(constant(string, &quot;lt&quot;), load_path(&quot;/volume&quot;), constant(u64, 11))
+</code></pre>
+<p>is true if the volumen is less than 11, false otherwise.</p>
+<h1><a class="header" href="#if" id="if">if</a></h1>
+<pre><code>if(Source, Source, Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of it's second argument if
+it's first argument is true, and it's third argument otherwise.</p>
+<p>e.g.</p>
+<pre><code>if(
+    cmp(constant(string, &quot;lt&quot;), load_path(&quot;/volume&quot;), constant(u64, 11)),
+    load_path(&quot;/normal_amp&quot;),
+    load_path(&quot;/this_one_goes_to_11&quot;)
+)
+</code></pre>
+<p>if &quot;/volume&quot; is less than 11 then the value is <code>&quot;/normal_amp&quot;</code>,
+otherwise the value is <code>&quot;/this_one_goes_to_11&quot;</code>.</p>
+<h1><a class="header" href="#filter" id="filter">filter</a></h1>
+<pre><code>filter(Source, Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of the second argument if
+the first argument is true, and nothing if it is false.</p>
+<p>e.g.</p>
+<pre><code>filter(
+    cmp(constant(string, &quot;gte&quot;), load_path(&quot;/volume&quot;), constant(u64, 11)),
+    load_path(&quot;/this_one_goes_to_11&quot;)
+)
+</code></pre>
+<p>Produces <code>&quot;/this_one_goes_to_11&quot;</code> if volume is 11 or higher, otherwise
+nothing. Is it even worth listening to an amp that doesn't go to 11?</p>
+<h1><a class="header" href="#cast" id="cast">cast</a></h1>
+<pre><code>cast(Source, Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the value of it's second argument
+changed into the type specified by it's first argument, or an error if
+the transformation is not possible.</p>
+<p>e.g.</p>
+<pre><code>cast(constant(string, &quot;f32&quot;), load_path(&quot;/volume&quot;))
+</code></pre>
+<p>Changes volume into a single precision float if possible.</p>
+<h1><a class="header" href="#isa" id="isa">isa</a></h1>
+<pre><code>isa(Source, Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is true if it's second argument is an
+instance of the type named by it's first argument.</p>
+<p>e.g.</p>
+<pre><code>isa(constant(string, &quot;f32&quot;), constant(u32, 10))
+</code></pre>
+<p>would yield false.</p>
+<h1><a class="header" href="#eval" id="eval">eval</a></h1>
+<pre><code>eval(Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the result of compiling and evaluating
+it's first argument as a filter, or an error if the argument is not a
+valid filter program. The source need not be constant, the filter
+program will be recompiled every time it's argument updates, and this
+can allow some quite powerful behaviors to be programmed.</p>
+<p>e.g.</p>
+<pre><code>eval(
+    constant(string, &quot;any(constant(f32, 24.0), load_path(\&quot;/battery_sense_voltage\&quot;))&quot;)
+)
+</code></pre>
+<p>Would evaluate to 24.0 until <code>&quot;/battery_sense_voltage&quot;</code> is subscribed,
+and thereafter to <code>&quot;/battery_sense_voltage&quot;</code>.</p>
+<h1><a class="header" href="#count" id="count">count</a></h1>
+<pre><code>count(Source) -&gt; Source
+</code></pre>
+<p>Creates a source who's value is the number of updates received by it's
+argument.</p>
+<p>e.g.</p>
+<pre><code>count(load_path(&quot;/volume&quot;))
+</code></pre>
+<p>would increment every time volume changed.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="administration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="administration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

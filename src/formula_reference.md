@@ -326,3 +326,56 @@ cast(constant(string, "f32"), load_path("/volume"))
 
 Changes volume into a single precision float if possible.
 
+# isa
+
+```
+isa(Source, Source) -> Source
+```
+
+Creates a source who's value is true if it's second argument is an
+instance of the type named by it's first argument.
+
+e.g.
+```
+isa(constant(string, "f32"), constant(u32, 10))
+```
+
+would yield false.
+
+# eval
+
+```
+eval(Source) -> Source
+```
+
+Creates a source who's value is the result of compiling and evaluating
+it's first argument as a filter, or an error if the argument is not a
+valid filter program. The source need not be constant, the filter
+program will be recompiled every time it's argument updates, and this
+can allow some quite powerful behaviors to be programmed.
+
+e.g.
+```
+eval(
+    constant(string, "any(constant(f32, 24.0), load_path(\"/battery_sense_voltage\"))")
+)
+```
+
+Would evaluate to 24.0 until `"/battery_sense_voltage"` is subscribed,
+and thereafter to `"/battery_sense_voltage"`.
+
+# count
+
+```
+count(Source) -> Source
+```
+
+Creates a source who's value is the number of updates received by it's
+argument.
+
+e.g.
+```
+count(load_path("/volume"))
+```
+
+would increment every time volume changed.
