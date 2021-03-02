@@ -393,3 +393,186 @@ count(load("/volume"))
 ```
 
 will increment every time volume changes.
+
+## sample
+
+```
+sample(Expr, Expr)
+```
+
+Produces the value of it's second argument when it's first argument
+updates.
+
+e.g.
+```
+sample(load("[base]/timestamp"), load("[base]/voltage"))
+```
+
+Produces `[base]/voltage` whenever `[base]/timestamp` updates.
+
+## uniq
+
+```
+uniq(Expr)
+```
+
+Produces the value of it's argument only if that value is different
+from the previous one.
+
+e.g.
+```
+uniq(load("[stock_base]/ibm/last"))
+```
+
+Would produce an event only when the last trade price of IBM changes.
+
+## string_join
+
+```
+string_join(sep: Expr, ..., Expr)
+```
+
+Concatinate all arguments from 2 ... n using the first argument as a
+separator.
+
+e.g.
+
+```
+string_join("/", base, "foo", "bar")
+```
+
+is the same a writing `"[base]/foo/bar"`
+
+## string_concat
+
+```
+string_concat(Expr, ..., Expr)
+```
+
+Concatinate all arguments.
+
+e.g.
+
+```
+string_concat(load("/foo"), load("/bar"), "baz")
+```
+
+is the same as writing `"[load("/foo")][load("/bar")]baz"`. And in
+fact string interpolations are just syntactic sugar for this function.
+
+## event
+
+```
+event()
+```
+
+Produces a widget specific event depending on which widget and which
+event handler the pipeline containing it is attached to. For example,
+when attached to an entry `on_change` handler it produces the string
+value of the entry whenever the user changes the text. When attached
+to the on_activate handler of the entry, it produces the string value
+of the entry when the user presses the Enter key. When attached to the
+`on_click` handler of a button, it produces Null every time the button
+is clicked.
+
+e.g.
+```
+store("/text", event())
+```
+
+When attached to the `on_change` event of an entry would write the
+text to `/text` every time the user changes it.
+
+## confirm
+
+```
+confirm(msg: Expr, val: Expr)
+```
+
+Asks the user msg with val appended, and if they say yes produces it's
+second argument, otherwise does not produce anything.
+
+e.g.
+```
+store(
+  "[base]/volume", 
+  confirm(
+    "are you sure you want to change the volume to ", 
+    volume
+  )
+)
+```
+
+Asks the user to confirm before writing the value of the variable
+`volume` to `[base]/volume`.
+
+## navigate
+
+```
+navigate(Expr)
+```
+
+Navigate the browser to the location specified by it's first
+argument. The syntax of a location is one of, 
+
+- a valid absolute netidx path, e.g. /foo/bar/baz
+- a view file e.g. file:/path/to/view/file
+- a netidx: prefixed netidx path, e.g. netidx:/foo/bar/baz
+
+e.g.
+```
+navigate(confirm("go to ", "file:[next_view]"))
+```
+
+## call
+
+```
+call(rpc: Expr, Expr, ..., Expr)
+```
+
+Call the netidx rpc specified by the first argument, passing the
+specified keyword arguments, and producing the return value of the
+call. Keyword arguments are encoded as pairs of a name followed by a
+value.
+
+e.g.
+```
+store_var(
+  "sessionid",
+  call(
+    "/solar/archive/session", 
+    "start", "-10d", 
+    "speed", "unlimited", 
+    "play_after", "2s"
+  )
+)
+```
+
+call `/solar/archive/session` with arguments to replay the last 10
+days, starting 2 seconds after the call finishes, at unlimited speed,
+and store the resulting session id in the variable sessionid.
+
+## load_var
+
+```
+load_var(var: Expr)
+var
+```
+
+Produce the value of the variable specified by var, or an error if var
+is not a valid variable name. The second form is syntactic sugar that
+translates into `load_var("var")`.
+
+## store_var
+
+```
+store_var(name: Expr, val: Expr)
+```
+
+Store the value of val in the variable specified by name. Return
+nothing, or an error if name is not a valid variable name.
+
+e.g.
+```
+store_var("volume", cast("f32", event()))
+```
