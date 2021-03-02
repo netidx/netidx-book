@@ -1,7 +1,45 @@
-# Types
+# Language Overview
 
-Types correspond to the netidx value type, and are used in various
-places in formulas. Type names are,
+The browser scripting language exists to glue the widgets in your gui
+to the inputs and outputs in netidx. If you're familiar with the model
+view controller gui paradigm, browser script is the controller
+layer. Because of it's purpose it works rather differently from most
+scripting languages, in that it is a 'reactive' or 'incremental'
+language. Instead of describing e.g. "steps the computer performs when
+I click the button" like most other languages browser script describes
+the plumbing that events flow through on their way to their final
+destination.
+
+For example the event handler for a button might look like so,
+```
+store("[base]/app/do_action", event())
+```
+
+The store function writes it's 2nd argument to the netidx path
+specified by it's first argument. The event function produces a widget
+specific event, in this case it produces a Null whenever the button is
+clicked. The path argument is actually a string with an expression
+interpolation that will generate the path we will write to. So we can
+think of this expression as building an event pipeline that looks
+something like this,
+
+```
+load_var(base) ------------1-> concat_string ----
+                                ^                |
+                                |                |
+"/app/do_action" -------------2-                 1
+                                                 v
+event() -----------------------------------2-> store
+```
+
+So not only do we write a Null whenever the button is clicked, but we
+also change were we write whenever the variable `base`
+changes. Constants like `"/app/do_action"` never change.
+
+# Types and Constants
+
+Types in browser script correspond to the netidx value type, and are
+named,
 
 - u32: unsigned 4 byte integer
 - v32: unsigned leb128 encoded integer
@@ -18,242 +56,236 @@ places in formulas. Type names are,
 - bytes: byte array
 - result: ok or error:description of error
 
-# constant
+Constants may be prefixed with the type name followed by a colon, e.g.
 
-```
-constant(type, value) -> Source
-or
-constant(null) -> Source
-```
+`f32:3.14`
 
-Creates a constant source that always has the specified type and
-value. There is an addional special form used to produce null.
+However constant expressions have a default type if none is specified,
 
-e.g.
-```
-# always 42
-constant(u64, 42) 
+- floating point numbers: f64
+- integers: u64
+- strings: string
+- true/false: bool
+- ok: result
 
-# always "hello world"
-constant(string, "hello world")
-```
+e.g. `3.1415` is the same as `f64:3.1415`, and both forms will be
+accepted.
 
-# load_var
+# Expression Interpolation
 
-```
-load_var(name) -> Source
-```
-
-Creates a source that references an internal variable. The source will
-update when the variable updates. If the variable does not exist, then
-the source will be Null.
+In a string literal you may substitute any number of expressions by
+surrounding them with `[]`. To produce a literal `[` or `]` you must
+escape them with `\`, e.g. `\[` and `\]`. To produce a literal `\` you
+may escape it as well, e.g. `\\`. Any expression is a valid
+interpolation (including another interpolation), e.g. numeric
+expressions will be cast to strings. Any expression that cannot be
+cast to a string will be ignored.
 
 e.g.
 ```
-# references the internal variable foo
-load_var(foo)
+"[base]/some/path"
+"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing"
 ```
 
-# load_path
+# Reference
+
+## load
 
 ```
-load_path(path) -> Source
+load(Expr)
 ```
 
-Creates a source the subscribes to the specified netidx path and who's
-value is the value of the subscription.
+Subscribes to the netidx path specified by it's argument, which must
+evaluate to a string.
 
 e.g.
 ```
-load_path("/some/path/in/netidx")
+load("/some/path/in/netidx")
+load("[base]/thing")
 ```
 
-# any
+## any
 
 ```
-any(Source, ..., Source) -> Source
+any(Expr, ..., Expr)
 ```
 
-Creates a source who's value is the value of the first argument with
-an update. consider the source defined by,
+Any produces an event every time any of it's arguments produce an event.
 
 ```
-any(constant(u64, 42), load_path("/foo/bar"), load_path("/foo/baz"))
+any(42, load("/foo/bar"), load("/foo/baz"))
 ```
 
-Initially it's value will be u64:42. If `"/foo/baz"` updates but
-`"/foo/bar"` does not, then it's value will be the value of
-`"/foo/baz"`. If both `"/foo/bar"` and `"/foo/baz"` update then it's
-value will be the value of `"/foo/bar"`.
-
-# all
+Will produce 42, and then all the updates to `/foo/bar` and `/foo/baz`
+in whatever order they arrive.
 
 ```
-all(Source, ..., Source) -> Source
-```
-
-Creates a source who's value is only defined if the values of all it's
-arguments are equal. Consider,
+mean(any(load("/bench/0/0"), load("/bench/0/1")))
 
 ```
-all(constant(u64, 11), load_path("/volume"))
-```
 
-If `"/volume"` is not 11 then no matter how it changes all will not have
-a value, however as soon as `"/volume"` goes to 11 then the value of all
-will be u64:11.
+Will produce the average of the values of `/bench/0/0` and
+`/bench/0/1`.
 
-# sum
+## all
 
 ```
-sum(Source, ..., Source) -> Source
+all(Expr, ..., Expr)
 ```
 
-Creates a source who's value is the sum of the values of all it's
-arguments, or an error if they don't have compatible types.
+All produces an if the current values of all it's arguments are equal.
+
+```
+all(11, load("/volume"))
+```
+
+Will produce 11 only when `/volume` is 11.
+
+## sum
+
+```
+sum(Expr, ..., Expr)
+```
+
+Produces the sum of it's arguments.
 
 e.g.
 ```
-sum(constant(u32, 1), constant(u32, 2), constant(u32, 5), load_path("/counter"))
+sum(load("/offset"), load("/random"))
 ```
 
-# product
+sums `/offset` and `/random`
+
+## product
 
 ```
-product(Source, ..., Source) -> Source
+product(Expr, ..., Expr)
 ```
 
-Creates a source who's value is the produt of the values of all it's
-arguments, or an error if they don't have compatible types.
+Produces the product of it's arguments.
 
 e.g. 
 ```
-product(constant(u32, 2), constant(u32, 2))
+product(2, 2)
 ```
 
-# divide
+## divide
 
 ```
-divide(Source, Source, ..., Source) -> Source
+divide(Expr, Expr, ..., Expr)
 ```
 
-Creates a source who's value is the value of the first argument
-divided by the values of subsuquent arguments successively, or an
-error if any argument has an incompatible type.
+Divides it's first argument by it's subsuquent arguments.
 
 ```
-divide(load_path("/volume"), constant(u32, 2), load_path("/additional_divisor"))
+divide(load("/volume"), 2, load("/additional_divisor"))
 ```
 
 First divides `"/volume"` by 2 and then divides it by
 "/additional_divisor".
 
-# mean
+## mean
 
 ```
-mean(Source) -> Source
+mean(Expr)
 ```
 
-Creates a source that computes the average of it's argument over time.
+Computes the average of it's argument over time.
 
 e.g.
 ```
-mean(load_path("/volume"))
+mean(load("/volume"))
 ```
 
-Would produce the average volume over the observed time period.
+Produce the average volume over the observed time period.
 
-# min
+## min
 
 ```
-min(Source, ..., Source) -> Source
+min(Expr, ..., Expr)
 ```
 
-Creates a source who's value is the value of it's smallest argument,
-or an error if it's arguments are incompatible types.
+Produces the smallest value of any of it's arguments.
 
 e.g.
 ```
-min(constant(u64, 42), load_path("/volume"))
+min(42, load("/volume"))
 ```
 
-produces the value of `"/volume"` if it is less than or equal to 42,
-otherwise it produces 42.
+produces the value of `"/volume"` if it is less than 42, otherwise it
+produces 42.
 
-# max
+## max
 
 ```
-max(Source, ..., Source) -> Source
+max(Expr, ..., Expr)
 ```
 
-Creates a source who's value is the value of it's largest argument, or
-an error if it's arguments are incompatible types.
+Produces the largest value of any of it's arguments.
 
 e.g.
 ```
-max(constant(u64, 5), load_path("/volume"))
+max(5, load("/volume"))
 ```
 
-produces the value of "/volume" if it is greater than or equal to 5,
-otherwise it produces 5.
+produces the value of "/volume" if it is greater than 5, otherwise it
+produces 5.
 
-# and
+## and
 
 ```
-and(Source, ..., Source) -> Source
+and(Expr, ..., Expr)
 ```
 
-Creates a source who's value is true if all it's arguments are true,
-and false otherwise (including if any argument is not a boolean).
+Produces true if all of it's arguments are true, otherwise false.
 
 e.g.
 ```
-and(load_path("/cake"), load_path("/diet"))
+and(load("/cake"), load("/diet"))
 ```
 
 Would produce false.
 
-# or
+## or
 
 ```
-or(Source, ..., Source) -> Source
+or(Expr, ..., Expr)
 ```
 
-Creates a source who's value is true if any of it's arguments are
-true.
+Produces true if any of it's arguments is true, otherwise false.
 
 e.g.
 ```
-or(load_path("/cake"), load_path("/death"))
+or(load("/cake"), load("/death"))
 ```
 
 Would produce true.
 
-# not
+## not
 
 ```
-not(Source) -> Source
+not(Expr)
 ```
 
-Creates a source who's value is false if it's argument is true, true
-if it's argument is false, or error if it's argument is not a boolean.
+Produces the opposite of it's argument, e.g. true if it's argument is
+false, false otherwise.
 
 e.g.
 ```
-not(load_path("/solar/control/charging"))
+not(load("/solar/control/charging"))
 ```
 
 true if the battery is not charging.
 
-# cmp
+## cmp
 
 ```
-cmp(Source, Source, Source) -> Source
+cmp(Expr, Expr, Expr)
 ```
 
-Creates a source who's value is the result of performing the
-comparison specified by it's first argument on it's second and third
-arguments. The following comparisons are supported,
+Produces the result of performing the comparison specified by it's
+first argument to it's 2nd and third arugments. Valid comparisons are
+encoded as strings, and are called,
 
 - eq: true if the arguments are equal
 - lt: true if the first argument is less than the second one
@@ -263,119 +295,101 @@ arguments. The following comparisons are supported,
 
 e.g.
 ```
-cmp(constant(string, "lt"), load_path("/volume"), constant(u64, 11))
+cmp("lt", load("/volume"), 11)
 ```
 
-is true if the volumen is less than 11, false otherwise.
+is true if the volume is less than 11, false otherwise.
 
-# if
+## if
 
 ```
-if(Source, Source, Source) -> Source
+if(Expr, Expr, [Expr])
 ```
 
-Creates a source who's value is the value of it's second argument if
-it's first argument is true, and it's third argument otherwise.
+Produces the value of it's 2nd argument if it's first argument is
+true, otherwise produces the value of it's third argument, or nothing
+if it has no third argument.
 
 e.g.
 ```
 if(
-    cmp(constant(string, "lt"), load_path("/volume"), constant(u64, 11)),
-    load_path("/normal_amp"),
-    load_path("/this_one_goes_to_11")
+    cmp("lt", load("/volume"), 11),
+    load("/normal_amp"),
+    load("/this_one_goes_to_11")
 )
 ```
 
-if "/volume" is less than 11 then the value is `"/normal_amp"`,
+If "/volume" is less than 11 then the value is `"/normal_amp"`,
 otherwise the value is `"/this_one_goes_to_11"`.
 
-# filter
+e.g.
+```
+if(cmp("eq", 11, load("/volume")), "huzzah!")
+```
+
+Produces `"huzzah!"` if `/volume` is `11`, otherwise nothing.
+
+## cast
 
 ```
-filter(Source, Source) -> Source
+cast(Expr, Expr)
 ```
 
-Creates a source who's value is the value of the second argument if
-the first argument is true, and nothing if it is false.
+Attempt to cast the second argument to the type specified by the
+first. Produce a value of the specified type, or an error if the cast
+is not possible.
 
 e.g.
 ```
-filter(
-    cmp(constant(string, "gte"), load_path("/volume"), constant(u64, 11)),
-    load_path("/this_one_goes_to_11")
-)
-```
-
-Produces `"/this_one_goes_to_11"` if volume is 11 or higher, otherwise
-nothing. Is it even worth listening to an amp that doesn't go to 11?
-
-# cast
-
-```
-cast(Source, Source) -> Source
-```
-
-Creates a source who's value is the value of it's second argument
-changed into the type specified by it's first argument, or an error if
-the transformation is not possible.
-
-e.g.
-```
-cast(constant(string, "f32"), load_path("/volume"))
+cast("f32", load("/volume"))
 ```
 
 Changes volume into a single precision float if possible.
 
-# isa
+## isa
 
 ```
-isa(Source, Source) -> Source
+isa(Expr, Expr)
 ```
 
-Creates a source who's value is true if it's second argument is an
-instance of the type named by it's first argument.
+Produce true if the 2nd argument is the type named by the first
+argument, false otherwise.
 
 e.g.
 ```
-isa(constant(string, "f32"), constant(u32, 10))
+isa("f32", 10)
 ```
 
-would yield false.
+would produce false.
 
-# eval
+## eval
 
 ```
-eval(Source) -> Source
+eval(Expr)
 ```
 
-Creates a source who's value is the result of compiling and evaluating
-it's first argument as a filter, or an error if the argument is not a
-valid filter program. The source need not be constant, the filter
-program will be recompiled every time it's argument updates, and this
-can allow some quite powerful behaviors to be programmed.
+Compiles and executes the browser script program specified by it's
+argument, or produces an error if the program is invalid.
 
 e.g.
 ```
-eval(
-    constant(string, "any(constant(f32, 24.0), load_path(\"/battery_sense_voltage\"))")
-)
+eval(load("[base]/program"))
 ```
 
-Would evaluate to 24.0 until `"/battery_sense_voltage"` is subscribed,
-and thereafter to `"/battery_sense_voltage"`.
+Load and execute browser script from `[base]/program`.
 
-# count
+## count
 
 ```
-count(Source) -> Source
+count(Expr)
 ```
 
-Creates a source who's value is the number of updates received by it's
-argument.
+Produces the count of events produced by expr since we started
+execution of the pipeline.
 
 e.g.
 ```
-count(load_path("/volume"))
+count(load("/volume"))
 ```
 
-would increment every time volume changed.
+will increment every time volume changes.

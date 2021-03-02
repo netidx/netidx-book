@@ -1404,9 +1404,39 @@ degraded server at each heartbeat interval. In a nutshell write clients,
 event all the resolver servers crash, when they come back up
 publishers will republishing everything after a maximum of 1/2
 <code>writer_ttl</code> has elapsed.</p>
-<h1><a class="header" href="#types" id="types">Types</a></h1>
-<p>Types correspond to the netidx value type, and are used in various
-places in formulas. Type names are,</p>
+<h1><a class="header" href="#language-overview" id="language-overview">Language Overview</a></h1>
+<p>The browser scripting language exists to glue the widgets in your gui
+to the inputs and outputs in netidx. If you're familiar with the model
+view controller gui paradigm, browser script is the controller
+layer. Because of it's purpose it works rather differently from most
+scripting languages, in that it is a 'reactive' or 'incremental'
+language. Instead of describing e.g. &quot;steps the computer performs when
+I click the button&quot; like most other languages browser script describes
+the plumbing that events flow through on their way to their final
+destination.</p>
+<p>For example the event handler for a button might look like so,</p>
+<pre><code>store(&quot;[base]/app/do_action&quot;, event())
+</code></pre>
+<p>The store function writes it's 2nd argument to the netidx path
+specified by it's first argument. The event function produces a widget
+specific event, in this case it produces a Null whenever the button is
+clicked. The path argument is actually a string with an expression
+interpolation that will generate the path we will write to. So we can
+think of this expression as building an event pipeline that looks
+something like this,</p>
+<pre><code>load_var(base) ------------1-&gt; concat_string ----
+                                ^                |
+                                |                |
+&quot;/app/do_action&quot; -------------2-                 1
+                                                 v
+event() -----------------------------------2-&gt; store
+</code></pre>
+<p>So not only do we write a Null whenever the button is clicked, but we
+also change were we write whenever the variable <code>base</code>
+changes. Constants like <code>&quot;/app/do_action&quot;</code> never change.</p>
+<h1><a class="header" href="#types-and-constants" id="types-and-constants">Types and Constants</a></h1>
+<p>Types in browser script correspond to the netidx value type, and are
+named,</p>
 <ul>
 <li>u32: unsigned 4 byte integer</li>
 <li>v32: unsigned leb128 encoded integer</li>
@@ -1423,146 +1453,140 @@ places in formulas. Type names are,</p>
 <li>bytes: byte array</li>
 <li>result: ok or error:description of error</li>
 </ul>
-<h1><a class="header" href="#constant" id="constant">constant</a></h1>
-<pre><code>constant(type, value) -&gt; Source
-or
-constant(null) -&gt; Source
-</code></pre>
-<p>Creates a constant source that always has the specified type and
-value. There is an addional special form used to produce null.</p>
+<p>Constants may be prefixed with the type name followed by a colon, e.g.</p>
+<p><code>f32:3.14</code></p>
+<p>However constant expressions have a default type if none is specified,</p>
+<ul>
+<li>floating point numbers: f64</li>
+<li>integers: u64</li>
+<li>strings: string</li>
+<li>true/false: bool</li>
+<li>ok: result</li>
+</ul>
+<p>e.g. <code>3.1415</code> is the same as <code>f64:3.1415</code>, and both forms will be
+accepted.</p>
+<h1><a class="header" href="#expression-interpolation" id="expression-interpolation">Expression Interpolation</a></h1>
+<p>In a string literal you may substitute any number of expressions by
+surrounding them with <code>[]</code>. To produce a literal <code>[</code> or <code>]</code> you must
+escape them with <code>\</code>, e.g. <code>\[</code> and <code>\]</code>. To produce a literal <code>\</code> you
+may escape it as well, e.g. <code>\\</code>. Any expression is a valid
+interpolation (including another interpolation), e.g. numeric
+expressions will be cast to strings. Any expression that cannot be
+cast to a string will be ignored.</p>
 <p>e.g.</p>
-<pre><code># always 42
-constant(u64, 42) 
+<pre><code>&quot;[base]/some/path&quot;
+&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot;
+</code></pre>
+<h1><a class="header" href="#reference" id="reference">Reference</a></h1>
+<h2><a class="header" href="#load" id="load">load</a></h2>
+<pre><code>load(Expr)
+</code></pre>
+<p>Subscribes to the netidx path specified by it's argument, which must
+evaluate to a string.</p>
+<p>e.g.</p>
+<pre><code>load(&quot;/some/path/in/netidx&quot;)
+load(&quot;[base]/thing&quot;)
+</code></pre>
+<h2><a class="header" href="#any" id="any">any</a></h2>
+<pre><code>any(Expr, ..., Expr)
+</code></pre>
+<p>Any produces an event every time any of it's arguments produce an event.</p>
+<pre><code>any(42, load(&quot;/foo/bar&quot;), load(&quot;/foo/baz&quot;))
+</code></pre>
+<p>Will produce 42, and then all the updates to <code>/foo/bar</code> and <code>/foo/baz</code>
+in whatever order they arrive.</p>
+<pre><code>mean(any(load(&quot;/bench/0/0&quot;), load(&quot;/bench/0/1&quot;)))
 
-# always &quot;hello world&quot;
-constant(string, &quot;hello world&quot;)
 </code></pre>
-<h1><a class="header" href="#load_var" id="load_var">load_var</a></h1>
-<pre><code>load_var(name) -&gt; Source
+<p>Will produce the average of the values of <code>/bench/0/0</code> and
+<code>/bench/0/1</code>.</p>
+<h2><a class="header" href="#all" id="all">all</a></h2>
+<pre><code>all(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source that references an internal variable. The source will
-update when the variable updates. If the variable does not exist, then
-the source will be Null.</p>
+<p>All produces an if the current values of all it's arguments are equal.</p>
+<pre><code>all(11, load(&quot;/volume&quot;))
+</code></pre>
+<p>Will produce 11 only when <code>/volume</code> is 11.</p>
+<h2><a class="header" href="#sum" id="sum">sum</a></h2>
+<pre><code>sum(Expr, ..., Expr)
+</code></pre>
+<p>Produces the sum of it's arguments.</p>
 <p>e.g.</p>
-<pre><code># references the internal variable foo
-load_var(foo)
+<pre><code>sum(load(&quot;/offset&quot;), load(&quot;/random&quot;))
 </code></pre>
-<h1><a class="header" href="#load_path" id="load_path">load_path</a></h1>
-<pre><code>load_path(path) -&gt; Source
+<p>sums <code>/offset</code> and <code>/random</code></p>
+<h2><a class="header" href="#product" id="product">product</a></h2>
+<pre><code>product(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source the subscribes to the specified netidx path and who's
-value is the value of the subscription.</p>
-<p>e.g.</p>
-<pre><code>load_path(&quot;/some/path/in/netidx&quot;)
-</code></pre>
-<h1><a class="header" href="#any" id="any">any</a></h1>
-<pre><code>any(Source, ..., Source) -&gt; Source
-</code></pre>
-<p>Creates a source who's value is the value of the first argument with
-an update. consider the source defined by,</p>
-<pre><code>any(constant(u64, 42), load_path(&quot;/foo/bar&quot;), load_path(&quot;/foo/baz&quot;))
-</code></pre>
-<p>Initially it's value will be u64:42. If <code>&quot;/foo/baz&quot;</code> updates but
-<code>&quot;/foo/bar&quot;</code> does not, then it's value will be the value of
-<code>&quot;/foo/baz&quot;</code>. If both <code>&quot;/foo/bar&quot;</code> and <code>&quot;/foo/baz&quot;</code> update then it's
-value will be the value of <code>&quot;/foo/bar&quot;</code>.</p>
-<h1><a class="header" href="#all" id="all">all</a></h1>
-<pre><code>all(Source, ..., Source) -&gt; Source
-</code></pre>
-<p>Creates a source who's value is only defined if the values of all it's
-arguments are equal. Consider,</p>
-<pre><code>all(constant(u64, 11), load_path(&quot;/volume&quot;))
-</code></pre>
-<p>If <code>&quot;/volume&quot;</code> is not 11 then no matter how it changes all will not have
-a value, however as soon as <code>&quot;/volume&quot;</code> goes to 11 then the value of all
-will be u64:11.</p>
-<h1><a class="header" href="#sum" id="sum">sum</a></h1>
-<pre><code>sum(Source, ..., Source) -&gt; Source
-</code></pre>
-<p>Creates a source who's value is the sum of the values of all it's
-arguments, or an error if they don't have compatible types.</p>
-<p>e.g.</p>
-<pre><code>sum(constant(u32, 1), constant(u32, 2), constant(u32, 5), load_path(&quot;/counter&quot;))
-</code></pre>
-<h1><a class="header" href="#product" id="product">product</a></h1>
-<pre><code>product(Source, ..., Source) -&gt; Source
-</code></pre>
-<p>Creates a source who's value is the produt of the values of all it's
-arguments, or an error if they don't have compatible types.</p>
+<p>Produces the product of it's arguments.</p>
 <p>e.g. </p>
-<pre><code>product(constant(u32, 2), constant(u32, 2))
+<pre><code>product(2, 2)
 </code></pre>
-<h1><a class="header" href="#divide" id="divide">divide</a></h1>
-<pre><code>divide(Source, Source, ..., Source) -&gt; Source
+<h2><a class="header" href="#divide" id="divide">divide</a></h2>
+<pre><code>divide(Expr, Expr, ..., Expr)
 </code></pre>
-<p>Creates a source who's value is the value of the first argument
-divided by the values of subsuquent arguments successively, or an
-error if any argument has an incompatible type.</p>
-<pre><code>divide(load_path(&quot;/volume&quot;), constant(u32, 2), load_path(&quot;/additional_divisor&quot;))
+<p>Divides it's first argument by it's subsuquent arguments.</p>
+<pre><code>divide(load(&quot;/volume&quot;), 2, load(&quot;/additional_divisor&quot;))
 </code></pre>
 <p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
 &quot;/additional_divisor&quot;.</p>
-<h1><a class="header" href="#mean" id="mean">mean</a></h1>
-<pre><code>mean(Source) -&gt; Source
+<h2><a class="header" href="#mean" id="mean">mean</a></h2>
+<pre><code>mean(Expr)
 </code></pre>
-<p>Creates a source that computes the average of it's argument over time.</p>
+<p>Computes the average of it's argument over time.</p>
 <p>e.g.</p>
-<pre><code>mean(load_path(&quot;/volume&quot;))
+<pre><code>mean(load(&quot;/volume&quot;))
 </code></pre>
-<p>Would produce the average volume over the observed time period.</p>
-<h1><a class="header" href="#min" id="min">min</a></h1>
-<pre><code>min(Source, ..., Source) -&gt; Source
+<p>Produce the average volume over the observed time period.</p>
+<h2><a class="header" href="#min" id="min">min</a></h2>
+<pre><code>min(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source who's value is the value of it's smallest argument,
-or an error if it's arguments are incompatible types.</p>
+<p>Produces the smallest value of any of it's arguments.</p>
 <p>e.g.</p>
-<pre><code>min(constant(u64, 42), load_path(&quot;/volume&quot;))
+<pre><code>min(42, load(&quot;/volume&quot;))
 </code></pre>
-<p>produces the value of <code>&quot;/volume&quot;</code> if it is less than or equal to 42,
-otherwise it produces 42.</p>
-<h1><a class="header" href="#max" id="max">max</a></h1>
-<pre><code>max(Source, ..., Source) -&gt; Source
+<p>produces the value of <code>&quot;/volume&quot;</code> if it is less than 42, otherwise it
+produces 42.</p>
+<h2><a class="header" href="#max" id="max">max</a></h2>
+<pre><code>max(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source who's value is the value of it's largest argument, or
-an error if it's arguments are incompatible types.</p>
+<p>Produces the largest value of any of it's arguments.</p>
 <p>e.g.</p>
-<pre><code>max(constant(u64, 5), load_path(&quot;/volume&quot;))
+<pre><code>max(5, load(&quot;/volume&quot;))
 </code></pre>
-<p>produces the value of &quot;/volume&quot; if it is greater than or equal to 5,
-otherwise it produces 5.</p>
-<h1><a class="header" href="#and" id="and">and</a></h1>
-<pre><code>and(Source, ..., Source) -&gt; Source
+<p>produces the value of &quot;/volume&quot; if it is greater than 5, otherwise it
+produces 5.</p>
+<h2><a class="header" href="#and" id="and">and</a></h2>
+<pre><code>and(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source who's value is true if all it's arguments are true,
-and false otherwise (including if any argument is not a boolean).</p>
+<p>Produces true if all of it's arguments are true, otherwise false.</p>
 <p>e.g.</p>
-<pre><code>and(load_path(&quot;/cake&quot;), load_path(&quot;/diet&quot;))
+<pre><code>and(load(&quot;/cake&quot;), load(&quot;/diet&quot;))
 </code></pre>
 <p>Would produce false.</p>
-<h1><a class="header" href="#or" id="or">or</a></h1>
-<pre><code>or(Source, ..., Source) -&gt; Source
+<h2><a class="header" href="#or" id="or">or</a></h2>
+<pre><code>or(Expr, ..., Expr)
 </code></pre>
-<p>Creates a source who's value is true if any of it's arguments are
-true.</p>
+<p>Produces true if any of it's arguments is true, otherwise false.</p>
 <p>e.g.</p>
-<pre><code>or(load_path(&quot;/cake&quot;), load_path(&quot;/death&quot;))
+<pre><code>or(load(&quot;/cake&quot;), load(&quot;/death&quot;))
 </code></pre>
 <p>Would produce true.</p>
-<h1><a class="header" href="#not" id="not">not</a></h1>
-<pre><code>not(Source) -&gt; Source
+<h2><a class="header" href="#not" id="not">not</a></h2>
+<pre><code>not(Expr)
 </code></pre>
-<p>Creates a source who's value is false if it's argument is true, true
-if it's argument is false, or error if it's argument is not a boolean.</p>
+<p>Produces the opposite of it's argument, e.g. true if it's argument is
+false, false otherwise.</p>
 <p>e.g.</p>
-<pre><code>not(load_path(&quot;/solar/control/charging&quot;))
+<pre><code>not(load(&quot;/solar/control/charging&quot;))
 </code></pre>
 <p>true if the battery is not charging.</p>
-<h1><a class="header" href="#cmp" id="cmp">cmp</a></h1>
-<pre><code>cmp(Source, Source, Source) -&gt; Source
+<h2><a class="header" href="#cmp" id="cmp">cmp</a></h2>
+<pre><code>cmp(Expr, Expr, Expr)
 </code></pre>
-<p>Creates a source who's value is the result of performing the
-comparison specified by it's first argument on it's second and third
-arguments. The following comparisons are supported,</p>
+<p>Produces the result of performing the comparison specified by it's
+first argument to it's 2nd and third arugments. Valid comparisons are
+encoded as strings, and are called,</p>
 <ul>
 <li>eq: true if the arguments are equal</li>
 <li>lt: true if the first argument is less than the second one</li>
@@ -1571,79 +1595,65 @@ arguments. The following comparisons are supported,</p>
 <li>gte: true if the first argument is greater than or equal to the second one</li>
 </ul>
 <p>e.g.</p>
-<pre><code>cmp(constant(string, &quot;lt&quot;), load_path(&quot;/volume&quot;), constant(u64, 11))
+<pre><code>cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11)
 </code></pre>
-<p>is true if the volumen is less than 11, false otherwise.</p>
-<h1><a class="header" href="#if" id="if">if</a></h1>
-<pre><code>if(Source, Source, Source) -&gt; Source
+<p>is true if the volume is less than 11, false otherwise.</p>
+<h2><a class="header" href="#if" id="if">if</a></h2>
+<pre><code>if(Expr, Expr, [Expr])
 </code></pre>
-<p>Creates a source who's value is the value of it's second argument if
-it's first argument is true, and it's third argument otherwise.</p>
+<p>Produces the value of it's 2nd argument if it's first argument is
+true, otherwise produces the value of it's third argument, or nothing
+if it has no third argument.</p>
 <p>e.g.</p>
 <pre><code>if(
-    cmp(constant(string, &quot;lt&quot;), load_path(&quot;/volume&quot;), constant(u64, 11)),
-    load_path(&quot;/normal_amp&quot;),
-    load_path(&quot;/this_one_goes_to_11&quot;)
+    cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11),
+    load(&quot;/normal_amp&quot;),
+    load(&quot;/this_one_goes_to_11&quot;)
 )
 </code></pre>
-<p>if &quot;/volume&quot; is less than 11 then the value is <code>&quot;/normal_amp&quot;</code>,
+<p>If &quot;/volume&quot; is less than 11 then the value is <code>&quot;/normal_amp&quot;</code>,
 otherwise the value is <code>&quot;/this_one_goes_to_11&quot;</code>.</p>
-<h1><a class="header" href="#filter" id="filter">filter</a></h1>
-<pre><code>filter(Source, Source) -&gt; Source
-</code></pre>
-<p>Creates a source who's value is the value of the second argument if
-the first argument is true, and nothing if it is false.</p>
 <p>e.g.</p>
-<pre><code>filter(
-    cmp(constant(string, &quot;gte&quot;), load_path(&quot;/volume&quot;), constant(u64, 11)),
-    load_path(&quot;/this_one_goes_to_11&quot;)
-)
+<pre><code>if(cmp(&quot;eq&quot;, 11, load(&quot;/volume&quot;)), &quot;huzzah!&quot;)
 </code></pre>
-<p>Produces <code>&quot;/this_one_goes_to_11&quot;</code> if volume is 11 or higher, otherwise
-nothing. Is it even worth listening to an amp that doesn't go to 11?</p>
-<h1><a class="header" href="#cast" id="cast">cast</a></h1>
-<pre><code>cast(Source, Source) -&gt; Source
+<p>Produces <code>&quot;huzzah!&quot;</code> if <code>/volume</code> is <code>11</code>, otherwise nothing.</p>
+<h2><a class="header" href="#cast" id="cast">cast</a></h2>
+<pre><code>cast(Expr, Expr)
 </code></pre>
-<p>Creates a source who's value is the value of it's second argument
-changed into the type specified by it's first argument, or an error if
-the transformation is not possible.</p>
+<p>Attempt to cast the second argument to the type specified by the
+first. Produce a value of the specified type, or an error if the cast
+is not possible.</p>
 <p>e.g.</p>
-<pre><code>cast(constant(string, &quot;f32&quot;), load_path(&quot;/volume&quot;))
+<pre><code>cast(&quot;f32&quot;, load(&quot;/volume&quot;))
 </code></pre>
 <p>Changes volume into a single precision float if possible.</p>
-<h1><a class="header" href="#isa" id="isa">isa</a></h1>
-<pre><code>isa(Source, Source) -&gt; Source
+<h2><a class="header" href="#isa" id="isa">isa</a></h2>
+<pre><code>isa(Expr, Expr)
 </code></pre>
-<p>Creates a source who's value is true if it's second argument is an
-instance of the type named by it's first argument.</p>
+<p>Produce true if the 2nd argument is the type named by the first
+argument, false otherwise.</p>
 <p>e.g.</p>
-<pre><code>isa(constant(string, &quot;f32&quot;), constant(u32, 10))
+<pre><code>isa(&quot;f32&quot;, 10)
 </code></pre>
-<p>would yield false.</p>
-<h1><a class="header" href="#eval" id="eval">eval</a></h1>
-<pre><code>eval(Source) -&gt; Source
+<p>would produce false.</p>
+<h2><a class="header" href="#eval" id="eval">eval</a></h2>
+<pre><code>eval(Expr)
 </code></pre>
-<p>Creates a source who's value is the result of compiling and evaluating
-it's first argument as a filter, or an error if the argument is not a
-valid filter program. The source need not be constant, the filter
-program will be recompiled every time it's argument updates, and this
-can allow some quite powerful behaviors to be programmed.</p>
+<p>Compiles and executes the browser script program specified by it's
+argument, or produces an error if the program is invalid.</p>
 <p>e.g.</p>
-<pre><code>eval(
-    constant(string, &quot;any(constant(f32, 24.0), load_path(\&quot;/battery_sense_voltage\&quot;))&quot;)
-)
+<pre><code>eval(load(&quot;[base]/program&quot;))
 </code></pre>
-<p>Would evaluate to 24.0 until <code>&quot;/battery_sense_voltage&quot;</code> is subscribed,
-and thereafter to <code>&quot;/battery_sense_voltage&quot;</code>.</p>
-<h1><a class="header" href="#count" id="count">count</a></h1>
-<pre><code>count(Source) -&gt; Source
+<p>Load and execute browser script from <code>[base]/program</code>.</p>
+<h2><a class="header" href="#count" id="count">count</a></h2>
+<pre><code>count(Expr)
 </code></pre>
-<p>Creates a source who's value is the number of updates received by it's
-argument.</p>
+<p>Produces the count of events produced by expr since we started
+execution of the pipeline.</p>
 <p>e.g.</p>
-<pre><code>count(load_path(&quot;/volume&quot;))
+<pre><code>count(load(&quot;/volume&quot;))
 </code></pre>
-<p>would increment every time volume changed.</p>
+<p>will increment every time volume changes.</p>
 
                     </main>
 
