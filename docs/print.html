@@ -1067,7 +1067,9 @@ batches for each logical processor. These batches are then
 interleaved pseudo randomly to ensure that neither reads nor writes
 are starved.</li>
 <li>Be mindful of the maximum number of available file descriptors per
-process on the resolver server machine when setting max_connections.</li>
+process on the resolver server machine when setting
+max_connections. You can easily raise this number on modern linux
+systems using ulimit.</li>
 </ul>
 <p>The resolver server drops idle read client connections fairly quickly
 (configurable, recommended default 60 seconds), however if you have
@@ -1285,6 +1287,113 @@ you can read with that spn in it, etc. You may need to, for example,
 run the publisher and/or resolver server with</p>
 <p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
 <p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging these issues.</p>
+<h2><a class="header" href="#subscription-flow-1" id="subscription-flow-1">Subscription Flow</a></h2>
+<h3><a class="header" href="#components-1" id="components-1">Components</a></h3>
+<p><img src="subscription-flow-components.png" alt="The Components" /></p>
+<p>In the full kerberos enabled version of netidx the following
+components are involved.</p>
+<ul>
+<li>The Kerberos 5 KDC (Key Distribution Center). e.g. The AD Domain Controller.</li>
+<li>Resolver Cluster, holds the path of everything published and the
+address of the publisher publishing it.</li>
+<li>Subscriber</li>
+<li>Publisher, holds the actual data, and has previously told the
+resolver server about the path of all the data it has.</li>
+</ul>
+<h3><a class="header" href="#step-1-1" id="step-1-1">Step 1</a></h3>
+<p><img src="subscription-flow-step1.png" alt="First Step" /></p>
+<ol>
+<li>The Subscriber asks the KDC for a service ticket to talk to the
+Resolver Cluster. Note this only happens once for each user for
+some amount of time (usually hours), after which the service ticket
+is cached. The subscriber proves it's identity to the KDC using
+it's TGT.</li>
+<li>The KDC, having checked the validity of the subscriber's identity,
+generates a service ticket for the resolver server cluster. NOTE,
+Kerberos does not make authorization decisions, it merely allows
+entities to prove to each other that they are who they claim to be.</li>
+</ol>
+<h3><a class="header" href="#step-2-1" id="step-2-1">Step 2</a></h3>
+<p><img src="subscription-flow-step2.png" alt="Second Step" /></p>
+<ol start="3">
+<li>The Subscriber uses the service ticket to establish an encrypted
+GSSAPI session with the Resolver Cluster.</li>
+<li>Using the session it just established sends a resolve request for
+the paths it wants to subscribe to. All traffic is encrypted using
+the session.</li>
+<li>The Resolver Cluster verifies the presented GSSAPI token and
+establishes a secure session, looks up the requested paths, and
+returns a number of things to the subscriber for each path.
+<ul>
+<li>The addresses of all the publishers who are publishing that path</li>
+<li>The service principal names of those publishers</li>
+<li>The permissions the subscriber has to the path</li>
+<li>The authorization token, which is a SHA512 hash of the concatenation of
+<ul>
+<li>A secret shared by the Resolver Cluster and the Publisher</li>
+<li>The path</li>
+<li>The permissions</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3><a class="header" href="#step-3-1" id="step-3-1">Step 3</a></h3>
+<p><img src="subscription-flow-step3.png" alt="Third Step" /></p>
+<ol start="6">
+<li>The subscriber picks a random publisher from the set of publishers
+publishing the path it wants, and requests a service ticket for
+that publisher's SPN from the KDC.</li>
+<li>The KDC validates the subscriber's TGT and returns a service ticket
+for the requested SPN, which will be cached going forward (usually
+for several hours).</li>
+</ol>
+<h3><a class="header" href="#step-4-1" id="step-4-1">Step 4</a></h3>
+<p><img src="subscription-flow-step4.png" alt="Fourth Step" /></p>
+<ol start="8">
+<li>
+<p>The subscriber uses the service ticket it just obtained to
+establish an encrypted GSSAPI session with the publisher, and using
+this session it sends a subscribe request, which consists of,</p>
+<ul>
+<li>The path it wants to subscribe to</li>
+<li>The permissions the resolver cluster gave to it</li>
+<li>The authorization token</li>
+</ul>
+</li>
+<li>
+<p>The publisher validates the subscriber's GSSAPI token and
+establishes an encrypted session, and then reads the subscribe
+request. It looks up the request path, and assuming it is
+publishing that path, it constructs a SHA512 hash value of,</p>
+<ul>
+<li>The secret it shared with the resolver cluster when it initially
+published the path.</li>
+<li>The path the subscriber is requesting</li>
+<li>The permissions the subscriber claims to have </li>
+</ul>
+<p>It then checks that it's constructed auth token matches the one the
+subscriber presented. Since the subscriber does not know the secret
+the publisher shared with the resolver server it is computationally
+infeasible for the subscriber to generate a valid hash value for an
+arbitrary path or permissions, therefore checking this hash is an
+effective proof that the resolver cluster really gave the
+subscriber the permissions it is claiming to have.</p>
+<p>Assuming all the authentication and authorization checks out, and
+the publisher actually publishes the requested value, it sends the
+current value back to the publisher along with the ID of the
+subscription.</p>
+<p>Whenever the value changes the publisher sends the new value along
+with the ID of the subscription to the publisher (encrypted using
+the GSSAPI session, and over the same TCP session that was
+established earlier).</p>
+</li>
+</ol>
+<p>In the case netidx is not configured to use kerberos the KDC is not
+involved, and none of the authentication or authorization tokens are
+established/sent, it's just a simple matter of look up the address
+from the resolver, and then subscribe to the publisher. In that case
+all data goes in the clear.</p>
 <h2><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h2>
 <p>As a system netidx depends on fault tolerant strategies in the
 subscriber, publisher, and resolver server in order to minimize
