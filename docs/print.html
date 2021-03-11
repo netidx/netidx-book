@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">2.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.</strong> A Complete System</a></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">5.</strong> Browser Scripting</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="small_example.html"><strong aria-hidden="true">3.</strong> Small Example</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">4.</strong> A Complete System</a></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">5.</strong> Administration</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.</strong> Browser Scripting</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -161,7 +161,46 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#overview-of-netidx" id="overview-of-netidx">Overview of Netidx</a></h1>
+                        <h1><a class="header" href="#quick-start-for-linux" id="quick-start-for-linux">Quick Start for Linux</a></h1>
+<p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
+you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
+<p><code>cargo install netidx-tools</code></p>
+<p>This will build and install the <code>netidx</code> command, which contains all
+the built in command line tools necessary to run to the resolver
+server, as well as the publisher/subscriber command line tools</p>
+<pre><code>{
+    &quot;parent&quot;: null,
+    &quot;children&quot;: [],
+    &quot;pid_file&quot;: &quot;&quot;,
+    &quot;addrs&quot;: [&quot;127.0.0.1:4564&quot;],
+    &quot;max_connections&quot;: 512,
+    &quot;hello_timeout&quot;: 10,
+    &quot;reader_ttl&quot;: 60,
+    &quot;writer_ttl&quot;: 120,
+    &quot;auth&quot;: &quot;Anonymous&quot;
+}
+</code></pre>
+<p>Install the above config in <code>~/.config/netidx.json</code>. This config will
+only allow communication on your local machine. Make sure port 4564 is
+free, or change it to a free port of your choosing.</p>
+<p>run <code>netidx resolver-server</code>. This command will return immediatly, and
+the resolver server will daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<p>To test the configuration run,</p>
+<p><code>netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10</code></p>
+<p>This will publish 10,000 items following the pattern <code>/bench/$r/$c</code>
+where <code>$r</code> is a row number and <code>$c</code> is a column
+number. e.g. <code>/bench/100/8</code> corresponds to row 100 column 8. The
+browser will draw this as a table with 1000 rows and 10 columns,
+however for this test we will use the command line subscriber to look
+at one cell in the table.</p>
+<p><code>netidx subscriber /bench/0/0</code></p>
+<p>should print out one line like this every second</p>
+<p><code>/bench/0/0|v64|1</code></p>
+<p>The final number should increment, and if that works then netidx is
+set up on your local machine. If it didn't work, try setting the
+environment variable <code>RUST_LOG=debug</code> and running the stress publisher
+and the subscriber again.</p>
+<h1><a class="header" href="#overview-of-netidx" id="overview-of-netidx">Overview of Netidx</a></h1>
 <p>Netidx is a library, protocol, and server that facilitates publishing
 the value of a variable in one program and consuming it in another
 program, possibly on another computer. There are a lot of details, but
