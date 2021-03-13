@@ -87,8 +87,9 @@ values just write `null` to `publish-base/session`. e.g.
 
 ```
 netidx subscriber /archive/session
-WRITE|/archive/session|string|null
-/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
+/solar/archive/session|none|Null
+WRITE|/solar/archive/session|string|null
+/solar/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```
 
 We just created a new playback session called
@@ -96,24 +97,32 @@ ef93a9dce21f40c49f5888e64964f93f, we can see that the recorder
 published some new things there,
 
 ```
-$ netidx resolver list /archive/ef93a9dce21f40c49f5888e64964f93f/*
-/archive/ef93a9dce21f40c49f5888e64964f93f/data
-/archive/ef93a9dce21f40c49f5888e64964f93f/cluster
-/archive/ef93a9dce21f40c49f5888e64964f93f/control
+$ netidx resolver list /solar/archive/ef93a9dce21f40c49f5888e64964f93f/*
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/data
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/cluster
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/control
 ```
 
 If we want to pass some arguments to the rpc so our session will be
 setup how we like by default we can do that as well, e.g.
 
 ```
-netidx subscriber /archive/session /archive/session/start/val /archive/session/speed/val
-WRITE|/archive/session/start/val|string|-3d
-WRITE|/archive/session/speed/val|f32|2
-WRITE|/archive/session|string|null
+netidx subscriber \
+    /solar/archive/session \
+    /solar/archive/session/start/val \
+    /solar/archive/session/speed/val
+/solar/archive/session|none|Null
+/solar/archive/session/start/val|string|Unbounded
+/solar/archive/session/speed/val|f64|1
+WRITE|/solar/archive/session/start/val|string|-3d
+WRITE|/solar/archive/session/speed/val|f32|2
+WRITE|/solar/archive/session|string|null
 /archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```
 
-And now our new session would be setup to start 3 days ago, and
+First we are told the defaults, as a result of subscribing to the
+rpc's arguments, then we write our desired values and finally call the
+rpc. Now our new session would be setup to start 3 days ago, and
 playback at 2x speed.
 
 ### Playback Controls
