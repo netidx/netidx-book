@@ -20,4 +20,4 @@
   - [stress](./stress_tool.md)
 - [Browser](./browser_overview.md)
   - [Constructing Custom Views](./browser_views.md)
-  - [bscript](./browser_scripting.md)
+  - [BScript](./browser_scripting.md)

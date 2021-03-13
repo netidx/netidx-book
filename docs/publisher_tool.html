@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html" class="active"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> bscript</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html" class="active"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,7 +159,101 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#publisher" id="publisher">publisher</a></h1>
+                        <h1><a class="header" href="#command-line-publisher" id="command-line-publisher">Command Line Publisher</a></h1>
+<p>The command line publisher allows you to publish values to netidx from
+stdin. The format of a published value is pipe separated, and newline
+delimited. It has 3 fields,</p>
+<ul>
+<li>The path</li>
+<li>The type which is one of,
+<ul>
+<li><code>u32</code>: unsigned 32 bit integer, 4 bytes on the wire</li>
+<li><code>v32</code>: unsigned 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-5 bytes on the wire depending on how big the number is. e.g. 0-128 is just 1 byte</li>
+<li><code>i32</code>: signed 32 bit integer, 4 bytes on the wire</li>
+<li><code>z32</code>: signed 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a> 1-5 bytes on the wire</li>
+<li><code>u64</code>: unsigned 64 bit integer, 8 bytes on the wire</li>
+<li><code>v64</code>: unsigned 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
+<li><code>i64</code>: signed 64 bit integer, 8 bytes on the wire</li>
+<li><code>z64</code>: signed 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
+<li><code>f32</code>: 32 bit single precision floating point number, 4 bytes on the wire</li>
+<li><code>f64</code>: 64 bit double precision floating point number, 8 bytes on the wire</li>
+<li><code>datetime</code>: a date + time encoded as an i64 timestamp representing
+the number of seconds since jan 1 1970 UTC and a u32 number of sub
+second nanoseconds fixing the exact point in time. 12 bytes on the
+wire</li>
+<li><code>duration</code>: a duration encoded as a u64 number of seconds plus a u32
+number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire</li>
+<li><code>bool</code>: true, or false. 1 byte on the wire</li>
+<li><code>string</code>: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)</li>
+<li><code>bytes</code>: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire</li>
+<li><code>result</code>: OK, or Error + string, consuming 1-1+string length bytes</li>
+</ul>
+</li>
+<li>The value</li>
+</ul>
+<p>or the special form</p>
+<ul>
+<li>The path</li>
+<li><code>null</code></li>
+</ul>
+<p>For example <code>/the/path/to/the/thing|u32|42</code>. If you want to publish to
+a path that has a <code>|</code> character in it then you must escape the <code>|</code>
+with <code>\</code>, e.g. <code>\|</code>. If you want to publish a path that has a <code>\</code> in
+it, then you must also escape it, e.g. <code>\\</code>.</p>
+<h2><a class="header" href="#arguments" id="arguments">Arguments</a></h2>
+<p>There are several command line options to the <code>netidx publisher</code> command,</p>
+<ul>
+<li><code>--bind</code>: required, specify the network address to bind to. This can
+be specified in two forms.
+<ul>
+<li>an exact address and port e.g.
+<ul>
+<li>127.0.0.1:5000</li>
+<li>127.0.0.1:0, in which case the OS will choose the port at random</li>
+</ul>
+</li>
+<li>an expression consisting of an ip/netmask that must match a unique
+network interface on the machine running the publisher. e.g.
+<ul>
+<li>127.0.0.0/24 selects the <code>lo</code> interface</li>
+<li>10.0.0.0/8 selects the interface bound to a 10.x.x.x address</li>
+<li>192.168.0.0/16 selects the interface bound to a 192.168.x.x address</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>--spn</code>: optional, required if using krb5, the service principal
+name the publisher should run as. This principal must have
+permission to publish where you plan to publish, must exist in your
+krb5 infrastructure, and you must have access to a keytab with it's
+credentials. If that keytab is in a non standard location then you
+must set the environment variable
+<code>KRB5_KTNAME=FILE:/the/path/to/the/keytab</code></li>
+<li><code>--timeout &lt;seconds&gt;</code>: optional, if specified requires subscribers
+to consume published values within the specified number of seconds
+or be disconnected. By default the publisher will wait forever for a
+subscriber to consume an update, and as a result could consume an
+unbounded amount of memory.</li>
+</ul>
+<h2><a class="header" href="#behavior" id="behavior">Behavior</a></h2>
+<p>When started the publisher runs until killed, it reads lines from
+stdin as long as stdin remains open, and attempts to parse them as
+<code>PATH|TYPE|VALUE</code> triples. If parsing fails, it prints an error to
+stderr and continues reading. If parsing succeeds it checks if it has
+already published <code>PATH</code>, if not, it publishes it with the specified
+type and value, if it has, then it updates the existing published
+value. It is not an error to change the type of an existing published
+value. If stdin is closed publisher does not stop, however it is no
+longer possible to update existing published values, or publish new
+values without restarting it.</p>
+<h2><a class="header" href="#limitations" id="limitations">Limitations</a></h2>
+<p>The command line publisher cannot respond to write requests, and
+cannot be a default publisher.</p>
+<h2><a class="header" href="#environment-variables" id="environment-variables">Environment Variables</a></h2>
+<p>In addition to all the krb5 environment variables, the command line
+publisher uses envlogger, and so will respond to <code>RUST_LOG</code>,
+e.g. <code>RUST_LOG=debug</code> will cause the publisher to print debug and
+higher priority messages to stderr.</p>
 
                     </main>
 

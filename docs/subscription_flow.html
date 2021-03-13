@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html" class="active"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> bscript</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html" class="active"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -268,125 +268,6 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.</p>
-<h2><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h2>
-<p>As a system netidx depends on fault tolerant strategies in the
-subscriber, publisher, and resolver server in order to minimize
-downtime caused by a failure. Before I talk about the specific
-strategies used by each component I want to give a short taxonomy of
-faults so I clearly talk about different classes.</p>
-<ul>
-<li>Hang: Where a component of the system is not 'dead', but is no
-longer responding, or is so slow it may as well not be
-responding. IMHO this is the worst kind of failure. It can happen at
-many different layers, e.g.
-<ul>
-<li>You can simulate a hang by sending SIGSTOP to a unix process. It
-isn't dead, but it also won't do anything.</li>
-<li>A machine with a broken network card, such that most packets are
-rejected due to checsum errors, it's still on the network, but
-it's effective bandwidth is a tiny fraction of what it should be.</li>
-<li>A software bug causing a deadlock</li>
-<li>A malfunctioning IO device</li>
-</ul>
-</li>
-<li>Crash: A process or the machine it's running on crashes cleanly and
-completely.</li>
-<li>Bug: A semantic bug in the system that causes an effective end to
-service.</li>
-<li>Misconfiguration: An error in the configuration of the system that
-causes it not to work. e.g.
-<ul>
-<li>Resolver server addresses that are routeable by some clients and not others</li>
-<li>Wrong Kerberos SPNs</li>
-<li>Misconfigured Kerberos</li>
-</ul>
-</li>
-</ul>
-<h3><a class="header" href="#subscriber--publisher" id="subscriber--publisher">Subscriber &amp; Publisher</a></h3>
-<ul>
-<li>
-<p>Hang: Most hang situations are solved by heartbeats. Publisher sends
-a heartbeat to every subscriber that is connected to it every 5
-seconds. Subscriber disconnects if it doesn't reveive at least 1
-message every 100 seconds.</p>
-<p>Once a hang is detected it is dealt with by disconnecting, and it
-essentially becomes a crash.</p>
-<p>The hang case that heartbeats don't solve is when data is flowing,
-but not fast enough. This could have multiple causes e.g. the
-subscriber is too slow, the publisher is too slow, or the link
-between them is too slow. Whatever the cause, the publisher can
-handle this condition by providing a timeout to it's <code>flush</code>
-function. This will cause any subscriber that can't consume the
-flushed batch within the specified timeout to be disconnected.</p>
-</li>
-<li>
-<p>Crash: Subscriber allows the library user to decide how to deal with
-a publisher crash. If the lower level <code>subscribe</code> function is used
-then on being disconnected unexpecetedly by the publisher all
-subscriptions are notified and marked as dead. The library user is
-free to retry. The library user could also use <code>durable_subscribe</code>
-which will dilligently keep trying to resubscribe, with linear
-backoff, until it is successful. Regardless of whether you retry
-manually or use <code>durable_subscribe</code> each retry will go through the
-entire process again, so it will eventually try all the publishers
-publishing a value, and it will pick up any new publishers that
-appear in the resolver server.</p>
-</li>
-</ul>
-<h3><a class="header" href="#resolver" id="resolver">Resolver</a></h3>
-<ul>
-<li>Hang: Resolver clients deal with a resolver server hang with a
-dynamically computed timeout based on the number of requests in the
-batch. The rule is, minimum timeout 15 seconds or 6 microseconds per
-operation in the batch for reads or 12 microseconds per operation in
-the batch for writes, whichever is longer. That timeout is a timeout
-to get an answer, not to finish the batch. Since the resolver server
-breaks large batches up into smaller ones, and answers each micro
-batch when it's done, the timeout should not usually be hit if the
-resolver is just very busy, since it will be sending back something
-periodically for each micro batch. The intent is for the timeout to
-trigger if the resolver is really hanging.</li>
-<li>Crash: Resolver clients deal with crashes differently depending on
-whether they are read or write connections.
-<ul>
-<li>Read Connections (Subscriber): Abandon the current connection, wait a random
-time between 1 and 4 seconds, and then go through the whole
-connection process again. That roughly entails taking the list of
-all servers, permuting it, and then connecting to each server in
-the list until one of them answers, says a proper hello, and
-successfully authenticates (if kerberos is on). For each batch a
-resolver client will do this abandon and reconnect dance 3 times,
-and then it will give up and return an error for that
-batch. Subsuquent batches will start over from the beginning. In a
-nutshell read clients will,
-<ul>
-<li>try every server 3 times in a random order</li>
-<li>only give up on a batch if every server is down or unable to answer</li>
-<li>remain in a good state to try new batches even if previous batches have failed</li>
-</ul>
-</li>
-<li>Write Connections (Publishers): Since write connections are
-responsible for replicating their data out to each resolver server
-they don't include some of the retry logic used in the read
-client. They do try to replicate each batch 3 times seperated by a
-1-4 second pause to each server in the cluster. If after 3 tries
-they still can't write to one of the servers then it is marked as
-degraded. The write client must send heartbeats periodically
-(configurable 1/2 writer_ttl), and it will try to replicate to a
-degraded server at each heartbeat interval. In a nutshell write clients,
-<ul>
-<li>try 3 times to write to each server</li>
-<li>try failed servers again each 1/2 <code>writer_ttl</code></li>
-<li>never fail a batch, just log an error and keep trying next 1/2 <code>writer_ttl</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>One important consequence of the write client behavior is that in the
-event all the resolver servers crash, when they come back up
-publishers will republishing everything after a maximum of 1/2
-<code>writer_ttl</code> has elapsed.</p>
 
                     </main>
 
