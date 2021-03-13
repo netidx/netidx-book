@@ -1,12 +1,3 @@
-# Publishing vmstat
-
-In this example we build a shell script to publish the output of the
-venerable vmstat tool to netidx. If we ran this on every computer on
-our network, we would get a table of the current vmstat state of each
-computer that we could view in the browser, archive with the recorder,
-and generally use for whatever we want. 
-
-```
 #! /bin/bash
 
 BASE="/sys/vmstat/$HOSTNAME"
@@ -49,18 +40,3 @@ vmstat -n 1 | \
         echo "${BASE}/stolen|z32|${stolen}"
     done | \
     netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
-```
-
-Running this on two of my systems results in a table viewable in the browser with two rows,
-
-![vmstat](vmstat-browser-table.png)
-
-Aside from the column ordering not being ideal, this is pretty sweet
-(we can fix that with a custom view). if we had 100 machines, we
-could, for example, sort by idle to see the busiest ones on top. We
-could set the archiver loose on this to record the history of load on
-our whole network. sar is probably a better solution, however this
-script took 10 minutes to write, and it can work for anything that
-prints out data where as sar is a specialized tool that only works for
-system perfomance data. e.g. does sar work for `nvidia-smi dmon`?
-Probably not, but this solution would.

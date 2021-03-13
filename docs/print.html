@@ -469,7 +469,66 @@ haven't tried.</p>
 <p>In this chapter we present three examples ranging in complexity from
 some shell scripts, to a clean slate design of a custom embedded
 application.</p>
-<h1><a class="header" href="#shell-only-example-publishing-vmstat" id="shell-only-example-publishing-vmstat">Shell Only Example, Publishing vmstat</a></h1>
+<h1><a class="header" href="#publishing-vmstat" id="publishing-vmstat">Publishing vmstat</a></h1>
+<p>In this example we build a shell script to publish the output of the
+venerable vmstat tool to netidx. If we ran this on every computer on
+our network, we would get a table of the current vmstat state of each
+computer that we could view in the browser, archive with the recorder,
+and generally use for whatever we want. </p>
+<pre><code>#! /bin/bash
+
+BASE=&quot;/sys/vmstat/$HOSTNAME&quot;
+
+vmstat -n 1 | \
+    while read running \
+               blocked \
+               swapped \
+               free \
+               buf \
+               cache \
+               swap_in \
+               swap_out \
+               blocks_in \
+               blocks_out \
+               interrupts \
+               context_switches \
+               user \
+               system \
+               idle \
+               waitio \
+               stolen
+    do
+        echo &quot;${BASE}/running|z32|${running}&quot;
+        echo &quot;${BASE}/blocked|z32|${blocked}&quot;
+        echo &quot;${BASE}/swapped|z32|${swapped}&quot;
+        echo &quot;${BASE}/free|u64|${free}&quot;
+        echo &quot;${BASE}/buf|u64|${buf}&quot;
+        echo &quot;${BASE}/cache|u64|${cache}&quot;
+        echo &quot;${BASE}/swap_in|z32|${swap_in}&quot;
+        echo &quot;${BASE}/swap_out|z32|${swap_out}&quot;
+        echo &quot;${BASE}/blocks_in|z32|${blocks_in}&quot;
+        echo &quot;${BASE}/blocks_out|z32|${blocks_out}&quot;
+        echo &quot;${BASE}/interrupts|z32|${interrupts}&quot;
+        echo &quot;${BASE}/context_switches|z32|${context_switches}&quot;
+        echo &quot;${BASE}/user|z32|${user}&quot;
+        echo &quot;${BASE}/system|z32|${system}&quot;
+        echo &quot;${BASE}/idle|z32|${idle}&quot;
+        echo &quot;${BASE}/waitio|z32|${waitio}&quot;
+        echo &quot;${BASE}/stolen|z32|${stolen}&quot;
+    done | \
+    netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
+</code></pre>
+<p>Running this on two of my systems results in a table viewable in the browser with two rows,</p>
+<p><img src="vmstat-browser-table.png" alt="vmstat" /></p>
+<p>Aside from the column ordering not being ideal, this is pretty sweet
+(we can fix that with a custom view). if we had 100 machines, we
+could, for example, sort by idle to see the busiest ones on top. We
+could set the archiver loose on this to record the history of load on
+our whole network. sar is probably a better solution, however this
+script took 10 minutes to write, and it can work for anything that
+prints out data where as sar is a specialized tool that only works for
+system perfomance data. e.g. does sar work for <code>nvidia-smi dmon</code>?
+Probably not, but this solution would.</p>
 <h1><a class="header" href="#integration-into-an-existing-system" id="integration-into-an-existing-system">Integration Into an Existing System</a></h1>
 <p>Suppose we have a small daemon that we run on many computers on our
 network, and it knows many things about them, and does many things. I
