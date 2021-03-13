@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Overview - Introduction to Netidx</title>
+        <title>Subscription Flow - Introduction to Netidx</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html" class="active"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> bscript</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html" class="active"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> bscript</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,161 +159,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#overview-of-netidx" id="overview-of-netidx">Overview of Netidx</a></h1>
-<p>Netidx is a library, protocol, and server that facilitates publishing
-the value of a variable in one program and consuming it in another
-program, possibly on another computer. There are a lot of details, but
-making that transaction as easy as possible, while still being secure
-and performant is the essential goal.</p>
-<h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
-<p>Netidx values are published to a hierarchical tuple space. The
-structure of the names look just like a filename, e.g.</p>
-<pre><code>/apps/solar/stats/battery_sense_voltage
-</code></pre>
-<p>Is an example name. Unlike a file name, a netidx name may point to a
-value, and also have children. So keeping the file analogy, it can be
-both a file and a directory. For example we might have,</p>
-<pre><code>/apps/solar/stats/battery_sense_voltage/millivolts
-</code></pre>
-<p>Where the <code>.../battery_sense_voltage</code> points to the number in volts,
-and it's 'millivolts' child gives the same number in millivolts.</p>
-<p>Sometimes a name like <code>battery_sense_voltage</code> is published deep in the
-hierarchy and it's parents are just structure. Unlike the file system
-the resolver server will create and delete those structural containers
-automatically, there is no need to manually manage them.</p>
-<p>The term 'points to' is literal. In netidx the actual data is
-completely separate from the names. The names are stored in the
-resolver server cluster. Each name points to the ip address and port
-of the publisher that actually has the data.</p>
-<p>When a client wants to subscribe to the value pointed to by a name, it
-queries the resolver server cluster, and is given the addresses of all
-the publishers that publish said data point. It then randomly permutes
-that list, and tries to subscribe to each address. If one of them
-succeeds, then the subscription succeeds, if they all fail then it
-doesn't. All the actual data flows from publishers to subscribers
-directly without ever going through any kind of centralized
-infrastructure.</p>
-<h2><a class="header" href="#whats-a-value" id="whats-a-value">What's a Value</a></h2>
-<p>Values are primitives, e.g. various kinds of number, strings,
-durations, timestamps, and byte arrays. Values don't have any inherent
-structure, but of course you can use byte arrays to publish anything
-that can be serialized, and since byte arrays are zero copy that is
-even quite efficient.</p>
-<p>Published values have some other properties as well,</p>
-<ul>
-<li>Every non structural name points to a value</li>
-<li>Every new subscription immediately delivers it's most recent value</li>
-<li>When a value is updated, every subscriber receives the new value</li>
-<li>Updates arrive reliably and in the order the publisher made them
-(like a TCP stream)</li>
-</ul>
-<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
-<p>Netidx is meant to be a building block, and as such a lot of thought
-has gone into scale. There are multiple different parts of the system
-that need to scale. The resolver servers, being the only centralized
-piece of infrastructure, are perhaps the most important piece, though
-the publisher and subscriber also need to be fast or it won't be worth
-using.</p>
-<h3><a class="header" href="#resolver-server" id="resolver-server">Resolver Server</a></h3>
-<p>The resolver servers implement two strategies to achieve
-scale. Replication is the first, one can deploy multiple replicas to
-multiple machines in order to protect against a single machine outage,
-and also increase throughput. In netidx, the publisher itself is the
-primary, and as such it is responsible for replicating the names it
-publishes out to all the configured resolver servers. This makes the
-system very resilient, as even if the entire resolver server cluster
-goes down, the data isn't lost if the publishers are still alive. They
-will keep trying to republish their data with linear backoff until
-they are killed.</p>
-<p>Hierarchy is the second scaling strategy. When a system grows too big
-to fit in even a large cluster of servers, then busy parts of the
-namespace can be delegated to 'child' server clusters. Readers
-familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is similarly
-hierarchical, since each cluster config file must only know about it's
-immediate superior and immediate children. It's entirely possible for
-a large organization to run a central 'root' resolver server cluster
-without needing to micro manage the delegation going on in various
-organizational units.</p>
-<p>I've focused on designing a scaleable architecture, but I should also
-mention that the resolver server itself is pretty fast, and uses a
-number of strategies to minimize memory use. It's entirely possible to
-put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. You get roughly 1 million names per 500 MB of ram,
-assuming your paths aren't crazy long. I have not explicitly tested
-the resolve throughput, but given that it uses the same infrastructure
-as the publisher/subscriber (which I have tested), and what it's
-doing, I would not be at all surprised if you could support millions
-of resolutions per second per core (yes it will use all your cores).</p>
-<h3><a class="header" href="#publishersubscriber" id="publishersubscriber">Publisher/Subscriber</a></h3>
-<p>On the wire, the netidx protocol is almost exactly the same as
-protobuf. In protobuf, each record is extensible and rather cleverly
-encoded. Each field in the record has a LEB128 Id, followed by a data
-value.</p>
-<p>In netidx, the subscriber sends the name it wants to one of the
-publishers specified by the resolver server cluster. The publisher
-looks up that value, and responds with the id it will use in
-subsequent messages, along with the current value. From then on
-updates to that value transmit only the id, which is LEB128 encoded,
-and the updated value. So on the wire, in terms of overhead, it looks
-very much like a protobuf record where the fields are exactly what the
-subscriber has requested and nothing more. The overhead of sending an
-f64 can be as small as 2 additional bytes (so 10 in total, 1 id byte,
-1 tag byte).</p>
-<p>Publisher and subscriber performance is fairly good, such that sending
-many millions of messages per second is possible. As of this writing a
-fast machine can send about 15 million kerberos encrypted
-messages/second and more then 20 million in the clear. The per message
-overhead is on the order of about 50ns of wall clock time per message
-with kerberos encryption on. Obviously that number depends on the
-exact hardware you're running on, and it depends on your workload
-batching well.</p>
-<p>The subscriber library also implements zero copy decoding for strings
-and byte arrays, so it is possible to receive large binary encoded
-things quite efficiently.</p>
-<h2><a class="header" href="#security" id="security">Security</a></h2>
-<p>No system like netidx can be taken seriously without a plausible
-design for securing data against unauthorized access, interception,
-manipulation, etc.</p>
-<p>The heart of netidx security is Kerberos v5. There are a lot of
-systems I might have used, e.g. openssl + certificates, oauth +
-openssl, and I'm sure many others. The reason I chose to use Kerberos
-v5 is that most users who I think might want to deploy netidx services
-already have Kerberos set up (even if they don't know it) in the form
-of Microsoft Active Directory, Samba ADS, Redhat Directory Server, or
-one of the many other compatible solutions.</p>
-<p>That said security is optional in netidx. It's possible to deploy a
-netidx system with no security at all, and it's possible to deploy a
-system where some publishers require security, and some do not. While
-it's possible to mix secured and non secured publishers on the same
-resolver cluster there are some restrictions. </p>
-<ul>
-<li>If a subscriber is configured with security, then it won't talk to
-publishers that aren't.</li>
-<li>If a publisher is configured with security, then it won't talk to a
-subscriber that isn't.</li>
-</ul>
-<p>When security is enabled you get the following guarantees,</p>
-<ul>
-<li>
-<p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
-they claim to be, and the subscriber knows the publisher is who they
-claim to be. This applies for the resolver &lt;-&gt; subscriber, and
-resolver &lt;-&gt; publisher as well.</p>
-</li>
-<li>
-<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
-and data cannot be altered undetected by a man in the middle.</p>
-</li>
-<li>
-<p><strong>Authorization</strong>, The user subscribing to a given data value is
-authorized to do so. The resolver servers maintain a permissions
-database specifying who is allowed to do what where in the
-tree. Thus the system administrator can centrally control who is
-allowed to publish and subscribe where.</p>
-</li>
-</ul>
-<h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
+                        <h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
+<p>Sometimes debugging problems requires a more detailed understanding of
+exactly what steps are involved in a subscription.</p>
 <h3><a class="header" href="#components" id="components">Components</a></h3>
 <p><img src="subscription-flow-components.png" alt="The Components" /></p>
 <p>In the full kerberos enabled version of netidx the following
@@ -420,23 +268,138 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.</p>
-<h2><a class="header" href="#cross-platform" id="cross-platform">Cross Platform</a></h2>
-<p>While netidx is primarily developed on Linux, it has been tested on
-Windows, and even Mac OS. It will probably work on many platforms I
-haven't tried.</p>
+<h2><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h2>
+<p>As a system netidx depends on fault tolerant strategies in the
+subscriber, publisher, and resolver server in order to minimize
+downtime caused by a failure. Before I talk about the specific
+strategies used by each component I want to give a short taxonomy of
+faults so I clearly talk about different classes.</p>
+<ul>
+<li>Hang: Where a component of the system is not 'dead', but is no
+longer responding, or is so slow it may as well not be
+responding. IMHO this is the worst kind of failure. It can happen at
+many different layers, e.g.
+<ul>
+<li>You can simulate a hang by sending SIGSTOP to a unix process. It
+isn't dead, but it also won't do anything.</li>
+<li>A machine with a broken network card, such that most packets are
+rejected due to checsum errors, it's still on the network, but
+it's effective bandwidth is a tiny fraction of what it should be.</li>
+<li>A software bug causing a deadlock</li>
+<li>A malfunctioning IO device</li>
+</ul>
+</li>
+<li>Crash: A process or the machine it's running on crashes cleanly and
+completely.</li>
+<li>Bug: A semantic bug in the system that causes an effective end to
+service.</li>
+<li>Misconfiguration: An error in the configuration of the system that
+causes it not to work. e.g.
+<ul>
+<li>Resolver server addresses that are routeable by some clients and not others</li>
+<li>Wrong Kerberos SPNs</li>
+<li>Misconfigured Kerberos</li>
+</ul>
+</li>
+</ul>
+<h3><a class="header" href="#subscriber--publisher" id="subscriber--publisher">Subscriber &amp; Publisher</a></h3>
+<ul>
+<li>
+<p>Hang: Most hang situations are solved by heartbeats. Publisher sends
+a heartbeat to every subscriber that is connected to it every 5
+seconds. Subscriber disconnects if it doesn't reveive at least 1
+message every 100 seconds.</p>
+<p>Once a hang is detected it is dealt with by disconnecting, and it
+essentially becomes a crash.</p>
+<p>The hang case that heartbeats don't solve is when data is flowing,
+but not fast enough. This could have multiple causes e.g. the
+subscriber is too slow, the publisher is too slow, or the link
+between them is too slow. Whatever the cause, the publisher can
+handle this condition by providing a timeout to it's <code>flush</code>
+function. This will cause any subscriber that can't consume the
+flushed batch within the specified timeout to be disconnected.</p>
+</li>
+<li>
+<p>Crash: Subscriber allows the library user to decide how to deal with
+a publisher crash. If the lower level <code>subscribe</code> function is used
+then on being disconnected unexpecetedly by the publisher all
+subscriptions are notified and marked as dead. The library user is
+free to retry. The library user could also use <code>durable_subscribe</code>
+which will dilligently keep trying to resubscribe, with linear
+backoff, until it is successful. Regardless of whether you retry
+manually or use <code>durable_subscribe</code> each retry will go through the
+entire process again, so it will eventually try all the publishers
+publishing a value, and it will pick up any new publishers that
+appear in the resolver server.</p>
+</li>
+</ul>
+<h3><a class="header" href="#resolver" id="resolver">Resolver</a></h3>
+<ul>
+<li>Hang: Resolver clients deal with a resolver server hang with a
+dynamically computed timeout based on the number of requests in the
+batch. The rule is, minimum timeout 15 seconds or 6 microseconds per
+operation in the batch for reads or 12 microseconds per operation in
+the batch for writes, whichever is longer. That timeout is a timeout
+to get an answer, not to finish the batch. Since the resolver server
+breaks large batches up into smaller ones, and answers each micro
+batch when it's done, the timeout should not usually be hit if the
+resolver is just very busy, since it will be sending back something
+periodically for each micro batch. The intent is for the timeout to
+trigger if the resolver is really hanging.</li>
+<li>Crash: Resolver clients deal with crashes differently depending on
+whether they are read or write connections.
+<ul>
+<li>Read Connections (Subscriber): Abandon the current connection, wait a random
+time between 1 and 4 seconds, and then go through the whole
+connection process again. That roughly entails taking the list of
+all servers, permuting it, and then connecting to each server in
+the list until one of them answers, says a proper hello, and
+successfully authenticates (if kerberos is on). For each batch a
+resolver client will do this abandon and reconnect dance 3 times,
+and then it will give up and return an error for that
+batch. Subsuquent batches will start over from the beginning. In a
+nutshell read clients will,
+<ul>
+<li>try every server 3 times in a random order</li>
+<li>only give up on a batch if every server is down or unable to answer</li>
+<li>remain in a good state to try new batches even if previous batches have failed</li>
+</ul>
+</li>
+<li>Write Connections (Publishers): Since write connections are
+responsible for replicating their data out to each resolver server
+they don't include some of the retry logic used in the read
+client. They do try to replicate each batch 3 times seperated by a
+1-4 second pause to each server in the cluster. If after 3 tries
+they still can't write to one of the servers then it is marked as
+degraded. The write client must send heartbeats periodically
+(configurable 1/2 writer_ttl), and it will try to replicate to a
+degraded server at each heartbeat interval. In a nutshell write clients,
+<ul>
+<li>try 3 times to write to each server</li>
+<li>try failed servers again each 1/2 <code>writer_ttl</code></li>
+<li>never fail a batch, just log an error and keep trying next 1/2 <code>writer_ttl</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>One important consequence of the write client behavior is that in the
+event all the resolver servers crash, when they come back up
+publishers will republishing everything after a maximum of 1/2
+<code>writer_ttl</code> has elapsed.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="quick_start.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="startup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="examples_overview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="fault_tolerance.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -448,13 +411,13 @@ haven't tried.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="quick_start.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="startup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="examples_overview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="fault_tolerance.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
