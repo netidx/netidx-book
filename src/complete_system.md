@@ -1,9 +1,10 @@
-# A Complete System
+# A Clean Slate Design Using Netidx
 
-In the last chapter we added netidx publishing of one data point to an
-existing system, and then explored what we could do with the data. In
-this chapter we're going to look at a system designed from scratch to
-use netidx as it's primary means of communication and control.
+In the last chapter we added netidx publishing of one data point from
+an existing system, and then explored what we could do with the
+data. In this chapter we're going to look at a system designed from
+scratch to use netidx as it's primary means of communication and
+control.
 
 The system we're going to look at is the control program of an off the
 grid solar generator. This is a medium sized system, meant to provide

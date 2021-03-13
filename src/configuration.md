@@ -1,0 +1,218 @@
+## Configuration
+
+The netidx configuration file is the same for all the different
+components of the system, resolver, publisher, and subscriber. By
+default it is stored,
+
+- on Linux: ~/.config/netidx.json
+- on Windows: ~\AppData\Roaming\netidx.json
+- on MacOS: ~/Library/Application Support/netidx.json
+
+Since the dirs crate is used to discover these paths, they are locally
+configurable by OS specific means. Everyone who will use netidx needs
+access to this file.
+
+``` json
+{
+    "parent": null,
+    "children": [],
+    "pid_file": "",
+    "addrs": ["192.168.0.1:4564"],
+    "max_connections": 768,
+    "hello_timeout": 10,
+    "reader_ttl": 60,
+    "writer_ttl": 120,
+    "auth": {
+        "Krb5": {"192.168.0.1:4564": "netidx/washu-chan.ryu-oh.org@RYU-OH.ORG"}
+    }
+}
+```
+
+Here's about the simplest possible Kerberos enabled
+configuration. I'll go through each field,
+
+- parent: null unless this server has a parent, which I'll document later
+- children: empty unless this server has children, which I'll document later
+- pid_file: prefix to add to the pid file which will otherwise be
+  e.g. 0.pid for the first server in the cluster, or 1.pid for the
+  second, etc.
+- addrs: The list of all resolver servers in this level of the
+  cluster, e.g. not children or parents, just this level. When
+  starting the server you must pass in an index into this array on the
+  command line as --id to identify which server you want to start.
+- max_connections: The maximum number of simultaneous connections to
+  allow (both read and write) before starting to reject new
+  connections.
+- hello_timeout: The amount of time to wait for a client to say a
+  proper hello before dropping the connection.
+- reader_ttl: The amount of time, in seconds, to keep an idle read
+  connection open.
+- writer_ttl: The amount of time, in seconds, to wait for a publisher
+  to heartbeat before deleting everything it has published. The
+  publisher will send heartbeats at 1/2 this interval. e.g. 120 means
+  publishers will heartbeat every minute. Processing a heartbeat does
+  not take the write lock.
+- auth: either "Anonymous", or "Krb5". If "Krb5", then a service
+  principal name should be included for every resolver server in the
+  cluster. Each resolver server instance must have access to the
+  corresponding SPN's key via a keytab or other means, and of course
+  you must create the corresponding service principal for each
+  instance.
+
+When using Kerberos we also need a permissions file in order to run a
+resolver server, it's a separate file because it's not meant to be
+shared with everyone using the cluster. E.G.
+
+``` json
+{
+    "/": {
+        "eric@RYU-OH.ORG": "swlpd"
+    },
+    "/solar": {
+	    "svc_solar@RYU-OH.ORG": "pd"
+    }
+}
+```
+
+In order to do the corresponding action in netidx a user must have
+that permission bit set, no bit, no action.
+
+Permission bits are computed starting from the root proceeding down
+the tree to the node being acted on. The bits are accumulated on the
+way down, and can also be removed at any point in the tree. Each bit
+is represented by a 1 character symbolic tag, E.G.
+
+- !: Deny, changes the meaning of the following bits to deny the
+  corresponding permission instead of grant it. Must be the first
+  character of the permission string.
+- s: Subscribe
+- w: Write
+- l: List
+- p: Publish
+- d: Publish default
+
+For example if I was subscribing to
+`/solar/stats/battery_sense_voltage` we would walk down the path from
+left to right and hit this permission first,
+
+``` json
+"/": {
+    "eric@RYU-OH.ORG": "swlpd"
+},
+```
+
+This applies to a Kerberos principal "eric@RYU-OH.ORG", the resolver
+server will check the user principal name of the user making the
+request, and it will check all the groups that user is a member of,
+and if any of those are "eric@RYU-OH.ORG" then it will `or` the
+current permission set with "swlpd". In this case this gives me
+permission to do anything I want in the whole tree (unless it is later
+denied). Next we would hit,
+
+``` json
+"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd"
+}
+```
+
+Which doesn't apply to me, and so would be ignored, and since there
+are no more permissions entries my effective permissions at
+`/solar/stats/battery_sense_voltage` are "swlpd", and so I would be
+allowed to subscribe.
+
+Suppose however I changed the above entry,
+
+``` json
+"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "eric@RYU-OH.ORG": "!swl",
+}
+```
+
+Now, in our walk, when we arrived at `/solar`, we would find an entry
+that matches me, and we would remove the permission bits s, w, and l,
+leaving our effective permissions at
+`/solar/stats/battery_sense_voltage` as "pd", since that doesn't give
+me the right to subscribe my request would be denied. We could, for
+example, do this by group instead.
+
+``` json
+"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "RYU-OH\domain admins": "!swl",
+}
+```
+
+As you would expect, this deny permission will still apply to me
+because I am a member of the domain admins group. A slightly more
+subtle point is that permissions are accumulated. For example, if I am
+a member of two groups, and both groups have different bits denied,
+then all of those bits would be removed. E.G.
+
+``` json
+"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "RYU-OH\domain admins": "!swl",
+    "RYU-OH\enterprise admins": "!pd",
+}
+```
+
+Now my effective permissions under `/solar` are empty, I can do
+nothing. If I am a member of more than one group, and one denies
+permissions that the other grants the deny always takes precidence.
+
+Each server cluster is completely independent for permissions. If for
+example this cluster had a child cluster, the administrators of that
+cluster would be responsible for deciding what permissions file it
+should use. It certainly could use the same file, but it doesn't have
+to.
+
+### Anonymous
+
+It's possible to give anonymous users permissions even on a Kerberos
+enabled system, and this could allow them to use whatever functions
+you deem non sensitive, subject to some limitations. There is no
+encryption. There is no tamper protection. There is no publisher ->
+subscriber authentication. Anonymous users can't subscribe to non
+anonymous publishers. Non anonymous users can't subscribe to anonymous
+publishers. You name anonymous "" in the permissions file, e.g.
+
+``` json
+"/tmp": {
+    "": "swlpd"
+}
+```
+
+Now `/tmp` is an anonymous free for all. If you have Kerberos
+deployed, it's probably not that useful to build such a hybrid system,
+because any anonymous publishers would not be usable by kerberos
+enabled users. However it might be useful if you have embedded systems
+that can't use kerberos, and you don't want to build a separate
+resolver server infrastructure for them.
+
+### Groups
+
+You'll might have noticed I'm using AD style group names above, that's
+because my example setup uses Samba in ADS mode so I can test windows
+and unix clients on the same domain. The most important thing about
+the fact that I'm using Samba ADS and thus have the group names I have
+is that it doesn't matter. Groups are just strings to netidx, for a
+given user, whatever the `id` command would spit out for that user is
+what it's going to use for the set of groups the user is in (so that
+better match what's in your permissions file). You need to set up the
+resolver server machines such that they can properly resolve the set
+of groups every user who might use netidx is in.
+
+Luckily you only need to get this right on the machines that run
+resolver servers, because that's the only place group resolution
+happens in netidx. You're other client and server machines can be as
+screwed up and inconsistent as you want, as long as the resolver
+server machine agrees that I'm a member of "RYU-OH\domain admins" then
+whatever permissions assigned to that group in the permission file
+will apply to me.
+
+All the non resolver server machines need to be able to do is get
+Kerberos tickets. You don't even need to set them up to use Kerberos
+for authentication (but I highly recommend it, unless you really hate
+your users), you can just force people to type `kinit foo@BAR.COM`
+every 8 hours if you like.

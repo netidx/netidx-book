@@ -3,10 +3,8 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title></title>
+        <title>Running the Resolver Server - Introduction to Netidx</title>
         
-        
-        <base href="/">
         
 
 
@@ -95,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li></ol></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">5.</strong> Browser Scripting</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html" class="active"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li></ol></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">5.</strong> Browser Scripting</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -161,15 +159,56 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#document-not-found-404" id="document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1><a class="header" href="#running-the-resolver-server" id="running-the-resolver-server">Running the Resolver Server</a></h1>
+<p>As of this writing the resolver server only runs on Unix, and has only
+been extensively tested on Linux. There's no reason it couldn't run on
+Windows, it's just a matter of some work around group name resolution
+and service integration. Starting a resolver server is done from the
+<code>netidx</code> command line tool (<code>cargo install netidx-tools</code>). e.g.</p>
+<pre><code class="language-bash">$ KRB5_KTNAME=FILE:/path/to/keytab \
+netidx resolver-server --permissions ./netidx-perms.json
+</code></pre>
+<p>By default the server will daemonize, include <code>-f</code> to prevent that. If
+your cluster has multiple replica servers then you must pass <code>--id &lt;index&gt;</code> to specify which one you are starting, however since the
+default is 0 you can omit the id argument in the case where you only
+have 1 replica.</p>
+<p>You can test that it's working by running,</p>
+<pre><code class="language-bash">$ netidx resolver list /
+</code></pre>
+<p>Which should print nothing (since you have nothing published), but
+should not error, and should run quickly. You can use the command line
+publisher and subscriber to further test. In my case I can do,</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx publisher \
+    --bind 192.168.0.0/24 \
+    --spn host/blackbird.ryu-oh.org@RYU-OH.ORG &lt;&lt;EOF
+/test|string|hello world
+EOF
+</code></pre>
+<p>and then I can subscribe using</p>
+<pre><code class="language-bash">[eric@blackbird ~]$ netidx subscriber /test
+/test|string|hello world
+</code></pre>
+<p>you'll need to make sure you have permission, that you have a keytab
+you can read with that spn in it, and that the service principal
+exists etc. You may need to, for example, run the publisher and/or
+resolver server with</p>
+<p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
+<p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging kerberos issues.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
+                            <a rel="prev" href="authorization.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
 
+                        
+                            <a rel="next" href="browser_scripting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -179,7 +218,15 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
+                    <a rel="prev" href="authorization.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
+                
+                    <a rel="next" href="browser_scripting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 
             </nav>
 
