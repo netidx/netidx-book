@@ -185,6 +185,9 @@ network I can get the battery voltage of my solar array by typing,</p>
 <li>write a value to a subscribed path
 <ul>
 <li><code>WRITE|/path/to/thing/you/want/to/write|TYPE|VALUE</code></li>
+<li>if the path you are writing to has a <code>|</code> in it, then you must
+escape it, e.g. <code>\|</code>. If it has a literal <code>\</code> in it, then you also
+must escape it e.g. <code>\\</code>.</li>
 </ul>
 </li>
 </ul>
