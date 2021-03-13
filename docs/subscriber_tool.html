@@ -159,7 +159,42 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#subscriber" id="subscriber">subscriber</a></h1>
+                        <h1><a class="header" href="#command-line-subscriber" id="command-line-subscriber">Command Line Subscriber</a></h1>
+<p>The command line subscriber allows you to subscribe to values in
+netidx. You can either specify a list of paths you want to subscribe
+to on the command line, or via commands sent to stdin. Once subscribed
+a line in the form <code>PATH|TYPE|VALUE</code> will be printed for every update
+to a subscribed value, including the initial value. e.g. on my local
+network I can get the battery voltage of my solar array by typing,</p>
+<pre><code>netidx subscriber /solar/stats/battery_sense_voltage
+/solar/stats/battery_sense_voltage|f32|26.796875
+</code></pre>
+<h2><a class="header" href="#directives-via-stdin" id="directives-via-stdin">Directives via stdin</a></h2>
+<p>The command line subscriber reads commands from stdin which can direct it to,</p>
+<ul>
+<li>subscribe to a new path
+<ul>
+<li><code>ADD|/path/to/thing/you/want/to/add</code></li>
+</ul>
+</li>
+<li>end a subscription
+<ul>
+<li><code>DROP|/path/to/thing/you/want/to/drop</code></li>
+</ul>
+</li>
+<li>write a value to a subscribed path
+<ul>
+<li><code>WRITE|/path/to/thing/you/want/to/write|TYPE|VALUE</code></li>
+</ul>
+</li>
+</ul>
+<p>If the subscriber doesn't recognize a command it will print an error
+to stderr and continue reading commands. If stdin is closed subscriber
+will not quit, but it will no longer be possible to issue commands.</p>
+<h2><a class="header" href="#notes" id="notes">Notes</a></h2>
+<p>The format subscriber writes to stdout is compatible with the format
+the publisher reads. This is by design, to make applications that
+subscribe, manipulate, and republish data easy to write.</p>
 
                     </main>
 
