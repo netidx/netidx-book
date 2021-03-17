@@ -2314,7 +2314,12 @@ installation I use the following command.</p>
     --spn publish/blackbird.ryu-oh.org@RYU-OH.ORG \
     --publish-base /solar/archive
 </code></pre>
-<h1><a class="header" href="#stress" id="stress">stress</a></h1>
+<h1><a class="header" href="#stress-test-tool" id="stress-test-tool">Stress Test Tool</a></h1>
+<p>The stress test tool is mostly for debug and development of netidx
+itself. The stress publisher publishes a configurably sized table, and
+updates each value after a configurable timeout. The stress subscriber
+subscribes to every value in the table published by the stress
+publisher, and prints throughput statistics to stdout.</p>
 <h1><a class="header" href="#browser" id="browser">Browser</a></h1>
 <h1><a class="header" href="#constructing-views" id="constructing-views">Constructing Views</a></h1>
 <h1><a class="header" href="#language-overview" id="language-overview">Language Overview</a></h1>
