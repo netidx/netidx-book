@@ -596,12 +596,11 @@ netidx resolver list -w &quot;${BASE}/**&quot; | \
             do
                 ((T+=TOTALS[&quot;$h/$field&quot;]))
             done
-            echo &quot;${BASE}/total/$field|z64|$T&quot;
+            echo &quot;${BASE}/total/$field|${input[1]}|$T&quot;
         fi
     done | netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
 </code></pre>
-<p>This may look more complex than publishing <code>vmstat</code>, and it is, but
-it's not as bad as it might look. Lets dissect it,</p>
+<p>Lets dissect this script,</p>
 <pre><code>netidx resolve list -w &quot;${BASE}/**&quot;
 </code></pre>
 <p>This lists everything under <code>/sys/vmstat</code> recursively, and instead of
@@ -631,23 +630,37 @@ ADD|/sys/vmstat/blackbird.ryu-oh.org/free
 a nutshell we've said subscribe to all the things anywhere under
 <code>/sys/vmstat</code> that are present now, or appear in the future, and
 aren't part of the total row. Subscriber prints a line for each
-subscription update in the form of a <code>PATH|TYP|VAL</code> triple, so we read
-that into an array called input. So in the body of the while loop the
-variable input will be an array with contents e.g.</p>
+subscription update in the form of a <code>PATH|TYP|VAL</code> triple, e.g.</p>
+<pre><code>..
+/sys/vmstat/ken-ohki.ryu-oh.org/swap_out|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_in|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_out|z32|16
+/sys/vmstat/ken-ohki.ryu-oh.org/interrupts|z32|1169
+/sys/vmstat/ken-ohki.ryu-oh.org/context_switches|z32|3710
+/sys/vmstat/ken-ohki.ryu-oh.org/user|z32|3
+/sys/vmstat/ken-ohki.ryu-oh.org/system|z32|1
+/sys/vmstat/ken-ohki.ryu-oh.org/idle|z32|96
+...
+</code></pre>
+<p>That gets passed into our big shell while loop, which uses the <code>read</code>
+builtin to read each line into an array called input. So in the body
+of each iteration of the the while loop the variable <code>input</code> will be
+an array with contents e.g.</p>
 <pre><code>[/sys/vmstat/ken-ohki.ryu-oh.org/swap_out, v32, 25]
 </code></pre>
-<p>Indexed starting at 0 as is the convention in bash. The last two
-elements of the path are important to us, the last element is the
-column, and the second to last is the host. We essentially want to sum
-each column as it is updated, and output that total. To do this we
-need to remember each column, since only one row gets updated at a
-time, so we use a hash table with a key of <code>row/column</code>, to remember
-the values, thats <code>TOTALS</code>. We also need to remember all the row
-names, so that when we've updated a particular row/column in our hash
-table, we can iterate over the column and output a total, that's
-<code>HOSTS</code>. Then we just iterate over all the rows, compute the sum, and
-output the total for that column. Finally we pass this to the
-publisher, and now we have a total row.</p>
+<p>Indexed starting at 0 as is the convention in bash. We split the path
+into an array called <code>path</code>, the last two elements of which are
+important to us. The last element is the field (e.g. <code>swap_out</code>), and
+the second to last is the host. Each line is an update to one field of
+one host, and when a field of a host is updated we want to compute the
+sum of that field for all the hosts, and then print the new total for
+that field. To do this we need to remember each field for each host,
+since only one field of one host gets updated at a time. For this we
+use an associative array with a key of <code>$host/$field</code>, thats
+<code>TOTALS</code>. We also need to remember all the host names, so that when we
+are ready to compute our total, we can look up the field for every
+host, that's <code>HOSTS</code>. Finally we pass the output of this while loop to
+the publisher, and now we have a published total row.</p>
 <h1><a class="header" href="#integration-into-an-existing-system" id="integration-into-an-existing-system">Integration Into an Existing System</a></h1>
 <p>Suppose we have a small daemon that we run on many computers on our
 network, and it knows many things about them, and does many things. I

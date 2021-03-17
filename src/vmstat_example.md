@@ -149,8 +149,7 @@ netidx resolver list -w "${BASE}/**" | \
     done | netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
 ```
 
-This may look more complex than publishing `vmstat`, and it is, but
-it's not as bad as it might look. Lets dissect it,
+Lets dissect this script,
 
 ```
 netidx resolve list -w "${BASE}/**"
@@ -190,23 +189,40 @@ The above is what gets fed into the `netidx subscriber` command. So in
 a nutshell we've said subscribe to all the things anywhere under
 `/sys/vmstat` that are present now, or appear in the future, and
 aren't part of the total row. Subscriber prints a line for each
-subscription update in the form of a `PATH|TYP|VAL` triple, so we read
-that into an array called input. So in the body of the while loop the
-variable input will be an array with contents e.g.
+subscription update in the form of a `PATH|TYP|VAL` triple, e.g.
+
+```
+..
+/sys/vmstat/ken-ohki.ryu-oh.org/swap_out|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_in|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_out|z32|16
+/sys/vmstat/ken-ohki.ryu-oh.org/interrupts|z32|1169
+/sys/vmstat/ken-ohki.ryu-oh.org/context_switches|z32|3710
+/sys/vmstat/ken-ohki.ryu-oh.org/user|z32|3
+/sys/vmstat/ken-ohki.ryu-oh.org/system|z32|1
+/sys/vmstat/ken-ohki.ryu-oh.org/idle|z32|96
+...
+```
+
+That gets passed into our big shell while loop, which uses the `read`
+builtin to read each line into an array called input. So in the body
+of each iteration of the the while loop the variable `input` will be
+an array with contents e.g.
 
 ```
 [/sys/vmstat/ken-ohki.ryu-oh.org/swap_out, v32, 25]
 ```
 
-Indexed starting at 0 as is the convention in bash. The last two
-elements of the path are important to us, the last element is the
-column, and the second to last is the host. We essentially want to sum
-each column as it is updated, and output that total. To do this we
-need to remember each column, since only one row gets updated at a
-time, so we use a hash table with a key of `row/column`, to remember
-the values, thats `TOTALS`. We also need to remember all the row
-names, so that when we've updated a particular row/column in our hash
-table, we can iterate over the column and output a total, that's
-`HOSTS`. Then we just iterate over all the rows, compute the sum, and
-output the total for that column. Finally we pass this to the
-publisher, and now we have a total row.
+Indexed starting at 0 as is the convention in bash. We split the path
+into an array called `path`, the last two elements of which are
+important to us. The last element is the field (e.g. `swap_out`), and
+the second to last is the host. Each line is an update to one field of
+one host, and when a field of a host is updated we want to compute the
+sum of that field for all the hosts, and then print the new total for
+that field. To do this we need to remember each field for each host,
+since only one field of one host gets updated at a time. For this we
+use an associative array with a key of `$host/$field`, thats
+`TOTALS`. We also need to remember all the host names, so that when we
+are ready to compute our total, we can look up the field for every
+host, that's `HOSTS`. Finally we pass the output of this while loop to
+the publisher, and now we have a published total row.
