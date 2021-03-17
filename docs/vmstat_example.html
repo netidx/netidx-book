@@ -161,11 +161,8 @@
                     <main>
                         <h1><a class="header" href="#publishing-vmstat" id="publishing-vmstat">Publishing vmstat</a></h1>
 <p>In this example we build a shell script to publish the output of the
-venerable vmstat tool to netidx. If we ran this on every computer on
-our network, we would get a table of the current vmstat state of each
-computer that we could view in the browser, archive with the recorder,
-and generally use for whatever we want. </p>
-<pre><code>#! /bin/bash
+venerable vmstat tool to netidx.</p>
+<pre><code class="language-bash">#! /bin/bash
 
 BASE=&quot;/sys/vmstat/$HOSTNAME&quot;
 
@@ -208,17 +205,139 @@ vmstat -n 1 | \
     done | \
     netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
 </code></pre>
-<p>Running this on two of my systems results in a table viewable in the browser with two rows,</p>
+<p>Lets dissect this pipeline of three commands into it's parts. First
+vmstat itself, if you aren't familiar with it, is part of the <code>procps</code>
+package on debian, which is a set of fundamental unix tools like
+<code>pkill</code>, <code>free</code>, and <code>w</code> which would have been familiar to sysadmins
+in the 80s.</p>
+<pre><code>vmstat -n 1
+</code></pre>
+<p>prints output like this</p>
+<pre><code>eric@ken-ohki:~$ vmstat -n 1
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 2  0 279988 4607136 1194752 19779448    0    0     5    48   14    8 15  6 79  0  0
+ 0  0 279988 4605104 1194752 19780728    0    0     0     0 1800 3869  4  1 95  0  0
+ 0  0 279988 4605372 1194752 19780632    0    0     0     0 1797 4175  3  1 96  0  0
+ 0  0 279988 4604104 1194752 19781672    0    0     0     0 1982 4570  4  1 95  0  0
+ 0  0 279988 4604112 1194752 19780648    0    0     0     0 1941 4690  3  2 95  0  0
+</code></pre>
+<p><code>-n</code> means only print the header once, and <code>1</code> means print a line
+every second until killed. Next we pass these lines to a shell while
+loop that reads the line using the builtin <code>read</code> command into a shell
+variable for each field. I've given the fields more verbose names than
+vmstat did. In the body of the while loop I echo a <code>path|typ|value</code>
+triple for each field. e.g. if we don't run the final pipe to <code>netidx publisher</code> the output of the while loop looks something like this.</p>
+<pre><code>/sys/vmstat/ken-ohki.ryu-oh.org/running|z32|1
+/sys/vmstat/ken-ohki.ryu-oh.org/blocked|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/swapped|z32|279988
+/sys/vmstat/ken-ohki.ryu-oh.org/free|u64|4644952
+/sys/vmstat/ken-ohki.ryu-oh.org/buf|u64|1194896
+/sys/vmstat/ken-ohki.ryu-oh.org/cache|u64|19775864
+/sys/vmstat/ken-ohki.ryu-oh.org/swap_in|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/swap_out|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_in|z32|5
+/sys/vmstat/ken-ohki.ryu-oh.org/blocks_out|z32|48
+/sys/vmstat/ken-ohki.ryu-oh.org/interrupts|z32|14
+/sys/vmstat/ken-ohki.ryu-oh.org/context_switches|z32|9
+/sys/vmstat/ken-ohki.ryu-oh.org/user|z32|15
+/sys/vmstat/ken-ohki.ryu-oh.org/system|z32|6
+/sys/vmstat/ken-ohki.ryu-oh.org/idle|z32|79
+/sys/vmstat/ken-ohki.ryu-oh.org/waitio|z32|0
+/sys/vmstat/ken-ohki.ryu-oh.org/stolen|z32|0
+</code></pre>
+<p>No surprise that this is the exact format <code>netidx publisher</code> requires
+to publish a value, so the final command in the pipeline is just
+<code>netidx publisher</code> consuming the output of the while loop. </p>
+<p>Running this on two of my systems results in a table viewable in the
+browser with two rows,</p>
 <p><img src="vmstat-browser-table.png" alt="vmstat" /></p>
-<p>Aside from the column ordering not being ideal, this is pretty sweet
-(we can fix that with a custom view). if we had 100 machines, we
-could, for example, sort by idle to see the busiest ones on top. We
-could set the archiver loose on this to record the history of load on
-our whole network. sar is probably a better solution, however this
-script took 10 minutes to write, and it can work for anything that
-prints out data where as sar is a specialized tool that only works for
-system perfomance data. e.g. does sar work for <code>nvidia-smi dmon</code>?
-Probably not, but this solution would.</p>
+<p>Because of the way the browser works, our regular tree structure is
+automatically turned into a table with a row for each host, and a
+column for each vmstat field. So we've made something that's
+potentially useful to look at with very little effort. There are many
+other things we can now do with this data, for example we could use
+<code>netidx record</code> to record the history of vmstat on these machines, we
+could subscribe, compute an aggregate, and republish it, or we could
+sort by various columns in the browser. How about we have some fun and
+pretend that all the machines running the script are part of an
+integrated cluster, as if it was that easy, and so we want a total
+vmstat for the cluster.</p>
+<pre><code class="language-bash">#! /bin/bash
+
+BASE='/sys/vmstat'
+declare -A TOTALS
+declare -A HOSTS
+
+netidx resolver list -w &quot;${BASE}/**&quot; | \
+    grep -v --line-buffered &quot;${BASE}/total/&quot; | \
+    sed -u -e 's/^/ADD|/' | \
+    netidx subscriber | \
+    while IFS='|' read -a input
+    do
+        IFS='/' path=(${input[0]})
+        host=${path[-2]}
+        field=${path[-1]}
+        if ! test -z &quot;$host&quot; -o -z &quot;$field&quot;; then
+            HOSTS[$host]=&quot;$host&quot;
+            TOTALS[&quot;$host/$field&quot;]=${input[2]}
+            T=0
+            for h in ${HOSTS[@]}
+            do
+                ((T+=TOTALS[&quot;$h/$field&quot;]))
+            done
+            echo &quot;${BASE}/total/$field|z64|$T&quot;
+        fi
+    done | netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
+</code></pre>
+<p>This may look more complex than publishing <code>vmstat</code>, and it is, but
+it's not as bad as it might look. Lets dissect it,</p>
+<pre><code>netidx resolve list -w &quot;${BASE}/**&quot;
+</code></pre>
+<p>This lists everything under <code>/sys/vmstat</code> recursively, and instead of
+exiting after doing that, it keeps polling every second, and if a new
+thing shows up that matches the glob it lists the new thing. The
+output is just a list of paths, e.g.</p>
+<pre><code>...
+/sys/vmstat/total/blocked
+/sys/vmstat/total/buf
+/sys/vmstat/total/system
+/sys/vmstat/blackbird.ryu-oh.org/swap_out
+/sys/vmstat/ken-ohki.ryu-oh.org/buf
+/sys/vmstat/ken-ohki.ryu-oh.org/idle
+...
+</code></pre>
+<p>The next two commands in the pipeline serve to filter out the total
+row we are going to publish (don't want to recursively total things
+right), and transform the remaining lines into commands to <code>netidx subscriber</code> that will cause it to add a subscription. e.g.</p>
+<pre><code>...
+ADD|/sys/vmstat/ken-ohki.ryu-oh.org/waitio
+ADD|/sys/vmstat/blackbird.ryu-oh.org/blocked
+ADD|/sys/vmstat/blackbird.ryu-oh.org/context_switches
+ADD|/sys/vmstat/blackbird.ryu-oh.org/free
+...
+</code></pre>
+<p>The above is what gets fed into the <code>netidx subscriber</code> command. So in
+a nutshell we've said subscribe to all the things anywhere under
+<code>/sys/vmstat</code> that are present now, or appear in the future, and
+aren't part of the total row. Subscriber prints a line for each
+subscription update in the form of a <code>PATH|TYP|VAL</code> triple, so we read
+that into an array called input. So in the body of the while loop the
+variable input will be an array with contents e.g.</p>
+<pre><code>[/sys/vmstat/ken-ohki.ryu-oh.org/swap_out, v32, 25]
+</code></pre>
+<p>Indexed starting at 0 as is the convention in bash. The last two
+elements of the path are important to us, the last element is the
+column, and the second to last is the host. We essentially want to sum
+each column as it is updated, and output that total. To do this we
+need to remember each column, since only one row gets updated at a
+time, so we use a hash table with a key of <code>row/column</code>, to remember
+the values, thats <code>TOTALS</code>. We also need to remember all the row
+names, so that when we've updated a particular row/column in our hash
+table, we can iterate over the column and output a total, that's
+<code>HOSTS</code>. Then we just iterate over all the rows, compute the sum, and
+output the total for that column. Finally we pass this to the
+publisher, and now we have a total row.</p>
 
                     </main>
 
