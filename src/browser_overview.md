@@ -29,7 +29,9 @@ The various components highlighted in red are,
 3. Design mode button, click to enter design mode. This will display
    the design of the current view, and allow you to edit it. This will
    be covered in detail in the next section.
-4. The currently selected cell in a table is highlighed.
+4. The currently selected cell in a table is highlighed. If you want
+   to write to the currently selected cell, you can press Ctrl+w, and
+   a write dialog will appear.
 
 You can enter a subtree by double clicking on it. To go up, use the
 path links as described in 1. You can also go directly to a path you
