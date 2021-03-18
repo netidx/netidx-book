@@ -75,7 +75,7 @@ controlling boolean values.
 
 ![Buttons and Table](./browser-buttons-and-table.png)
 
-We'd like the toggles and their lables to line up in nice neat columns
+We'd like the toggles and their labels to line up in nice neat columns
 and rows, we could accomplish that with boxes, however Gtk+ has a grid
 container widget that makes it much easier. We can also see our first
 BScript looking at the properties of the first toggle button.
@@ -98,4 +98,4 @@ If it's safe to do so, we can test out if these buttons work without
 leaving design mode. We can also use the expression inspector, by
 clicking the tool button right next to the expression, to construct
 and debug more complex expressions. Using that tool will be covered
-more in the next section.
+more in the next section on BScript.
