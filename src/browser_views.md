@@ -21,7 +21,7 @@ Design mode has 3 parts,
    - create a child of the currently selected node
    - delete the currently selected node as well as all of it's children
    - duplicate the currently selected node as well as all of it's children
-   - undo actions
+   - undo
 2. This box displays the properties and controls of the currently
    selected widget, if any.
 3. The content area; this displays the actual live gui as it is being
