@@ -47,6 +47,8 @@ There are several things about this worth pointing out.
 - The layout properties expander is present on nearly every widget,
   and allows setting properties that all Gtk+ widets share.
 
+## Our First Custom View
+
 Now, lets make a custom view that displays 2 tables looking at
 different subtrees at the same time. To do this, we need a container
 widget to hold both tables, in Gtk+ we use a Box widget for this kind
@@ -67,6 +69,8 @@ If you write your custom view to a location in netidx that ends in
 `.view`, e.g. `/solar/.view`, then when the browser is asked to
 navigate to that subtree it will draw your view instead of the default
 table.
+
+## Toggle Buttons
 
 Lets refine this little solar gui a bit, the top table takes up too
 much space, and could be easier to interact with. There is a nice Gtk+
@@ -94,8 +98,8 @@ BScript looking at the properties of the first toggle button.
   now. If it is, then it will update it's published value and the
   state of the toggle will reflect that.
 
-If it's safe to do so, we can test out if these buttons work without
-leaving design mode. We can also use the expression inspector, by
-clicking the tool button right next to the expression, to construct
-and debug more complex expressions. Using that tool will be covered
-more in the next section on BScript.
+We can test out if these buttons work without leaving design mode. We
+can also use the expression inspector, by clicking the tool button
+right next to the expression, to construct and debug more complex
+expressions. Using that tool will be covered more in the next section
+on BScript.

@@ -180,7 +180,7 @@ buttons just above the tree you can,
 <li>create a child of the currently selected node</li>
 <li>delete the currently selected node as well as all of it's children</li>
 <li>duplicate the currently selected node as well as all of it's children</li>
-<li>undo actions</li>
+<li>undo</li>
 </ul>
 </li>
 <li>This box displays the properties and controls of the currently
@@ -206,6 +206,7 @@ control column order, default sort, and which columns even appear.</li>
 <li>The layout properties expander is present on nearly every widget,
 and allows setting properties that all Gtk+ widets share.</li>
 </ul>
+<h2><a class="header" href="#our-first-custom-view" id="our-first-custom-view">Our First Custom View</a></h2>
 <p>Now, lets make a custom view that displays 2 tables looking at
 different subtrees at the same time. To do this, we need a container
 widget to hold both tables, in Gtk+ we use a Box widget for this kind
@@ -223,6 +224,7 @@ definition in a file, or you can write it to a location in netidx.</p>
 <code>.view</code>, e.g. <code>/solar/.view</code>, then when the browser is asked to
 navigate to that subtree it will draw your view instead of the default
 table.</p>
+<h2><a class="header" href="#toggle-buttons" id="toggle-buttons">Toggle Buttons</a></h2>
 <p>Lets refine this little solar gui a bit, the top table takes up too
 much space, and could be easier to interact with. There is a nice Gtk+
 widget called a toggle that is great for both visualizing and
@@ -247,11 +249,11 @@ decide whether the new requested state is actually valid right
 now. If it is, then it will update it's published value and the
 state of the toggle will reflect that.</li>
 </ul>
-<p>If it's safe to do so, we can test out if these buttons work without
-leaving design mode. We can also use the expression inspector, by
-clicking the tool button right next to the expression, to construct
-and debug more complex expressions. Using that tool will be covered
-more in the next section on BScript.</p>
+<p>We can test out if these buttons work without leaving design mode. We
+can also use the expression inspector, by clicking the tool button
+right next to the expression, to construct and debug more complex
+expressions. Using that tool will be covered more in the next section
+on BScript.</p>
 
                     </main>
 
