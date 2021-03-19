@@ -91,7 +91,7 @@ e.g.
 
 The expression inspector shows a tree representation of a BScript
 expression in it's first column, and the current value of the
-expression in it's second.
+corresponding expression in it's second.
 
 ![Expression Inspector](./expression-inspector.png)
 
