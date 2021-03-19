@@ -36,6 +36,9 @@ impl HwPub {
         // and organized.
         let path = Path::from(format!("/hw/{}/cpu-temp", host));
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
+        // flush our publish request to the resolver server. Nothing
+        // happens until you do this.
+        publisher.flush(None).await?;
         Ok(HwPub {
             publisher,
             cpu_temp,
