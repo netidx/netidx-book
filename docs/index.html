@@ -166,6 +166,11 @@ you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools</p>
+<p>You will need some build dependencies,</p>
+<ul>
+<li>libclang, necessary for bindgen, on debian/ubuntu <code>sudo apt install libclang-dev</code></li>
+<li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
+</ul>
 <pre><code>{
     &quot;parent&quot;: null,
     &quot;children&quot;: [],
@@ -198,6 +203,12 @@ at one cell in the table.</p>
 set up on your local machine. If it didn't work, try setting the
 environment variable <code>RUST_LOG=debug</code> and running the stress publisher
 and the subscriber again.</p>
+<h2><a class="header" href="#optional-netidx-browser" id="optional-netidx-browser">Optional Netidx Browser</a></h2>
+<p>The browser is an optional gui browser for the netidx tree, you need
+gtk development files installed to build it, on debian/ubuntu add those with </p>
+<p><code>sudo apt install libgtk-3-dev</code></p>
+<p>and then</p>
+<p><code>cargo install netidx-browser</code></p>
 
                     </main>
 

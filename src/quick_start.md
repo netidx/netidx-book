@@ -9,6 +9,11 @@ This will build and install the `netidx` command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools
 
+You will need some build dependencies,
+
+- libclang, necessary for bindgen, on debian/ubuntu `sudo apt install libclang-dev`
+- gssapi, necessary for kerberos support, on debian/ubuntu `sudo apt install libkrb5-dev`
+
 ```
 {
     "parent": null,
@@ -52,3 +57,14 @@ The final number should increment, and if that works then netidx is
 set up on your local machine. If it didn't work, try setting the
 environment variable `RUST_LOG=debug` and running the stress publisher
 and the subscriber again.
+
+## Optional Netidx Browser
+
+The browser is an optional gui browser for the netidx tree, you need
+  gtk development files installed to build it, on debian/ubuntu add those with 
+
+`sudo apt install libgtk-3-dev`
+
+and then
+
+`cargo install netidx-browser`
