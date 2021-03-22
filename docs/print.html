@@ -1636,33 +1636,12 @@ command line tools!</p>
 <h1><a class="header" href="#command-line-publisher" id="command-line-publisher">Command Line Publisher</a></h1>
 <p>The command line publisher allows you to publish values to netidx from
 stdin. The format of a published value is pipe separated, and newline
-delimited. It has 3 fields,</p>
+delimited. e.g.</p>
+<p><code>/foo/bar|u32|42</code></p>
+<p>The three fields are,</p>
 <ul>
 <li>The path</li>
-<li>The type which is one of,
-<ul>
-<li><code>u32</code>: unsigned 32 bit integer, 4 bytes on the wire</li>
-<li><code>v32</code>: unsigned 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-5 bytes on the wire depending on how big the number is. e.g. 0-128 is just 1 byte</li>
-<li><code>i32</code>: signed 32 bit integer, 4 bytes on the wire</li>
-<li><code>z32</code>: signed 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a> 1-5 bytes on the wire</li>
-<li><code>u64</code>: unsigned 64 bit integer, 8 bytes on the wire</li>
-<li><code>v64</code>: unsigned 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
-<li><code>i64</code>: signed 64 bit integer, 8 bytes on the wire</li>
-<li><code>z64</code>: signed 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
-<li><code>f32</code>: 32 bit single precision floating point number, 4 bytes on the wire</li>
-<li><code>f64</code>: 64 bit double precision floating point number, 8 bytes on the wire</li>
-<li><code>datetime</code>: a date + time encoded as an i64 timestamp representing
-the number of seconds since jan 1 1970 UTC and a u32 number of sub
-second nanoseconds fixing the exact point in time. 12 bytes on the
-wire</li>
-<li><code>duration</code>: a duration encoded as a u64 number of seconds plus a u32
-number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire</li>
-<li><code>bool</code>: true, or false. 1 byte on the wire</li>
-<li><code>string</code>: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)</li>
-<li><code>bytes</code>: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire</li>
-<li><code>result</code>: OK, or Error + string, consuming 1-1+string length bytes</li>
-</ul>
-</li>
+<li>The type</li>
 <li>The value</li>
 </ul>
 <p>or the special form</p>
@@ -1670,28 +1649,39 @@ number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire
 <li>The path</li>
 <li><code>null</code></li>
 </ul>
-<p>For example <code>/the/path/to/the/thing|u32|42</code>. If you want to publish to
-a path that has a <code>|</code> character in it then you must escape the <code>|</code>
-with <code>\</code>, e.g. <code>\|</code>. If you want to publish a path that has a <code>\</code> in
-it, then you must also escape it, e.g. <code>\\</code>.</p>
+<p>or the special form</p>
+<ul>
+<li>DROP</li>
+<li>the path</li>
+</ul>
+<p>e.g. <code>DROP|/foo/bar</code> stops publishing <code>/foo/bar</code></p>
+<p>If you want to publish to a path that has a <code>|</code> character in it then
+you must escape the <code>|</code> with <code>\</code>, e.g. <code>\|</code>. If you want to publish a
+path that has a <code>\</code> in it, then you must also escape it,
+e.g. <code>\\</code>. e.g.</p>
+<p><code>/this/path/has\|pipes\|and\\in-it|string|waow grape, pipe and backslash everywhere</code></p>
 <h2><a class="header" href="#arguments" id="arguments">Arguments</a></h2>
 <p>There are several command line options to the <code>netidx publisher</code> command,</p>
 <ul>
 <li><code>--bind</code>: required, specify the network address to bind to. This can
 be specified in two forms.
 <ul>
-<li>an exact address and port e.g.
-<ul>
-<li>127.0.0.1:5000</li>
-<li>127.0.0.1:0, in which case the OS will choose the port at random</li>
-</ul>
-</li>
 <li>an expression consisting of an ip/netmask that must match a unique
-network interface on the machine running the publisher. e.g.
+network interface on the machine running the publisher. This is
+prefered, e.g.
 <ul>
 <li>127.0.0.0/24 selects the <code>lo</code> interface</li>
 <li>10.0.0.0/8 selects the interface bound to a 10.x.x.x address</li>
 <li>192.168.0.0/16 selects the interface bound to a 192.168.x.x address</li>
+<li>The publisher will choose a free port automatically starting at 5000</li>
+</ul>
+</li>
+<li>if you must specify an exact address and port e.g.
+<ul>
+<li>127.0.0.1:5000</li>
+<li>127.0.0.1:0, in which case the OS will choose the port at
+random, depending on the OS/libc this may pick an ephemeral
+port, so be careful.</li>
 </ul>
 </li>
 </ul>
@@ -1728,6 +1718,30 @@ cannot be a default publisher.</p>
 publisher uses envlogger, and so will respond to <code>RUST_LOG</code>,
 e.g. <code>RUST_LOG=debug</code> will cause the publisher to print debug and
 higher priority messages to stderr.</p>
+<h2><a class="header" href="#types" id="types">Types</a></h2>
+<p>The following types are supported,</p>
+<ul>
+<li><code>u32</code>: unsigned 32 bit integer, 4 bytes on the wire</li>
+<li><code>v32</code>: unsigned 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-5 bytes on the wire depending on how big the number is. e.g. 0-128 is just 1 byte</li>
+<li><code>i32</code>: signed 32 bit integer, 4 bytes on the wire</li>
+<li><code>z32</code>: signed 32 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a> 1-5 bytes on the wire</li>
+<li><code>u64</code>: unsigned 64 bit integer, 8 bytes on the wire</li>
+<li><code>v64</code>: unsigned 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
+<li><code>i64</code>: signed 64 bit integer, 8 bytes on the wire</li>
+<li><code>z64</code>: signed 64 bit integer <a href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoded</a>, 1-10 bytes on the wire</li>
+<li><code>f32</code>: 32 bit single precision floating point number, 4 bytes on the wire</li>
+<li><code>f64</code>: 64 bit double precision floating point number, 8 bytes on the wire</li>
+<li><code>datetime</code>: a date + time encoded as an i64 timestamp representing
+the number of seconds since jan 1 1970 UTC and a u32 number of sub
+second nanoseconds fixing the exact point in time. 12 bytes on the
+wire</li>
+<li><code>duration</code>: a duration encoded as a u64 number of seconds plus a u32
+number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire</li>
+<li><code>bool</code>: true, or false. 1 byte on the wire</li>
+<li><code>string</code>: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)</li>
+<li><code>bytes</code>: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire</li>
+<li><code>result</code>: OK, or Error + string, consuming 1-1+string length bytes</li>
+</ul>
 <h1><a class="header" href="#command-line-subscriber" id="command-line-subscriber">Command Line Subscriber</a></h1>
 <p>The command line subscriber allows you to subscribe to values in
 netidx. You can either specify a list of paths you want to subscribe
