@@ -61,8 +61,9 @@ talking about.
 
 - Hang: Resolver clients deal with a resolver server hang with a
   dynamically computed timeout based on the number of requests in the
-  batch. The rule is, minimum timeout 15 seconds or 6 microseconds per
-  operation in the batch for reads or 12 microseconds per operation in
+  batch. The rule is, minimum timeout 15 seconds or 50 microseconds
+  per simple operation in the batch for reads (longer for complex read
+  ops like list matching) or 100 microseconds per simple operation in
   the batch for writes, whichever is longer. That timeout is a timeout
   to get an answer, not to finish the batch. Since the resolver server
   breaks large batches up into smaller ones, and answers each micro
@@ -73,7 +74,7 @@ talking about.
 - Crash: Resolver clients deal with crashes differently depending on
   whether they are read or write connections.
   - Read Connections (Subscriber): Abandon the current connection, wait a random
-    time between 1 and 4 seconds, and then go through the whole
+    time between 1 and 12 seconds, and then go through the whole
     connection process again. That roughly entails taking the list of
     all servers, permuting it, and then connecting to each server in
     the list until one of them answers, says a proper hello, and
@@ -89,14 +90,14 @@ talking about.
     responsible for replicating their data out to each resolver server
     they don't include some of the retry logic used in the read
     client. They do try to replicate each batch 3 times seperated by a
-    1-4 second pause to each server in the cluster. If after 3 tries
+    1-12 second pause to each server in the cluster. If after 3 tries
     they still can't write to one of the servers then it is marked as
-    degraded. The write client must send heartbeats periodically
-    (configurable 1/2 writer_ttl), and it will try to replicate to a
-    degraded server at each heartbeat interval. In a nutshell write clients,
+    degraded. The write client will try to replicate to a degraded
+    server again at each heartbeat interval. In a nutshell write
+    clients,
      - try 3 times to write to each server
      - try failed servers again each 1/2 `writer_ttl`
-     - never fail a batch, just log an error and keep trying next 1/2 `writer_ttl`
+     - never fail a batch, just log an error and keep trying
 
 One important consequence of the write client behavior is that in the
 event all the resolver servers crash, when they come back up
