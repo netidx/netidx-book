@@ -271,7 +271,7 @@ netidx publisher --bind 192.168.0.0/24
 </code></pre>
 <p>Now we've done something very interesting, we took some data out of
 netidx, did a computation on it, and published the result into the
-same namespace. We can now subscribe to e.g. /hw/krusty/overtemp-ts
+same namespace. We can now subscribe to e.g. <code>/hw/krusty/overtemp-ts</code>
 and we will know when that machine last went over temperature. To a
 user looking at this namespace in the browser (more on that later)
 there is no indication that the over temp data comes from a separate
@@ -302,26 +302,24 @@ will be successful right away, and the alarm will sound immediately
 after the event is detected. So lets change the code ...</p>
 <pre><code class="language-bash">#! /bin/bash
 
-cat &lt;(
-    netidx resolver list /hw | \
-        while IFS='/' read -a pparts
-        do
-            echo &quot;/hw/${pparts[2]}/overtemp-ts|null&quot;
-            echo &quot;/hw/${pparts[2]}/overtemp|null&quot;
-        done
-) \
-&lt;(
-   netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
-       while IFS='|' read path typ temp
-       do
-            IFS='/' pparts=($path)
-            if ((temp &gt; 75)); then
-                echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
-                echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
-            fi
-       done
-) | netidx publisher --bind 192.168.0.0/24
-
+declare -A HOSTS
+netidx resolver list -w '/hw/*/cpu-temp' | \
+    sed -u -e 's/^/ADD|/' | \
+    netidx subscriber | \
+    while IFS='|' read path typ temp
+    do
+        IFS='/' pparts=($path)
+        temp=$(sed -e 's/\.[0-9]*//' &lt;&lt;&lt; &quot;$temp&quot;) # strip the fractional part, if any
+        host=${pparts[2]}
+        if ((temp &gt; 75)); then
+            echo &quot;/hw/${host}/overtemp-ts|string|$(date)&quot;
+            echo &quot;/hw/${host}/overtemp|f64|$temp&quot;
+        elif test &quot;${HOSTS[$host]}&quot; != &quot;$host&quot;; then
+            HOSTS[$host]=$host
+            echo &quot;/hw/${host}/overtemp-ts|null&quot;
+            echo &quot;/hw/${host}/overtemp|null&quot;
+        fi
+    done | netidx publisher --bind 192.168.0.0/24
 </code></pre>
 <p>So first we list all the machines in /hw and publish null for
 overtemp-ts and overtemp for each one, and then using cat and the

@@ -119,7 +119,7 @@ netidx publisher --bind 192.168.0.0/24
 
 Now we've done something very interesting, we took some data out of
 netidx, did a computation on it, and published the result into the
-same namespace. We can now subscribe to e.g. /hw/krusty/overtemp-ts
+same namespace. We can now subscribe to e.g. `/hw/krusty/overtemp-ts`
 and we will know when that machine last went over temperature. To a
 user looking at this namespace in the browser (more on that later)
 there is no indication that the over temp data comes from a separate
@@ -156,26 +156,24 @@ after the event is detected. So lets change the code ...
 ``` bash
 #! /bin/bash
 
-cat <(
-    netidx resolver list /hw | \
-        while IFS='/' read -a pparts
-        do
-            echo "/hw/${pparts[2]}/overtemp-ts|null"
-            echo "/hw/${pparts[2]}/overtemp|null"
-        done
-) \
-<(
-   netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
-       while IFS='|' read path typ temp
-       do
-            IFS='/' pparts=($path)
-            if ((temp > 75)); then
-                echo "/hw/${pparts[2]}/overtemp-ts|string|$(date)"
-                echo "/hw/${pparts[2]}/overtemp|f64|$temp"
-            fi
-       done
-) | netidx publisher --bind 192.168.0.0/24
-
+declare -A HOSTS
+netidx resolver list -w '/hw/*/cpu-temp' | \
+    sed -u -e 's/^/ADD|/' | \
+    netidx subscriber | \
+    while IFS='|' read path typ temp
+    do
+        IFS='/' pparts=($path)
+        temp=$(sed -e 's/\.[0-9]*//' <<< "$temp") # strip the fractional part, if any
+        host=${pparts[2]}
+        if ((temp > 75)); then
+            echo "/hw/${host}/overtemp-ts|string|$(date)"
+            echo "/hw/${host}/overtemp|f64|$temp"
+        elif test "${HOSTS[$host]}" != "$host"; then
+            HOSTS[$host]=$host
+            echo "/hw/${host}/overtemp-ts|null"
+            echo "/hw/${host}/overtemp|null"
+        fi
+    done | netidx publisher --bind 192.168.0.0/24
 ```
 
 So first we list all the machines in /hw and publish null for
