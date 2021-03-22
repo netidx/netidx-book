@@ -166,9 +166,10 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
         temp=$(sed -e 's/\.[0-9]*//' <<< "$temp") # strip the fractional part, if any
         host=${pparts[2]}
         if ((temp > 75)); then
+            HOSTS[$host]=$host
             echo "/hw/${host}/overtemp-ts|string|$(date)"
             echo "/hw/${host}/overtemp|f64|$temp"
-        elif test "${HOSTS[$host]}" != "$host"; then
+        elif test -z "${HOSTS[$host]}"; then
             HOSTS[$host]=$host
             echo "/hw/${host}/overtemp-ts|null"
             echo "/hw/${host}/overtemp|null"
@@ -176,10 +177,28 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
     done | netidx publisher --bind 192.168.0.0/24
 ```
 
-So first we list all the machines in /hw and publish null for
-overtemp-ts and overtemp for each one, and then using cat and the
-magic of process substitution we append to that the real time list of
-actual over temp events.
+We use `resolver list -w` to list all paths that match
+`/hw/*/cpu-temp`, and watch for new ones that might appear later. We
+take that output, which is just a list of paths, and use sed to
+prepend `ADD|` to it, which makes it a valid subscribe request for
+`netidx subscriber`. We then process the resulting cpu temperature
+records. We check for over temp, and we store each host in an
+associative array. If this is the first time we've seen a given host,
+then we set it's initial `overtemp-ts` and `overtemp` to null,
+otherwise we don't do anything unless it's actually too hot. Even
+though it's only a little longer, this shell program has a number of
+advantages over the previous version.
+
+- It will automatically start checking the cpu temp of new hosts as
+  they are added
+- It will always publish a row for every host, but will fill it with
+  null if it has never seen that host over temp. This allows clients
+  to subscribe to the overtemp value and receive a timely notification
+  when a host goes over temperature, and it's also nicer to look at in
+  the browser.
+- It handles the fractional part of the temperature properly for the
+  shell, which can't do floating point math (in this case we don't
+  care)
 
 ## Or Maybe Shell is Not Your Jam
 

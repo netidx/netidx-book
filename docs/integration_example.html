@@ -312,19 +312,39 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
         temp=$(sed -e 's/\.[0-9]*//' &lt;&lt;&lt; &quot;$temp&quot;) # strip the fractional part, if any
         host=${pparts[2]}
         if ((temp &gt; 75)); then
+            HOSTS[$host]=$host
             echo &quot;/hw/${host}/overtemp-ts|string|$(date)&quot;
             echo &quot;/hw/${host}/overtemp|f64|$temp&quot;
-        elif test &quot;${HOSTS[$host]}&quot; != &quot;$host&quot;; then
+        elif test -z &quot;${HOSTS[$host]}&quot;; then
             HOSTS[$host]=$host
             echo &quot;/hw/${host}/overtemp-ts|null&quot;
             echo &quot;/hw/${host}/overtemp|null&quot;
         fi
     done | netidx publisher --bind 192.168.0.0/24
 </code></pre>
-<p>So first we list all the machines in /hw and publish null for
-overtemp-ts and overtemp for each one, and then using cat and the
-magic of process substitution we append to that the real time list of
-actual over temp events.</p>
+<p>We use <code>resolver list -w</code> to list all paths that match
+<code>/hw/*/cpu-temp</code>, and watch for new ones that might appear later. We
+take that output, which is just a list of paths, and use sed to
+prepend <code>ADD|</code> to it, which makes it a valid subscribe request for
+<code>netidx subscriber</code>. We then process the resulting cpu temperature
+records. We check for over temp, and we store each host in an
+associative array. If this is the first time we've seen a given host,
+then we set it's initial <code>overtemp-ts</code> and <code>overtemp</code> to null,
+otherwise we don't do anything unless it's actually too hot. Even
+though it's only a little longer, this shell program has a number of
+advantages over the previous version.</p>
+<ul>
+<li>It will automatically start checking the cpu temp of new hosts as
+they are added</li>
+<li>It will always publish a row for every host, but will fill it with
+null if it has never seen that host over temp. This allows clients
+to subscribe to the overtemp value and receive a timely notification
+when a host goes over temperature, and it's also nicer to look at in
+the browser.</li>
+<li>It handles the fractional part of the temperature properly for the
+shell, which can't do floating point math (in this case we don't
+care)</li>
+</ul>
 <h2><a class="header" href="#or-maybe-shell-is-not-your-jam" id="or-maybe-shell-is-not-your-jam">Or Maybe Shell is Not Your Jam</a></h2>
 <p>It's entirely possible that thinking about the above solution makes
 you shiver and reinforces for you that nothing should ever be written

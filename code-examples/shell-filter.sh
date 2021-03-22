@@ -10,9 +10,10 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
         temp=$(sed -e 's/\.[0-9]*//' <<< "$temp") # strip the fractional part, if any
         host=${pparts[2]}
         if ((temp > 75)); then
+            HOSTS[$host]=$host
             echo "/hw/${host}/overtemp-ts|string|$(date)"
             echo "/hw/${host}/overtemp|f64|$temp"
-        elif test "${HOSTS[$host]}" != "$host"; then
+        elif test -z "${HOSTS[$host]}"; then
             HOSTS[$host]=$host
             echo "/hw/${host}/overtemp-ts|null"
             echo "/hw/${host}/overtemp|null"
