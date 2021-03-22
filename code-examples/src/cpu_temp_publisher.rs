@@ -38,14 +38,11 @@ impl HwPub {
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
         // flush our publish request to the resolver server. Nothing
         // happens until you do this.
-        publisher.flush(None).await?;
-        Ok(HwPub {
-            publisher,
-            cpu_temp,
-        })
+        publisher.flush(None).await;
+        Ok(HwPub { publisher, cpu_temp })
     }
 
-    pub async fn update(&self, current: f64) -> Result<()> {
+    pub async fn update(&self, current: f64) {
         // update the current cpu-temp
         self.cpu_temp.update(Value::F64(current));
 
@@ -53,3 +50,5 @@ impl HwPub {
         self.publisher.flush(None).await
     }
 }
+
+pub fn main() {}

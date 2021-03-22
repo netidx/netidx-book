@@ -4,6 +4,14 @@ version = "0.1.0"
 authors = ["Eric Stokes <letaris@gmail.com>"]
 edition = "2018"
 
+[[bin]]
+name = "cpu_overtemp_detector"
+path = "src/cpu_overtemp_detector.rs"
+
+[[bin]]
+name = "cpu_temp_publisher"
+path = "src/cpu_temp_publisher.rs"
+
 [dependencies]
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
