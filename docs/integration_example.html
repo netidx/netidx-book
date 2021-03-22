@@ -261,7 +261,7 @@ it was observed.</p>
 
 netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
-    IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
+    IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
         echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
         echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
@@ -284,7 +284,7 @@ to write the following additional script.</p>
 
 netidx subscriber $(netidx resolver list '/hw/*/overtemp-ts') | \
 while IFS='|' read path typ temp; do
-    IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
+    IFS='/' pparts=($path)
     ring-very-loud-alarm ${pparts[2]}
 done
 </code></pre>
@@ -314,7 +314,7 @@ cat &lt;(
    netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
        while IFS='|' read path typ temp
        do
-            IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
+            IFS='/' pparts=($path)
             if ((temp &gt; 75)); then
                 echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
                 echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
