@@ -652,7 +652,7 @@ the data.</p>
 
 netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
-    IFS='/' read -a pparts &lt;&lt;&lt; &quot;$path&quot;
+    IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
         echo &quot;host: ${pparts[2]} cpu tmp is too high: ${temp}&quot;
     fi
