@@ -188,8 +188,8 @@ access to this file.</p>
 <p>Here's about the simplest possible Kerberos enabled
 configuration. I'll go through each field,</p>
 <ul>
-<li>parent: null unless this server has a parent, which I'll document later</li>
-<li>children: empty unless this server has children, which I'll document later</li>
+<li>parent: null unless this server has a parent</li>
+<li>children: empty unless this server has children</li>
 <li>pid_file: prefix to add to the pid file which will otherwise be
 e.g. 0.pid for the first server in the cluster, or 1.pid for the
 second, etc.</li>
@@ -207,8 +207,7 @@ connection open.</li>
 <li>writer_ttl: The amount of time, in seconds, to wait for a publisher
 to heartbeat before deleting everything it has published. The
 publisher will send heartbeats at 1/2 this interval. e.g. 120 means
-publishers will heartbeat every minute. Processing a heartbeat does
-not take the write lock.</li>
+publishers will heartbeat every minute.</li>
 <li>auth: either &quot;Anonymous&quot;, or &quot;Krb5&quot;. If &quot;Krb5&quot;, then a service
 principal name should be included for every resolver server in the
 cluster. Each resolver server instance must have access to the
@@ -216,133 +215,8 @@ corresponding SPN's key via a keytab or other means, and of course
 you must create the corresponding service principal for each
 instance.</li>
 </ul>
-<p>When using Kerberos we also need a permissions file in order to run a
-resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. E.G.</p>
-<pre><code class="language-json">{
-    &quot;/&quot;: {
-        &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
-    },
-    &quot;/solar&quot;: {
-	    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
-    }
-}
-</code></pre>
-<p>In order to do the corresponding action in netidx a user must have
-that permission bit set, no bit, no action.</p>
-<p>Permission bits are computed starting from the root proceeding down
-the tree to the node being acted on. The bits are accumulated on the
-way down, and can also be removed at any point in the tree. Each bit
-is represented by a 1 character symbolic tag, E.G.</p>
-<ul>
-<li>!: Deny, changes the meaning of the following bits to deny the
-corresponding permission instead of grant it. Must be the first
-character of the permission string.</li>
-<li>s: Subscribe</li>
-<li>w: Write</li>
-<li>l: List</li>
-<li>p: Publish</li>
-<li>d: Publish default</li>
-</ul>
-<p>For example if I was subscribing to
-<code>/solar/stats/battery_sense_voltage</code> we would walk down the path from
-left to right and hit this permission first,</p>
-<pre><code class="language-json">&quot;/&quot;: {
-    &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
-},
-</code></pre>
-<p>This applies to a Kerberos principal &quot;eric@RYU-OH.ORG&quot;, the resolver
-server will check the user principal name of the user making the
-request, and it will check all the groups that user is a member of,
-and if any of those are &quot;eric@RYU-OH.ORG&quot; then it will <code>or</code> the
-current permission set with &quot;swlpd&quot;. In this case this gives me
-permission to do anything I want in the whole tree (unless it is later
-denied). Next we would hit,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
-}
-</code></pre>
-<p>Which doesn't apply to me, and so would be ignored, and since there
-are no more permissions entries my effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> are &quot;swlpd&quot;, and so I would be
-allowed to subscribe.</p>
-<p>Suppose however I changed the above entry,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;eric@RYU-OH.ORG&quot;: &quot;!swl&quot;,
-}
-</code></pre>
-<p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
-that matches me, and we would remove the permission bits s, w, and l,
-leaving our effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;, since that doesn't give
-me the right to subscribe my request would be denied. We could, for
-example, do this by group instead.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
-}
-</code></pre>
-<p>As you would expect, this deny permission will still apply to me
-because I am a member of the domain admins group. A slightly more
-subtle point is that permissions are accumulated. For example, if I am
-a member of two groups, and both groups have different bits denied,
-then all of those bits would be removed. E.G.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
-    &quot;RYU-OH\enterprise admins&quot;: &quot;!pd&quot;,
-}
-</code></pre>
-<p>Now my effective permissions under <code>/solar</code> are empty, I can do
-nothing. If I am a member of more than one group, and one denies
-permissions that the other grants the deny always takes precidence.</p>
-<p>Each server cluster is completely independent for permissions. If for
-example this cluster had a child cluster, the administrators of that
-cluster would be responsible for deciding what permissions file it
-should use. It certainly could use the same file, but it doesn't have
-to.</p>
-<h3><a class="header" href="#anonymous" id="anonymous">Anonymous</a></h3>
-<p>It's possible to give anonymous users permissions even on a Kerberos
-enabled system, and this could allow them to use whatever functions
-you deem non sensitive, subject to some limitations. There is no
-encryption. There is no tamper protection. There is no publisher -&gt;
-subscriber authentication. Anonymous users can't subscribe to non
-anonymous publishers. Non anonymous users can't subscribe to anonymous
-publishers. You name anonymous &quot;&quot; in the permissions file, e.g.</p>
-<pre><code class="language-json">&quot;/tmp&quot;: {
-    &quot;&quot;: &quot;swlpd&quot;
-}
-</code></pre>
-<p>Now <code>/tmp</code> is an anonymous free for all. If you have Kerberos
-deployed, it's probably not that useful to build such a hybrid system,
-because any anonymous publishers would not be usable by kerberos
-enabled users. However it might be useful if you have embedded systems
-that can't use kerberos, and you don't want to build a separate
-resolver server infrastructure for them.</p>
-<h3><a class="header" href="#groups" id="groups">Groups</a></h3>
-<p>You'll might have noticed I'm using AD style group names above, that's
-because my example setup uses Samba in ADS mode so I can test windows
-and unix clients on the same domain. The most important thing about
-the fact that I'm using Samba ADS and thus have the group names I have
-is that it doesn't matter. Groups are just strings to netidx, for a
-given user, whatever the <code>id</code> command would spit out for that user is
-what it's going to use for the set of groups the user is in (so that
-better match what's in your permissions file). You need to set up the
-resolver server machines such that they can properly resolve the set
-of groups every user who might use netidx is in.</p>
-<p>Luckily you only need to get this right on the machines that run
-resolver servers, because that's the only place group resolution
-happens in netidx. You're other client and server machines can be as
-screwed up and inconsistent as you want, as long as the resolver
-server machine agrees that I'm a member of &quot;RYU-OH\domain admins&quot; then
-whatever permissions assigned to that group in the permission file
-will apply to me.</p>
-<p>All the non resolver server machines need to be able to do is get
-Kerberos tickets. You don't even need to set them up to use Kerberos
-for authentication (but I highly recommend it, unless you really hate
-your users), you can just force people to type <code>kinit foo@BAR.COM</code>
-every 8 hours if you like.</p>
+<p>If you're using Kerberos then you also need a permissions file, which
+is covered in the next section.</p>
 
                     </main>
 

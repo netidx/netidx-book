@@ -166,35 +166,21 @@ data. In this chapter we're going to look at a system designed from
 scratch to use netidx as it's primary means of communication and
 control.</p>
 <p>The system we're going to look at is the control program of an off the
-grid solar generator. This is a medium sized system, meant to provide
-backup power in the event of a long outage, as well as power to any
-110vac appliance (up to 20 amps). It consists of a Morningstar
-Prostart MPPT charge controller, 4 100 Watt solar panels, 4 lithium
-ion batteries arranged in series/parallel to make a 24 volt nominal
-200 ah battery pack (about 4.8 Kwh of total storage), and a 3000 Watt
-inverter. As the power is quite reliable where I live I often use it
-to charge my plug in hybrid car. The Prostar MPPT controller has a
-serial port over which it talks modbus, and I've connected a raspberry
-pi 3 running raspbian to that port using a usb to serial adapter. The
-pi, called &quot;solar&quot;, is connected to my wifi network and is joined to
-my samba ADS domain.</p>
-<p>The control program, then, is more or less a simple translation layer
-between the modbus interface of the Prostar and netidx. Full source code
+grid solar generator. The system uses a Prostar MPPT controller, which
+has a serial port over which it talks modbus. Connected to this port
+is raspberry pi 3, called &quot;solar&quot;, which is connected to wifi and
+joined to samba ADS.</p>
+<p>The control program is a simple translation layer between the modbus
+interface of the Prostar and netidx. Full source code
 <a href="https://github.com/estokes/solar">here</a>.</p>
-<p>The main loop takes commands from either the command socket, or the
-netidx publisher, and sends them via modbus to the charge controller, e.g.</p>
+<p>The main loop takes commands from either the local command socket, or
+the netidx publisher, and sends them via modbus to the charge
+controller, e.g.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    loop {
-        let msg = select_biased! {
-            _ = tick.next() =&gt; ToMainLoop::Tick,
-            m = receiver.next() =&gt; match m {
-                None =&gt; break,
-                Some(m) =&gt; m
-            }
-        };
-        debug!(&quot;run_server: {:?}&quot;, msg);
+        ...
         match msg {
             ToMainLoop::FromClient(msg, mut reply) =&gt; match msg {
                 FromClient::SetCharging(b) =&gt; {
@@ -209,15 +195,6 @@ netidx publisher, and sends them via modbus to the charge controller, e.g.</p>
                     send_reply(mb.write_coil(ps::Coil::ResetControl, true).await, reply)
                         .await
                 }
-                FromClient::LogRotated =&gt; {
-                    log = log_fatal!(
-                        open_log(&amp;config).await,
-                        &quot;failed to open log {}&quot;,
-                        break
-                    );
-                    send_reply(Ok(()), reply).await
-                }
-                FromClient::TailStats =&gt; tailing.push(reply),
                 ...
 <span class="boring">}
 </span></code></pre></pre>
@@ -248,7 +225,7 @@ timer tick. e.g.</p>
 <p>These are all published under <code>/solar/stats</code>, there are a lot of them,
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
-log to a file, update netidx, flush netidx, loop.</p>
+update netidx, flush netidx, loop.</p>
 <h2><a class="header" href="#what-about-control" id="what-about-control">What About Control</a></h2>
 <p>The above handles distributing the stats perfectly well, but for
 control we need some way to send commands from the subscriber back to
@@ -346,119 +323,42 @@ impl PublishedControl {
 <p>In process_writes we translate each WriteRequest that is targeted at
 one of the published controls into a FromClient message that the main
 loop will act on. So from the main loop's perspective it doesn't
-matter if a command came from netidx, or a command line tool. Note
-that it isn't necessary to do any authorization here, the publisher
-library has already checked that the resolver server granted the user
-making these writes permission to do them.</p>
+matter if a command came from netidx or the local control socket.</p>
+<p>Note that it isn't necessary to do any authorization here, the
+publisher library has already checked that the resolver server granted
+the user making these writes permission to do them, and of course we
+can control who is authorized to write in the resolver server
+permissions.</p>
 <p>For the basic day to day use case, that's all we need on the server
-side. The entire daemon uses 6.5 MB or ram, and almost no cpu, it
+side. The entire daemon uses 6.5 MB of ram, and almost no cpu, it
 could certainly run on a smaller device, though we depend on tokio,
-which means we at least need a real OS under us (for now).</p>
+which means we at least need a unix like OS under us.</p>
 <p>The kerberos configuration for this service is also quite simple,
 there is a service principal called svc_solar in samba ADS, and solar
 has a keytab installed for it, as well as a cron job that renews it's
-TGT every couple of hours. Depending on which OS and KDC you are using
-there are different ways you might do this, but that's pretty far out
-of our scope.</p>
+TGT every couple of hours.</p>
 <h2><a class="header" href="#building-a-custom-gui-with-views" id="building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
-<p>What we have is fine as far as it goes, we can view our stats in
-vector mode in the browser, and we can write to the controls using the
-command line subscriber. For scripting it's great, but when I want to
-turn on the inverter on so I can charge the lawn mower, typing
-commands at my phone is not ideal, I'd like a gui. This is where
-custom browser views come in, here is the finished product,</p>
+<p>What we have is fine as far as it goes, we can view our stats in the
+browser, and we can write to the controls using the command line
+subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
 <p><img src="solar-gui.png" alt="Solar GUI" /></p>
-<p>A view definition can be published to the special value .view in a
-given directory (e.g. <code>/solar/.view</code>) so it will automatically render
-whenever the browser visits that directory, that's what we've done
-here. In fact we have our view definition in a file solar.view, and
-we're publishing it with the following shell script,</p>
-<pre><code class="language-bash">netidx publisher -b 192.168.0.0/24 --spn svc/host@REALM &lt;&lt;EOF
-/solar/.view|string|$(cat ~/solar.view)
-EOF
-
-</code></pre>
-<p>This need not be on the same machine as the control program, as long
-as the user running the command has permission to publish under <code>/solar</code>
-it will work.</p>
-<p>Building the view in the first place can be done using design mode in
-the browser, the view can then be saved to a file or written directly
-to a netidx path.</p>
+<p>This can be built using design mode in the browser, the view can then
+be saved to a file or written directly to a netidx path.</p>
 <p><img src="browser-design-mode.png" alt="Browser Design Mode" /></p>
-<p>Design mode can be activated at any time with the toggle button in the
-upper left corner, to the left of save. It splits the window
-vertically into two panes, the gui on the right, and the view
-definition on the left. The view definition is visualized as a tree of
-widgets, with parents higher in the tree containing children, and each
-widget having a type. Notice that we've selected a toggle widget in
-the tree, and we can see that widget is highlighted blue in the gui,
-as we move the selection, the highlight will move, such that we always
-know what part of the actual gui we are changing. From a static
-picture it's not possible to see this, however the gui is fully
-functional in every way while design mode is activated, it isn't some
-&quot;special&quot; mode, what you see is exactly what you will get. This
-extends to changes, as we make changes the gui will reflect them
-immediately, of course if we don't like a change we can simply press
-the undo button in the tool bar above the widget tree. </p>
-<p>Now lets take a look at the bottom part of the view definition pane,
-we see the details of the widget we've selected, the toggle button. We
-see there are some layout properties hidden by an expander, every
-drawable widget has those, so lets leave them for later. Every widget
-that does something in the browser has one or more sources, and one or
-more sinks. Sources are where data comes in, and sinks are where data
-goes out. Sources are defined in a little domain specific language
-called the formula language, which will be specified in detail
-later. Sinks use the same syntax but have a different set of
-functions.</p>
-<p>The semantics of the formula language, and it's syntax, are meant to
-be very similar to formulas in a spreadsheet. Where instead of row/col
-notation, we use netidx paths to denote refs to other parts of the
-&quot;sheet&quot;. Sources update whenever something they ref updates, and sinks
-are updated, and may cause sources to update. And, that's all rather
-abstract, lets focus on our example.</p>
-<p>Our toggle has two sources, and one sink. The enabled source just
-determines if the toggle is interactable, and in our case it's set to
-a function <code>constant(bool, true)</code>, which creates a source that always
-evaluates to <code>Value::True</code>. The other source, just called source,
-determines whether the toggle displays as on or off, and this one is
-set to <code>load_path(&quot;/solar/control/charging&quot;)</code>, load_path is a function
-that creates a source that subscribes to the netidx path it's given
-and updates when the subscription updates. So this straightforwardly
-ties the state of the toggle to the value of
-<code>/solar/control/charging</code>, when that value changes the toggle state
-changes. When the user clicks the toggle, either true or false is
-written to the sink which is defined as
-<code>confirm(store_path(&quot;/solar/control/charging&quot;))</code>. So what does this
-do?  Well, store_path creates a sink that writes whatever value it
-receives to the specified path, confirm is more complex. It takes a
-sink as an argument, and returns a sink that asks the user to confirm
-every value it receives. If the user says yes, then it passes the
-value on to the passed in sink, in this case to load_path, otherwise
-it drops the value.</p>
-<p>There are many other useful formulas, and the goal is to make building
-simple guis like this easy, the majority of the work should be the
-layout, and moderately complex guis should be possible. While this
-system is already pretty useful it is still under heavy development,
-and is by no means finished. Another &quot;limitation&quot; to mention is since
-it's built with Gtk+ it's primarily a desktop application, though I
-have tested it on the pinephone phosh, and even made a few changes to
-improve touch support. Android, and especially iOS versions will not
-happen, unless someone else wants to step up.</p>
+<p>See the chapter on custom views for more information.</p>
 <h2><a class="header" href="#wrapping-up" id="wrapping-up">Wrapping Up</a></h2>
 <p>In this chapter we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We
 didn't cover the opportunities for scripting our solar installation
 now that we can control it using netidx, but we certainly could do any
-of the nice things we did in the last chapter. Instead we saw how we
-could build a pretty nice looking and functional gui using browser
-custom views, and we got an introduction to the formula language. I
-want to point out that with our design having a gui in no way alters
-our ability to script and manipulate the system programatically. It's
+of the nice things we did in the last chapter. We did show an example
+gui, and I want to point out that having a gui in no way alters our
+ability to script and manipulate the system programatically. It's
 important to recognize that building a bespoke system with a gui as
-complex as the browser view we built AND making it scriptable over the
-network in a discoverable, secure, and performant way is not an easy
-task, and usually isn't worth doing. However by using netidx we got it
-for free once we made our problem fit into netidxs' data model.</p>
+complex as the one we built AND making it scriptable over the network
+in a discoverable, secure, and performant way is not an easy task.
+Usually it just isn't worth doing, however by using netidx it was
+easy, and that's really the point of the whole thing.</p>
 
                     </main>
 

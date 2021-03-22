@@ -17,17 +17,12 @@ informative.
 
 ## Resources and Gotchas
 
-Most installations need not devote massive resources to the resolver
-server, however you may want to use at least two instances on
-different machines or VMs for redundancy. Here are a few rules of
-thumb/gotchas.
-
 - Expect to use about 500 MiB of ram in the resolver server for every
   1 million published values.
-- Both read and write operations should make use of all available
-  logical processors on the machine in most cases. So, in the case you
-  are hitting performance problems, try allocating more cores before
-  taking more drastic segmentation steps.
+- Both read and write operations will make use of all available
+  logical processors on the machine. So, in the case you are hitting
+  performance problems, try allocating more cores before taking more
+  drastic segmentation steps.
 - Even when the resolvers are very busy they should remain fair. Large
   batches of reads or writes are broken into smaller reasonably sized
   batches for each logical processor. These batches are then
@@ -37,10 +32,17 @@ thumb/gotchas.
   process on the resolver server machine when setting
   max_connections. You can easily raise this number on modern linux
   systems using ulimit.
+  
+- While the resolver server drops idle read client connections fairly
+  quickly (default 60 seconds), if you have many thousands or tens of
+  thousands of read clients that want to do a lot of reading
+  simultaneously then you may need to raise the maximum number of file
+  descriptors available, and/or deploy additional processes to avoid
+  file descriptor exhaustion.
 
-The resolver server drops idle read client connections fairly quickly
-(configurable, recommended default 60 seconds), however if you have
-many thousands or tens of thousands of read clients that want to do a
-lot of reading simultaneously then you may need to raise the maximum
-number of file descriptors available, and/or deploy additional
-processes to avoid file descriptor exhaustion.
+- Some implementations of Krb5/GSSAPI keep a file descriptor open for
+  every active client/server session, which in our case means every
+  read client, but also every publisher, connected or not. This has
+  been fixed in recent versions of MIT Kerberos (but may still
+  manifest if you are running with KRB5_TRACE). Keep this in mind if
+  you're seeing file descriptor exhaustion.

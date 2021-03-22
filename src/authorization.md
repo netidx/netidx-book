@@ -2,7 +2,7 @@
 
 When using Kerberos we also need a permissions file in order to run a
 resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. E.G.
+shared with everyone using the cluster. e.g.
 
 ``` json
 {
@@ -16,15 +16,13 @@ shared with everyone using the cluster. E.G.
 ```
 
 In order to do the corresponding action in netidx a user must have
-that permission bit set, no bit, no action.
-
-Permission bits are computed starting from the root proceeding down
-the tree to the node being acted on. The bits are accumulated on the
-way down, and can also be removed at any point in the tree. Each bit
-is represented by a 1 character symbolic tag, E.G.
+that permission bit set. Permission bits are computed starting from
+the root proceeding down the tree to the node being acted on. The bits
+are accumulated on the way down. Each bit is represented by a 1
+character symbolic tag, e.g.
 
 - !: Deny, changes the meaning of the following bits to deny the
-  corresponding permission instead of grant it. Must be the first
+  corresponding permission instead of grant it. May only be the first
   character of the permission string.
 - s: Subscribe
 - w: Write
@@ -73,9 +71,9 @@ Suppose however I changed the above entry,
 Now, in our walk, when we arrived at `/solar`, we would find an entry
 that matches me, and we would remove the permission bits s, w, and l,
 leaving our effective permissions at
-`/solar/stats/battery_sense_voltage` as "pd", since that doesn't give
-me the right to subscribe my request would be denied. We could, for
-example, do this by group instead.
+`/solar/stats/battery_sense_voltage` as "pd". Since that doesn't give
+me the right to subscribe my request would be denied. We could also do
+this by group.
 
 ``` json
 "/solar": {
@@ -85,10 +83,9 @@ example, do this by group instead.
 ```
 
 As you would expect, this deny permission will still apply to me
-because I am a member of the domain admins group. A slightly more
-subtle point is that permissions are accumulated. For example, if I am
-a member of two groups, and both groups have different bits denied,
-then all of those bits would be removed. E.G.
+because I am a member of the domain admins group. If I am a member of
+two groups, and both groups have different bits denied, then all of
+them would be removed. e.g.
 
 ``` json
 "/solar": {

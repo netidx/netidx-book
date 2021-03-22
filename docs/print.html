@@ -933,35 +933,21 @@ data. In this chapter we're going to look at a system designed from
 scratch to use netidx as it's primary means of communication and
 control.</p>
 <p>The system we're going to look at is the control program of an off the
-grid solar generator. This is a medium sized system, meant to provide
-backup power in the event of a long outage, as well as power to any
-110vac appliance (up to 20 amps). It consists of a Morningstar
-Prostart MPPT charge controller, 4 100 Watt solar panels, 4 lithium
-ion batteries arranged in series/parallel to make a 24 volt nominal
-200 ah battery pack (about 4.8 Kwh of total storage), and a 3000 Watt
-inverter. As the power is quite reliable where I live I often use it
-to charge my plug in hybrid car. The Prostar MPPT controller has a
-serial port over which it talks modbus, and I've connected a raspberry
-pi 3 running raspbian to that port using a usb to serial adapter. The
-pi, called &quot;solar&quot;, is connected to my wifi network and is joined to
-my samba ADS domain.</p>
-<p>The control program, then, is more or less a simple translation layer
-between the modbus interface of the Prostar and netidx. Full source code
+grid solar generator. The system uses a Prostar MPPT controller, which
+has a serial port over which it talks modbus. Connected to this port
+is raspberry pi 3, called &quot;solar&quot;, which is connected to wifi and
+joined to samba ADS.</p>
+<p>The control program is a simple translation layer between the modbus
+interface of the Prostar and netidx. Full source code
 <a href="https://github.com/estokes/solar">here</a>.</p>
-<p>The main loop takes commands from either the command socket, or the
-netidx publisher, and sends them via modbus to the charge controller, e.g.</p>
+<p>The main loop takes commands from either the local command socket, or
+the netidx publisher, and sends them via modbus to the charge
+controller, e.g.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    loop {
-        let msg = select_biased! {
-            _ = tick.next() =&gt; ToMainLoop::Tick,
-            m = receiver.next() =&gt; match m {
-                None =&gt; break,
-                Some(m) =&gt; m
-            }
-        };
-        debug!(&quot;run_server: {:?}&quot;, msg);
+        ...
         match msg {
             ToMainLoop::FromClient(msg, mut reply) =&gt; match msg {
                 FromClient::SetCharging(b) =&gt; {
@@ -976,15 +962,6 @@ netidx publisher, and sends them via modbus to the charge controller, e.g.</p>
                     send_reply(mb.write_coil(ps::Coil::ResetControl, true).await, reply)
                         .await
                 }
-                FromClient::LogRotated =&gt; {
-                    log = log_fatal!(
-                        open_log(&amp;config).await,
-                        &quot;failed to open log {}&quot;,
-                        break
-                    );
-                    send_reply(Ok(()), reply).await
-                }
-                FromClient::TailStats =&gt; tailing.push(reply),
                 ...
 <span class="boring">}
 </span></code></pre></pre>
@@ -1015,7 +992,7 @@ timer tick. e.g.</p>
 <p>These are all published under <code>/solar/stats</code>, there are a lot of them,
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
-log to a file, update netidx, flush netidx, loop.</p>
+update netidx, flush netidx, loop.</p>
 <h2><a class="header" href="#what-about-control" id="what-about-control">What About Control</a></h2>
 <p>The above handles distributing the stats perfectly well, but for
 control we need some way to send commands from the subscriber back to
@@ -1113,119 +1090,42 @@ impl PublishedControl {
 <p>In process_writes we translate each WriteRequest that is targeted at
 one of the published controls into a FromClient message that the main
 loop will act on. So from the main loop's perspective it doesn't
-matter if a command came from netidx, or a command line tool. Note
-that it isn't necessary to do any authorization here, the publisher
-library has already checked that the resolver server granted the user
-making these writes permission to do them.</p>
+matter if a command came from netidx or the local control socket.</p>
+<p>Note that it isn't necessary to do any authorization here, the
+publisher library has already checked that the resolver server granted
+the user making these writes permission to do them, and of course we
+can control who is authorized to write in the resolver server
+permissions.</p>
 <p>For the basic day to day use case, that's all we need on the server
-side. The entire daemon uses 6.5 MB or ram, and almost no cpu, it
+side. The entire daemon uses 6.5 MB of ram, and almost no cpu, it
 could certainly run on a smaller device, though we depend on tokio,
-which means we at least need a real OS under us (for now).</p>
+which means we at least need a unix like OS under us.</p>
 <p>The kerberos configuration for this service is also quite simple,
 there is a service principal called svc_solar in samba ADS, and solar
 has a keytab installed for it, as well as a cron job that renews it's
-TGT every couple of hours. Depending on which OS and KDC you are using
-there are different ways you might do this, but that's pretty far out
-of our scope.</p>
+TGT every couple of hours.</p>
 <h2><a class="header" href="#building-a-custom-gui-with-views" id="building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
-<p>What we have is fine as far as it goes, we can view our stats in
-vector mode in the browser, and we can write to the controls using the
-command line subscriber. For scripting it's great, but when I want to
-turn on the inverter on so I can charge the lawn mower, typing
-commands at my phone is not ideal, I'd like a gui. This is where
-custom browser views come in, here is the finished product,</p>
+<p>What we have is fine as far as it goes, we can view our stats in the
+browser, and we can write to the controls using the command line
+subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
 <p><img src="solar-gui.png" alt="Solar GUI" /></p>
-<p>A view definition can be published to the special value .view in a
-given directory (e.g. <code>/solar/.view</code>) so it will automatically render
-whenever the browser visits that directory, that's what we've done
-here. In fact we have our view definition in a file solar.view, and
-we're publishing it with the following shell script,</p>
-<pre><code class="language-bash">netidx publisher -b 192.168.0.0/24 --spn svc/host@REALM &lt;&lt;EOF
-/solar/.view|string|$(cat ~/solar.view)
-EOF
-
-</code></pre>
-<p>This need not be on the same machine as the control program, as long
-as the user running the command has permission to publish under <code>/solar</code>
-it will work.</p>
-<p>Building the view in the first place can be done using design mode in
-the browser, the view can then be saved to a file or written directly
-to a netidx path.</p>
+<p>This can be built using design mode in the browser, the view can then
+be saved to a file or written directly to a netidx path.</p>
 <p><img src="browser-design-mode.png" alt="Browser Design Mode" /></p>
-<p>Design mode can be activated at any time with the toggle button in the
-upper left corner, to the left of save. It splits the window
-vertically into two panes, the gui on the right, and the view
-definition on the left. The view definition is visualized as a tree of
-widgets, with parents higher in the tree containing children, and each
-widget having a type. Notice that we've selected a toggle widget in
-the tree, and we can see that widget is highlighted blue in the gui,
-as we move the selection, the highlight will move, such that we always
-know what part of the actual gui we are changing. From a static
-picture it's not possible to see this, however the gui is fully
-functional in every way while design mode is activated, it isn't some
-&quot;special&quot; mode, what you see is exactly what you will get. This
-extends to changes, as we make changes the gui will reflect them
-immediately, of course if we don't like a change we can simply press
-the undo button in the tool bar above the widget tree. </p>
-<p>Now lets take a look at the bottom part of the view definition pane,
-we see the details of the widget we've selected, the toggle button. We
-see there are some layout properties hidden by an expander, every
-drawable widget has those, so lets leave them for later. Every widget
-that does something in the browser has one or more sources, and one or
-more sinks. Sources are where data comes in, and sinks are where data
-goes out. Sources are defined in a little domain specific language
-called the formula language, which will be specified in detail
-later. Sinks use the same syntax but have a different set of
-functions.</p>
-<p>The semantics of the formula language, and it's syntax, are meant to
-be very similar to formulas in a spreadsheet. Where instead of row/col
-notation, we use netidx paths to denote refs to other parts of the
-&quot;sheet&quot;. Sources update whenever something they ref updates, and sinks
-are updated, and may cause sources to update. And, that's all rather
-abstract, lets focus on our example.</p>
-<p>Our toggle has two sources, and one sink. The enabled source just
-determines if the toggle is interactable, and in our case it's set to
-a function <code>constant(bool, true)</code>, which creates a source that always
-evaluates to <code>Value::True</code>. The other source, just called source,
-determines whether the toggle displays as on or off, and this one is
-set to <code>load_path(&quot;/solar/control/charging&quot;)</code>, load_path is a function
-that creates a source that subscribes to the netidx path it's given
-and updates when the subscription updates. So this straightforwardly
-ties the state of the toggle to the value of
-<code>/solar/control/charging</code>, when that value changes the toggle state
-changes. When the user clicks the toggle, either true or false is
-written to the sink which is defined as
-<code>confirm(store_path(&quot;/solar/control/charging&quot;))</code>. So what does this
-do?  Well, store_path creates a sink that writes whatever value it
-receives to the specified path, confirm is more complex. It takes a
-sink as an argument, and returns a sink that asks the user to confirm
-every value it receives. If the user says yes, then it passes the
-value on to the passed in sink, in this case to load_path, otherwise
-it drops the value.</p>
-<p>There are many other useful formulas, and the goal is to make building
-simple guis like this easy, the majority of the work should be the
-layout, and moderately complex guis should be possible. While this
-system is already pretty useful it is still under heavy development,
-and is by no means finished. Another &quot;limitation&quot; to mention is since
-it's built with Gtk+ it's primarily a desktop application, though I
-have tested it on the pinephone phosh, and even made a few changes to
-improve touch support. Android, and especially iOS versions will not
-happen, unless someone else wants to step up.</p>
+<p>See the chapter on custom views for more information.</p>
 <h2><a class="header" href="#wrapping-up" id="wrapping-up">Wrapping Up</a></h2>
 <p>In this chapter we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We
 didn't cover the opportunities for scripting our solar installation
 now that we can control it using netidx, but we certainly could do any
-of the nice things we did in the last chapter. Instead we saw how we
-could build a pretty nice looking and functional gui using browser
-custom views, and we got an introduction to the formula language. I
-want to point out that with our design having a gui in no way alters
-our ability to script and manipulate the system programatically. It's
+of the nice things we did in the last chapter. We did show an example
+gui, and I want to point out that having a gui in no way alters our
+ability to script and manipulate the system programatically. It's
 important to recognize that building a bespoke system with a gui as
-complex as the browser view we built AND making it scriptable over the
-network in a discoverable, secure, and performant way is not an easy
-task, and usually isn't worth doing. However by using netidx we got it
-for free once we made our problem fit into netidxs' data model.</p>
+complex as the one we built AND making it scriptable over the network
+in a discoverable, secure, and performant way is not an easy task.
+Usually it just isn't worth doing, however by using netidx it was
+easy, and that's really the point of the whole thing.</p>
 <h1><a class="header" href="#administration" id="administration">Administration</a></h1>
 <h2><a class="header" href="#first-things-first" id="first-things-first">First Things First</a></h2>
 <p>If you plan to use Kerberos make sure you have it set up properly,
@@ -1240,33 +1140,47 @@ isn't too bad, though it is somewhat specific to their product.</p>
 sometimes be less than helpful, but usually the KRB5_TRACE is more
 informative.</p>
 <h2><a class="header" href="#resources-and-gotchas" id="resources-and-gotchas">Resources and Gotchas</a></h2>
-<p>Most installations need not devote massive resources to the resolver
-server, however you may want to use at least two instances on
-different machines or VMs for redundancy. Here are a few rules of
-thumb/gotchas.</p>
 <ul>
-<li>Expect to use about 500 MiB of ram in the resolver server for every
-1 million published values.</li>
-<li>Both read and write operations should make use of all available
-logical processors on the machine in most cases. So, in the case you
-are hitting performance problems, try allocating more cores before
-taking more drastic segmentation steps.</li>
-<li>Even when the resolvers are very busy they should remain fair. Large
+<li>
+<p>Expect to use about 500 MiB of ram in the resolver server for every
+1 million published values.</p>
+</li>
+<li>
+<p>Both read and write operations will make use of all available
+logical processors on the machine. So, in the case you are hitting
+performance problems, try allocating more cores before taking more
+drastic segmentation steps.</p>
+</li>
+<li>
+<p>Even when the resolvers are very busy they should remain fair. Large
 batches of reads or writes are broken into smaller reasonably sized
 batches for each logical processor. These batches are then
 interleaved pseudo randomly to ensure that neither reads nor writes
-are starved.</li>
-<li>Be mindful of the maximum number of available file descriptors per
+are starved.</p>
+</li>
+<li>
+<p>Be mindful of the maximum number of available file descriptors per
 process on the resolver server machine when setting
 max_connections. You can easily raise this number on modern linux
-systems using ulimit.</li>
+systems using ulimit.</p>
+</li>
+<li>
+<p>While the resolver server drops idle read client connections fairly
+quickly (default 60 seconds), if you have many thousands or tens of
+thousands of read clients that want to do a lot of reading
+simultaneously then you may need to raise the maximum number of file
+descriptors available, and/or deploy additional processes to avoid
+file descriptor exhaustion.</p>
+</li>
+<li>
+<p>Some implementations of Krb5/GSSAPI keep a file descriptor open for
+every active client/server session, which in our case means every
+read client, but also every publisher, connected or not. This has
+been fixed in recent versions of MIT Kerberos (but may still
+manifest if you are running with KRB5_TRACE). Keep this in mind if
+you're seeing file descriptor exhaustion.</p>
+</li>
 </ul>
-<p>The resolver server drops idle read client connections fairly quickly
-(configurable, recommended default 60 seconds), however if you have
-many thousands or tens of thousands of read clients that want to do a
-lot of reading simultaneously then you may need to raise the maximum
-number of file descriptors available, and/or deploy additional
-processes to avoid file descriptor exhaustion.</p>
 <h2><a class="header" href="#configuration" id="configuration">Configuration</a></h2>
 <p>The netidx configuration file is the same for all the different
 components of the system, resolver, publisher, and subscriber. By
@@ -1296,8 +1210,8 @@ access to this file.</p>
 <p>Here's about the simplest possible Kerberos enabled
 configuration. I'll go through each field,</p>
 <ul>
-<li>parent: null unless this server has a parent, which I'll document later</li>
-<li>children: empty unless this server has children, which I'll document later</li>
+<li>parent: null unless this server has a parent</li>
+<li>children: empty unless this server has children</li>
 <li>pid_file: prefix to add to the pid file which will otherwise be
 e.g. 0.pid for the first server in the cluster, or 1.pid for the
 second, etc.</li>
@@ -1315,8 +1229,7 @@ connection open.</li>
 <li>writer_ttl: The amount of time, in seconds, to wait for a publisher
 to heartbeat before deleting everything it has published. The
 publisher will send heartbeats at 1/2 this interval. e.g. 120 means
-publishers will heartbeat every minute. Processing a heartbeat does
-not take the write lock.</li>
+publishers will heartbeat every minute.</li>
 <li>auth: either &quot;Anonymous&quot;, or &quot;Krb5&quot;. If &quot;Krb5&quot;, then a service
 principal name should be included for every resolver server in the
 cluster. Each resolver server instance must have access to the
@@ -1324,9 +1237,12 @@ corresponding SPN's key via a keytab or other means, and of course
 you must create the corresponding service principal for each
 instance.</li>
 </ul>
+<p>If you're using Kerberos then you also need a permissions file, which
+is covered in the next section.</p>
+<h1><a class="header" href="#authorization" id="authorization">Authorization</a></h1>
 <p>When using Kerberos we also need a permissions file in order to run a
 resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. E.G.</p>
+shared with everyone using the cluster. e.g.</p>
 <pre><code class="language-json">{
     &quot;/&quot;: {
         &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
@@ -1337,14 +1253,13 @@ shared with everyone using the cluster. E.G.</p>
 }
 </code></pre>
 <p>In order to do the corresponding action in netidx a user must have
-that permission bit set, no bit, no action.</p>
-<p>Permission bits are computed starting from the root proceeding down
-the tree to the node being acted on. The bits are accumulated on the
-way down, and can also be removed at any point in the tree. Each bit
-is represented by a 1 character symbolic tag, E.G.</p>
+that permission bit set. Permission bits are computed starting from
+the root proceeding down the tree to the node being acted on. The bits
+are accumulated on the way down. Each bit is represented by a 1
+character symbolic tag, e.g.</p>
 <ul>
 <li>!: Deny, changes the meaning of the following bits to deny the
-corresponding permission instead of grant it. Must be the first
+corresponding permission instead of grant it. May only be the first
 character of the permission string.</li>
 <li>s: Subscribe</li>
 <li>w: Write</li>
@@ -1383,19 +1298,18 @@ allowed to subscribe.</p>
 <p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
 that matches me, and we would remove the permission bits s, w, and l,
 leaving our effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;, since that doesn't give
-me the right to subscribe my request would be denied. We could, for
-example, do this by group instead.</p>
+<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;. Since that doesn't give
+me the right to subscribe my request would be denied. We could also do
+this by group.</p>
 <pre><code class="language-json">&quot;/solar&quot;: {
     &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
     &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
 }
 </code></pre>
 <p>As you would expect, this deny permission will still apply to me
-because I am a member of the domain admins group. A slightly more
-subtle point is that permissions are accumulated. For example, if I am
-a member of two groups, and both groups have different bits denied,
-then all of those bits would be removed. E.G.</p>
+because I am a member of the domain admins group. If I am a member of
+two groups, and both groups have different bits denied, then all of
+them would be removed. e.g.</p>
 <pre><code class="language-json">&quot;/solar&quot;: {
     &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
     &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
@@ -1429,134 +1343,6 @@ enabled users. However it might be useful if you have embedded systems
 that can't use kerberos, and you don't want to build a separate
 resolver server infrastructure for them.</p>
 <h3><a class="header" href="#groups" id="groups">Groups</a></h3>
-<p>You'll might have noticed I'm using AD style group names above, that's
-because my example setup uses Samba in ADS mode so I can test windows
-and unix clients on the same domain. The most important thing about
-the fact that I'm using Samba ADS and thus have the group names I have
-is that it doesn't matter. Groups are just strings to netidx, for a
-given user, whatever the <code>id</code> command would spit out for that user is
-what it's going to use for the set of groups the user is in (so that
-better match what's in your permissions file). You need to set up the
-resolver server machines such that they can properly resolve the set
-of groups every user who might use netidx is in.</p>
-<p>Luckily you only need to get this right on the machines that run
-resolver servers, because that's the only place group resolution
-happens in netidx. You're other client and server machines can be as
-screwed up and inconsistent as you want, as long as the resolver
-server machine agrees that I'm a member of &quot;RYU-OH\domain admins&quot; then
-whatever permissions assigned to that group in the permission file
-will apply to me.</p>
-<p>All the non resolver server machines need to be able to do is get
-Kerberos tickets. You don't even need to set them up to use Kerberos
-for authentication (but I highly recommend it, unless you really hate
-your users), you can just force people to type <code>kinit foo@BAR.COM</code>
-every 8 hours if you like.</p>
-<h1><a class="header" href="#authorization" id="authorization">Authorization</a></h1>
-<p>When using Kerberos we also need a permissions file in order to run a
-resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. E.G.</p>
-<pre><code class="language-json">{
-    &quot;/&quot;: {
-        &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
-    },
-    &quot;/solar&quot;: {
-	    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
-    }
-}
-</code></pre>
-<p>In order to do the corresponding action in netidx a user must have
-that permission bit set, no bit, no action.</p>
-<p>Permission bits are computed starting from the root proceeding down
-the tree to the node being acted on. The bits are accumulated on the
-way down, and can also be removed at any point in the tree. Each bit
-is represented by a 1 character symbolic tag, E.G.</p>
-<ul>
-<li>!: Deny, changes the meaning of the following bits to deny the
-corresponding permission instead of grant it. Must be the first
-character of the permission string.</li>
-<li>s: Subscribe</li>
-<li>w: Write</li>
-<li>l: List</li>
-<li>p: Publish</li>
-<li>d: Publish default</li>
-</ul>
-<p>For example if I was subscribing to
-<code>/solar/stats/battery_sense_voltage</code> we would walk down the path from
-left to right and hit this permission first,</p>
-<pre><code class="language-json">&quot;/&quot;: {
-    &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
-},
-</code></pre>
-<p>This applies to a Kerberos principal &quot;eric@RYU-OH.ORG&quot;, the resolver
-server will check the user principal name of the user making the
-request, and it will check all the groups that user is a member of,
-and if any of those are &quot;eric@RYU-OH.ORG&quot; then it will <code>or</code> the
-current permission set with &quot;swlpd&quot;. In this case this gives me
-permission to do anything I want in the whole tree (unless it is later
-denied). Next we would hit,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
-}
-</code></pre>
-<p>Which doesn't apply to me, and so would be ignored, and since there
-are no more permissions entries my effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> are &quot;swlpd&quot;, and so I would be
-allowed to subscribe.</p>
-<p>Suppose however I changed the above entry,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;eric@RYU-OH.ORG&quot;: &quot;!swl&quot;,
-}
-</code></pre>
-<p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
-that matches me, and we would remove the permission bits s, w, and l,
-leaving our effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;, since that doesn't give
-me the right to subscribe my request would be denied. We could, for
-example, do this by group instead.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
-}
-</code></pre>
-<p>As you would expect, this deny permission will still apply to me
-because I am a member of the domain admins group. A slightly more
-subtle point is that permissions are accumulated. For example, if I am
-a member of two groups, and both groups have different bits denied,
-then all of those bits would be removed. E.G.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
-    &quot;RYU-OH\enterprise admins&quot;: &quot;!pd&quot;,
-}
-</code></pre>
-<p>Now my effective permissions under <code>/solar</code> are empty, I can do
-nothing. If I am a member of more than one group, and one denies
-permissions that the other grants the deny always takes precidence.</p>
-<p>Each server cluster is completely independent for permissions. If for
-example this cluster had a child cluster, the administrators of that
-cluster would be responsible for deciding what permissions file it
-should use. It certainly could use the same file, but it doesn't have
-to.</p>
-<h3><a class="header" href="#anonymous-1" id="anonymous-1">Anonymous</a></h3>
-<p>It's possible to give anonymous users permissions even on a Kerberos
-enabled system, and this could allow them to use whatever functions
-you deem non sensitive, subject to some limitations. There is no
-encryption. There is no tamper protection. There is no publisher -&gt;
-subscriber authentication. Anonymous users can't subscribe to non
-anonymous publishers. Non anonymous users can't subscribe to anonymous
-publishers. You name anonymous &quot;&quot; in the permissions file, e.g.</p>
-<pre><code class="language-json">&quot;/tmp&quot;: {
-    &quot;&quot;: &quot;swlpd&quot;
-}
-</code></pre>
-<p>Now <code>/tmp</code> is an anonymous free for all. If you have Kerberos
-deployed, it's probably not that useful to build such a hybrid system,
-because any anonymous publishers would not be usable by kerberos
-enabled users. However it might be useful if you have embedded systems
-that can't use kerberos, and you don't want to build a separate
-resolver server infrastructure for them.</p>
-<h3><a class="header" href="#groups-1" id="groups-1">Groups</a></h3>
 <p>You'll might have noticed I'm using AD style group names above, that's
 because my example setup uses Samba in ADS mode so I can test windows
 and unix clients on the same domain. The most important thing about
