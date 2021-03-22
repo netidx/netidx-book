@@ -926,48 +926,6 @@ same name. In the example we have</p>
 each $host, and a column for each child of $host. In our case, the
 data is perfectly regular, and so we end up with a fully populated
 table with 3 columns, and a row for each host.</p>
-<p>While it's nice to have perfect regularity is not a requirement. By
-default in order to be included as a column in the table a 2nd level
-child must be shared by at least 50% of the 1st level children (50% of
-the rows must have that column). However it is possible to manually
-configure which columns the browser should draw, what order they
-appear in, and even which (if any) should be the default sort
-column. One can do this using the browser's built in view editor (or
-by editing some json), and one can publish the result into netidx such
-that the browser will automatically use your view definition when the
-user navigates to a specific place in the tree. There is more that can
-be done with views but that's for another chapter.</p>
-<p>In the case where the browser does not find this 2 level regularity,
-for example if the current level nodes don't have any children, then
-it will draw a table with 1 column (the value) and a row for each
-node. This is called vector mode. </p>
-<p>If you're worried that this pattern recognition is expensive in cpu,
-bandwidth, and round trips, don't be. The resolver server pre computes
-tables, so it's just one call for the browser to retrieve that
-information for a given location.</p>
-<h2><a class="header" href="#wrapping-up" id="wrapping-up">Wrapping Up</a></h2>
-<p>In this chapter we saw how we could add a bit of code to an existing
-system to expose some of it's data to netidx, and then get quite a bit
-of functionality out of that for not much work. I'd like to point out
-that all of the components we saw need not have been written by one
-person. In fact the people who write them didn't need to talk to each
-other in advance (or ever). Having worked in a large organization
-where netidx was deployed I found that it's often the case that
-someone publishes some interesting data, and then later on other
-people see it, do things with it, and publish those things, and after
-a while a very compelling application appears almost by magic. Of
-course once that happens it's often necessary to get those people
-together and talk about how to streamline their design, support the
-user base, etc, but that's a really good problem to have because it
-means value has been created. Many administrators deploying netidx
-might be tempted to lock it completely down so that only &quot;production&quot;
-applications are allowed to publish. It's important to think carefully
-about how to make sure production applications are always available,
-but even still we always included a place in the namespace where
-anyone could publish anything.</p>
-<p>In the next chapter I'll focus on an application written from scratch
-to use netidx as it's primary means of communication and control, and
-the browser as it's primary user interface.</p>
 <h1><a class="header" href="#a-clean-slate-design-using-netidx" id="a-clean-slate-design-using-netidx">A Clean Slate Design Using Netidx</a></h1>
 <p>In the last chapter we added netidx publishing of one data point from
 an existing system, and then explored what we could do with the
@@ -1253,7 +1211,7 @@ it's built with Gtk+ it's primarily a desktop application, though I
 have tested it on the pinephone phosh, and even made a few changes to
 improve touch support. Android, and especially iOS versions will not
 happen, unless someone else wants to step up.</p>
-<h2><a class="header" href="#wrapping-up-1" id="wrapping-up-1">Wrapping Up</a></h2>
+<h2><a class="header" href="#wrapping-up" id="wrapping-up">Wrapping Up</a></h2>
 <p>In this chapter we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We
 didn't cover the opportunities for scripting our solar installation
