@@ -40,4 +40,5 @@ several other implications,
 - publishers on different network segments that might share ip
   addresses can't use the same resolver server.
 - the resolver must be able to route back to every publisher, and also
-  it must be able to actually connect.
+  it must be able to actually connect. For example your firewall must
+  allow connections both ways.
