@@ -29,6 +29,26 @@ If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber
 will not quit, but it will no longer be possible to issue commands.
 
+## Arguments
+
+- `-o, --oneshot`: Causes subscriber to subscribe to each requested
+  path, get one value, and then unsubscribe. In oneshot mode, if all
+  requested subscriptions have been processed, and either stdin is
+  closed, or `-n, --no-stdin` was also specified, then subscriber will
+  exit. e.g.
+ 
+  `netidx subscriber -no /solar/stats/battery_sense_voltage`
+  
+  Will subscribe to `/solar/stats/battery_sense_voltage`, print out
+  the current value, and then exit.
+- `-n, --no-stdin`: Do not read commands from stdin, only subscribe to
+  paths passed on the command line. In this mode it is not possible to
+  unsubscribe, write, or add new subscriptions after the program starts.
+- `-t, --subscribe-timeout`: Instead of retrying failed subscriptions
+  forever, only retry them for the specified number of seconds, after
+  that remove them, and possibly exit if `-o, --oneshot` was also
+  specified.
+
 ## Notes
 
 The format subscriber writes to stdout is compatible with the format

@@ -1777,6 +1777,30 @@ must escape it e.g. <code>\\</code>.</li>
 <p>If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber
 will not quit, but it will no longer be possible to issue commands.</p>
+<h2><a class="header" href="#arguments-1" id="arguments-1">Arguments</a></h2>
+<ul>
+<li>
+<p><code>-o, --oneshot</code>: Causes subscriber to subscribe to each requested
+path, get one value, and then unsubscribe. In oneshot mode, if all
+requested subscriptions have been processed, and either stdin is
+closed, or <code>-n, --no-stdin</code> was also specified, then subscriber will
+exit. e.g.</p>
+<p><code>netidx subscriber -no /solar/stats/battery_sense_voltage</code></p>
+<p>Will subscribe to <code>/solar/stats/battery_sense_voltage</code>, print out
+the current value, and then exit.</p>
+</li>
+<li>
+<p><code>-n, --no-stdin</code>: Do not read commands from stdin, only subscribe to
+paths passed on the command line. In this mode it is not possible to
+unsubscribe, write, or add new subscriptions after the program starts.</p>
+</li>
+<li>
+<p><code>-t, --subscribe-timeout</code>: Instead of retrying failed subscriptions
+forever, only retry them for the specified number of seconds, after
+that remove them, and possibly exit if <code>-o, --oneshot</code> was also
+specified.</p>
+</li>
+</ul>
 <h2><a class="header" href="#notes" id="notes">Notes</a></h2>
 <p>The format subscriber writes to stdout is compatible with the format
 the publisher reads. This is by design, to make applications that
