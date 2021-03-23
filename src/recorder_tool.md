@@ -26,22 +26,22 @@ underlying IO device and the number of processor cores available.
     that updates a lot, it may not be possible to use just one
     computer. The recorder supports sharding across an arbitrary
     number of processes for both recording and playback. n is the
-    number of shards that are expected in a given
-    cluster. recording/playback will not begin until all the shards
-    have appeared and synced with each other. default 1.
+    number of shards that are expected in a given cluster. playback
+    will not be avaliable until all the shards have appeared and
+    synced with each other, however recording will begin
+    immediatly. default 1.
   - `-f, --foreground`: don't daemonize
 - Args that apply to recording
   - `--spec <glob>`: required by recording, enables recording if
     specified, may be specified multiple times, a glob describing what
     to archive. If multiple globs are specified and they overlap, the
     overlapped items will only be archived once.
-  - `--flush-frequency <pages>`: optional, How much data to write before
-    flushing to disk in pages, where a page is a filesystem page,
-    however large that is on your system. default 65534. This is the
-    maximum amount of data you will probably lose in a power outage,
-    system crash, or program crash. The recorder uses two phase commits
-    to the archive file to ensure that partially written data does not
-    corrupt the file.
+  - `--flush-frequency <pages>`: optional, How much data to write
+    before flushing to disk, in pages, where a page is a filesystem
+    page. default 65534. This is the maximum amount of data you will
+    probably lose in a power outage, system crash, or program
+    crash. The recorder uses two phase commits to the archive file to
+    ensure that partially written data does not corrupt the file.
   - `--flush-interval <seconds>`: optional, How long in seconds to wait
     before flushing data to disk even if `flush-frequency` pages was not
     yet written. 0 to disable, default 30.
@@ -86,9 +86,9 @@ or programatically. To create a new playback session with default
 values just write `null` to `publish-base/session`. e.g.
 
 ```
-netidx subscriber /archive/session
-/solar/archive/session|none|Null
+netidx subscriber <<EOF
 WRITE|/solar/archive/session|string|null
+EOF
 /solar/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```
 
@@ -107,23 +107,16 @@ If we want to pass some arguments to the rpc so our session will be
 setup how we like by default we can do that as well, e.g.
 
 ```
-netidx subscriber \
-    /solar/archive/session \
-    /solar/archive/session/start/val \
-    /solar/archive/session/speed/val
-/solar/archive/session|none|Null
-/solar/archive/session/start/val|string|Unbounded
-/solar/archive/session/speed/val|f64|1
+netidx subscriber <<EOF
 WRITE|/solar/archive/session/start/val|string|-3d
 WRITE|/solar/archive/session/speed/val|f32|2
 WRITE|/solar/archive/session|string|null
+EOF
 /archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```
 
-First we are told the defaults, as a result of subscribing to the
-rpc's arguments, then we write our desired values and finally call the
-rpc. Now our new session would be setup to start 3 days ago, and
-playback at 2x speed.
+Now our new session would be setup to start 3 days ago, and playback
+at 2x speed.
 
 ### Playback Controls
 
@@ -176,9 +169,7 @@ batching.
 ### Deleting a Playback Session
 
 Simply stop subscribing to any value or control in the session and the
-recorder will delete it within about 30 seconds. At the moment there
-is no other way to delete a session, but that's a feature that would
-be easy to add if it was needed.
+recorder will garbage collect it.
 
 ## Example
 
