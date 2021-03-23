@@ -1,8 +1,8 @@
 # Resolver Command Line Tool
 
 The resolver command line tool allows you to query and update the
-resolver server from the command line. It's mostly intended for
-testing and debugging. There are several kinds of querys/manipulations it can perform,
+resolver server from the command line. There are several kinds of
+querys/manipulations it can perform,
 
 - `list`: list entries matching a specified pattern
 - `table`: query the table descriptor for a path
@@ -40,12 +40,8 @@ List supports several arguments,
 
 - `-n, --no-structure`: don't list matching items that are structural
   only. Only list items that are actually published.
-- `-w, --watch`: don't quit, instead poll the resolver server for
-  changes to things matching the specified pattern, and print out new
-  items as they are added. This does not just run the query every
-  second, since the resolver server maintains a set of change ids for
-  each path, using those ids this command is able to run the query
-  again only if something relevant has actually changed.
+- `-w, --watch`: don't quit, instead wait for new items matching the
+  pattern and print them out as they appear.
 
 ## Table
 

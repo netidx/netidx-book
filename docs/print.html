@@ -1807,8 +1807,8 @@ the publisher reads. This is by design, to make applications that
 subscribe, manipulate, and republish data easy to write.</p>
 <h1><a class="header" href="#resolver-command-line-tool" id="resolver-command-line-tool">Resolver Command Line Tool</a></h1>
 <p>The resolver command line tool allows you to query and update the
-resolver server from the command line. It's mostly intended for
-testing and debugging. There are several kinds of querys/manipulations it can perform,</p>
+resolver server from the command line. There are several kinds of
+querys/manipulations it can perform,</p>
 <ul>
 <li><code>list</code>: list entries matching a specified pattern</li>
 <li><code>table</code>: query the table descriptor for a path</li>
@@ -1840,12 +1840,8 @@ begin with <code>battery</code> with the following query,</p>
 <ul>
 <li><code>-n, --no-structure</code>: don't list matching items that are structural
 only. Only list items that are actually published.</li>
-<li><code>-w, --watch</code>: don't quit, instead poll the resolver server for
-changes to things matching the specified pattern, and print out new
-items as they are added. This does not just run the query every
-second, since the resolver server maintains a set of change ids for
-each path, using those ids this command is able to run the query
-again only if something relevant has actually changed.</li>
+<li><code>-w, --watch</code>: don't quit, instead wait for new items matching the
+pattern and print them out as they appear.</li>
 </ul>
 <h2><a class="header" href="#table" id="table">Table</a></h2>
 <p>This prints out the table desciptor for a path, which can tell you how
