@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Configuration - Introduction to Netidx</title>
+        <title>Listener Check - Introduction to Netidx</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html" class="active"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="listener_check.html" class="active"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,77 +159,61 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2><a class="header" href="#configuration" id="configuration">Configuration</a></h2>
-<p>The netidx configuration file is the same for all the different
-components of the system, resolver, publisher, and subscriber. By
-default it is stored,</p>
+                        <h1><a class="header" href="#listener-check" id="listener-check">Listener Check</a></h1>
+<p>The listener check is an extra security measure that is intended to
+prevent an authenticated user from hijacking the gssapi session of
+another publisher. When a client connects to the resolver server for
+write, and kerberos is enabled, then after authentication the resolver
+server encrypts a challenge using the newly created gssapi session. It
+then connects to the write address proposed by this new publisher and
+presents the challenge, which the publisher must answer correctly,
+otherwise the old session, if any, tied to the write address will be
+kept, and the new client will be disconnected. So in order to publish
+at a given address you must,</p>
 <ul>
-<li>on Linux: ~/.config/netidx.json</li>
-<li>on Windows: ~\AppData\Roaming\netidx.json</li>
-<li>on MacOS: ~/Library/Application Support/netidx.json</li>
+<li>Be a valid kerberos user with a valid service ticket for the
+resolver server.</li>
+<li>Actually be listening on the write address you propose to use for
+publishing. And the write address must be routable from the resolver
+server's position on the network.</li>
+<li>Have permission to publish where you want to publish.</li>
 </ul>
-<p>Since the dirs crate is used to discover these paths, they are locally
-configurable by OS specific means. Everyone who will use netidx needs
-access to this file.</p>
-<pre><code class="language-json">{
-    &quot;parent&quot;: null,
-    &quot;children&quot;: [],
-    &quot;pid_file&quot;: &quot;&quot;,
-    &quot;addrs&quot;: [&quot;192.168.0.1:4564&quot;],
-    &quot;max_connections&quot;: 768,
-    &quot;hello_timeout&quot;: 10,
-    &quot;reader_ttl&quot;: 60,
-    &quot;writer_ttl&quot;: 120,
-    &quot;auth&quot;: {
-        &quot;Krb5&quot;: {&quot;192.168.0.1:4564&quot;: &quot;netidx/washu-chan.ryu-oh.org@RYU-OH.ORG&quot;}
-    }
-}
-</code></pre>
-<p>Here's about the simplest possible Kerberos enabled
-configuration. I'll go through each field,</p>
+<h2><a class="header" href="#why-is-the-listener-check-important" id="why-is-the-listener-check-important">Why is the listener check important?</a></h2>
+<p>Since connecting to the resolver as a publisher can be done by any
+kerberos user who can get a service ticket for the resolver,
+essentially anyone on your network, and since the address and port a
+publisher is going to insert into the resolver server as their address
+is just part of the hello message, without some kind of check anyone
+on your network could figure out the address of an important
+publisher, then connect to the resolver server and say they <em>are</em> that
+publisher address. Even if they don't have permission to actually
+publish paths where that publisher is publishing, the gssapi sessions
+are tied to the write ip/port in the resolver server. If the gssapi
+session of an existing publisher is replaced without it's knowledge,
+then it would no longer be able to validate authorization tokens from
+the resolver server, and all subscriptions to it would fail. So
+essentially the listener check exists to prevent an unauthorized
+elevation of privledges leading to a denial of service. There are
+several other implications,</p>
 <ul>
-<li>parent: null unless this server has a parent</li>
-<li>children: empty unless this server has children</li>
-<li>pid_file: prefix to add to the pid file which will otherwise be
-e.g. 0.pid for the first server in the cluster, or 1.pid for the
-second, etc.</li>
-<li>addrs: The list of all resolver servers in this level of the
-cluster, e.g. not children or parents, just this level. When
-starting the server you must pass in an index into this array on the
-command line as --id to identify which server you want to start.</li>
-<li>max_connections: The maximum number of simultaneous connections to
-allow (both read and write) before starting to reject new
-connections.</li>
-<li>hello_timeout: The amount of time to wait for a client to say a
-proper hello before dropping the connection.</li>
-<li>reader_ttl: The amount of time, in seconds, to keep an idle read
-connection open.</li>
-<li>writer_ttl: The amount of time, in seconds, to wait for a publisher
-to heartbeat before deleting everything it has published. The
-publisher will send heartbeats at 1/2 this interval. e.g. 120 means
-publishers will heartbeat every minute.</li>
-<li>auth: either &quot;Anonymous&quot;, or &quot;Krb5&quot;. If &quot;Krb5&quot;, then a service
-principal name should be included for every resolver server in the
-cluster. Each resolver server instance must have access to the
-corresponding SPN's key via a keytab or other means, and of course
-you must create the corresponding service principal for each
-instance.</li>
+<li>publishers on different network segments that might share ip
+addresses can't use the same resolver server.</li>
+<li>the resolver must be able to route back to every publisher, and also
+it must be able to actually connect.</li>
 </ul>
-<p>If you're using Kerberos then you also need a permissions file, which
-is covered in the next section.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="administration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="startup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="authorization.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="subscription_flow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -241,13 +225,13 @@ is covered in the next section.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="administration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="startup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="authorization.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="subscription_flow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.4.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.5.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples_overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="vmstat_example.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="integration_example.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="administration.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools_overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="publisher_tool.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="subscriber_tool.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="resolver_tool.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="recorder_tool.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="stress_tool.html"><strong aria-hidden="true">5.5.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="browser_overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser_views.html"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="browser_scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1400,6 +1400,48 @@ exists etc. You may need to, for example, run the publisher and/or
 resolver server with</p>
 <p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
 <p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging kerberos issues.</p>
+<h1><a class="header" href="#listener-check" id="listener-check">Listener Check</a></h1>
+<p>The listener check is an extra security measure that is intended to
+prevent an authenticated user from hijacking the gssapi session of
+another publisher. When a client connects to the resolver server for
+write, and kerberos is enabled, then after authentication the resolver
+server encrypts a challenge using the newly created gssapi session. It
+then connects to the write address proposed by this new publisher and
+presents the challenge, which the publisher must answer correctly,
+otherwise the old session, if any, tied to the write address will be
+kept, and the new client will be disconnected. So in order to publish
+at a given address you must,</p>
+<ul>
+<li>Be a valid kerberos user with a valid service ticket for the
+resolver server.</li>
+<li>Actually be listening on the write address you propose to use for
+publishing. And the write address must be routable from the resolver
+server's position on the network.</li>
+<li>Have permission to publish where you want to publish.</li>
+</ul>
+<h2><a class="header" href="#why-is-the-listener-check-important" id="why-is-the-listener-check-important">Why is the listener check important?</a></h2>
+<p>Since connecting to the resolver as a publisher can be done by any
+kerberos user who can get a service ticket for the resolver,
+essentially anyone on your network, and since the address and port a
+publisher is going to insert into the resolver server as their address
+is just part of the hello message, without some kind of check anyone
+on your network could figure out the address of an important
+publisher, then connect to the resolver server and say they <em>are</em> that
+publisher address. Even if they don't have permission to actually
+publish paths where that publisher is publishing, the gssapi sessions
+are tied to the write ip/port in the resolver server. If the gssapi
+session of an existing publisher is replaced without it's knowledge,
+then it would no longer be able to validate authorization tokens from
+the resolver server, and all subscriptions to it would fail. So
+essentially the listener check exists to prevent an unauthorized
+elevation of privledges leading to a denial of service. There are
+several other implications,</p>
+<ul>
+<li>publishers on different network segments that might share ip
+addresses can't use the same resolver server.</li>
+<li>the resolver must be able to route back to every publisher, and also
+it must be able to actually connect.</li>
+</ul>
 <h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
 <p>Sometimes debugging problems requires a more detailed understanding of
 exactly what steps are involved in a subscription.</p>

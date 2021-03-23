@@ -10,6 +10,7 @@
   - [Configuration](./configuration.md)
   - [Authorization](./authorization.md)
   - [Running the Resolver Server](./startup.md)
+  - [Listener Check](./listener_check.md)
   - [Subscription Flow](./subscription_flow.md)
   - [Fault Tolerance](./fault_tolerance.md)
 - [Command Line Tools](./tools_overview.md)
