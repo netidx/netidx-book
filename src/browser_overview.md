@@ -5,12 +5,12 @@ netidx, it allows users to navigate to places of interest, view data
 in tabular or vector form, and construct applications with custom
 views and BScript.
 
-When the browser visits it displays either a vector or a table. A
-vector looks like e.g.
+Depending on the structure of a subtree the browser draws either a
+vector,
 
 ![Vector mode](./browser-vector-mode.png)
 
-Where as a table looks like, e.g.
+or a table,
 
 ![Table mode](./browser-components-tour.png)
 

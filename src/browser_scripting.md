@@ -32,9 +32,55 @@ load_var(base) ------------1-> concat_string ----
 event() -----------------------------------2-> store
 ```
 
-So not only do we write a Null whenever the button is clicked, but we
-also change were we write whenever the variable `base`
-changes. Constants like `"/app/do_action"` never change.
+- When the button is clicked the `event()` node emits a `Null` which
+  is received by `store` and ultimately either written right away to
+  the path specified by store's first argument, or retained until
+  store's first argument is a valid path.
+- When the value of `base` is changed it's new value is emitted to
+  `concat_string`, which concatinates it with it's second argument (a
+  constant) and emits the result to store. Store will then either wait
+  for event to emit a value, or if event has already emitted a value
+  in the past then store will store that value to the new path
+  (assuming it's valid) it just received.
+
+# Compile Time vs Run Time
+
+When a view is first loaded all BScript expressions in it are compiled
+into event graphs like the one visualized above. From then on, as the
+view runs, events are generated and flow through the graphs, but no
+additional compilation takes place.
+
+The only exception to this rule is the `eval` function, which compiles
+and executes new BScript code on the fly from a string.
+
+Since all BScript expressions are compiled at view load time, if you
+write an expression that just immediatly does something, then whatever
+it does will happen when the view is loaded. That holds true no matter
+where you put it, e.g. say we put the following as the `enabled`
+expression of a toggle.
+
+`any(true, store("/foo/bar", 42))`
+
+Since `any` always returns the left most event it receives, it will
+evaluate to true, making the toggle enabled, however every time the
+view containing this expression is loaded `42` will also be stored at
+`/foo/bar`.
+
+It's important to understand these semantics if you want to write more
+complex applications using BScript. The action widget is an invisible
+widget specifically meant for setting up these "background" event
+graphs. For example, we might want to have a variable called `base`
+that contains the base relative to which our view will operate. We can
+easily reference this variable in all our widgets, and the correct way
+to set it's value would be to put it's initialization expression in an
+action. e.g.
+
+```
+store_var(
+  "base",
+  load("/where")
+)
+```
 
 # Types and Constants
 
@@ -63,7 +109,7 @@ Constants may be prefixed with the type name followed by a colon, e.g.
 However constant expressions have a default type if none is specified,
 
 - floating point numbers: f64
-- integers: u64
+- integers: i64
 - strings: string
 - true/false: bool
 - ok: result

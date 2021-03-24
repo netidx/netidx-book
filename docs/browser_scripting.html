@@ -186,9 +186,48 @@ something like this,</p>
                                                  v
 event() -----------------------------------2-&gt; store
 </code></pre>
-<p>So not only do we write a Null whenever the button is clicked, but we
-also change were we write whenever the variable <code>base</code>
-changes. Constants like <code>&quot;/app/do_action&quot;</code> never change.</p>
+<ul>
+<li>When the button is clicked the <code>event()</code> node emits a <code>Null</code> which
+is received by <code>store</code> and ultimately either written right away to
+the path specified by store's first argument, or retained until
+store's first argument is a valid path.</li>
+<li>When the value of <code>base</code> is changed it's new value is emitted to
+<code>concat_string</code>, which concatinates it with it's second argument (a
+constant) and emits the result to store. Store will then either wait
+for event to emit a value, or if event has already emitted a value
+in the past then store will store that value to the new path
+(assuming it's valid) it just received.</li>
+</ul>
+<h1><a class="header" href="#compile-time-vs-run-time" id="compile-time-vs-run-time">Compile Time vs Run Time</a></h1>
+<p>When a view is first loaded all BScript expressions in it are compiled
+into event graphs like the one visualized above. From then on, as the
+view runs, events are generated and flow through the graphs, but no
+additional compilation takes place.</p>
+<p>The only exception to this rule is the <code>eval</code> function, which compiles
+and executes new BScript code on the fly from a string.</p>
+<p>Since all BScript expressions are compiled at view load time, if you
+write an expression that just immediatly does something, then whatever
+it does will happen when the view is loaded. That holds true no matter
+where you put it, e.g. say we put the following as the <code>enabled</code>
+expression of a toggle.</p>
+<p><code>any(true, store(&quot;/foo/bar&quot;, 42))</code></p>
+<p>Since <code>any</code> always returns the left most event it receives, it will
+evaluate to true, making the toggle enabled, however every time the
+view containing this expression is loaded <code>42</code> will also be stored at
+<code>/foo/bar</code>.</p>
+<p>It's important to understand these semantics if you want to write more
+complex applications using BScript. The action widget is an invisible
+widget specifically meant for setting up these &quot;background&quot; event
+graphs. For example, we might want to have a variable called <code>base</code>
+that contains the base relative to which our view will operate. We can
+easily reference this variable in all our widgets, and the correct way
+to set it's value would be to put it's initialization expression in an
+action. e.g.</p>
+<pre><code>store_var(
+  &quot;base&quot;,
+  load(&quot;/where&quot;)
+)
+</code></pre>
 <h1><a class="header" href="#types-and-constants" id="types-and-constants">Types and Constants</a></h1>
 <p>Types in browser script correspond to the netidx value type, and are
 named,</p>
@@ -213,7 +252,7 @@ named,</p>
 <p>However constant expressions have a default type if none is specified,</p>
 <ul>
 <li>floating point numbers: f64</li>
-<li>integers: u64</li>
+<li>integers: i64</li>
 <li>strings: string</li>
 <li>true/false: bool</li>
 <li>ok: result</li>
