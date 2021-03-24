@@ -2374,12 +2374,22 @@ accepted.</p>
 surrounding them with <code>[]</code>. To produce a literal <code>[</code> or <code>]</code> you must
 escape them with <code>\</code>, e.g. <code>\[</code> and <code>\]</code>. To produce a literal <code>\</code> you
 may escape it as well, e.g. <code>\\</code>. Any expression is a valid
-interpolation (including another interpolation), e.g. numeric
-expressions will be cast to strings. Any expression that cannot be
-cast to a string will be ignored.</p>
+interpolation (including another interpolation). Non string valued
+expressions will be cast to strings, and any expression that cannot be
+cast to a string will be replaced with the empty string.</p>
 <p>e.g.</p>
-<pre><code>&quot;[base]/some/path&quot;
-&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot;
+<pre><code>&quot;[base]/some/path&quot; =&gt; string_concat(load_var(&quot;base&quot;), &quot;/some/path&quot;)
+&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot; =&gt; 
+string_concat(
+    load_var(&quot;base&quot;),
+    &quot;/bar/&quot;,
+    if(
+        load(string_concat(load_var(&quot;base&quot;), &quot;/enabled&quot;)),
+        &quot;enabled&quot;,
+        &quot;disabled&quot;
+    ),
+    &quot;/thing&quot;
+)
 </code></pre>
 <h1><a class="header" href="#the-expression-inspector" id="the-expression-inspector">The Expression Inspector</a></h1>
 <p>The expression inspector shows a tree representation of a BScript

@@ -123,14 +123,24 @@ In a string literal you may substitute any number of expressions by
 surrounding them with `[]`. To produce a literal `[` or `]` you must
 escape them with `\`, e.g. `\[` and `\]`. To produce a literal `\` you
 may escape it as well, e.g. `\\`. Any expression is a valid
-interpolation (including another interpolation), e.g. numeric
-expressions will be cast to strings. Any expression that cannot be
-cast to a string will be ignored.
+interpolation (including another interpolation). Non string valued
+expressions will be cast to strings, and any expression that cannot be
+cast to a string will be replaced with the empty string.
 
 e.g.
 ```
-"[base]/some/path"
-"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing"
+"[base]/some/path" => string_concat(load_var("base"), "/some/path")
+"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing" => 
+string_concat(
+    load_var("base"),
+    "/bar/",
+    if(
+        load(string_concat(load_var("base"), "/enabled")),
+        "enabled",
+        "disabled"
+    ),
+    "/thing"
+)
 ```
 
 # The Expression Inspector
