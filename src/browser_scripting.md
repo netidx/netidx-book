@@ -166,20 +166,34 @@ edit the expression by manipulating the tree.
 
 # Reference
 
-## load
+## all
 
 ```
-load(Expr)
+all(Expr, ..., Expr)
 ```
 
-Subscribes to the netidx path specified by it's argument, which must
-evaluate to a string.
+All produces an if the current values of all it's arguments are equal.
+
+```
+all(11, load("/volume"))
+```
+
+Will produce 11 only when `/volume` is 11.
+
+## and
+
+```
+and(Expr, ..., Expr)
+```
+
+Produces true if all of it's arguments are true, otherwise false.
 
 e.g.
 ```
-load("/some/path/in/netidx")
-load("[base]/thing")
+and(load("/cake"), load("/diet"))
 ```
+
+Would produce false.
 
 ## any
 
@@ -204,47 +218,112 @@ mean(any(load("/bench/0/0"), load("/bench/0/1")))
 Will produce the average of the values of `/bench/0/0` and
 `/bench/0/1`.
 
-## all
+## call
 
 ```
-all(Expr, ..., Expr)
+call(rpc: Expr, Expr, ..., Expr)
 ```
 
-All produces an if the current values of all it's arguments are equal.
-
-```
-all(11, load("/volume"))
-```
-
-Will produce 11 only when `/volume` is 11.
-
-## sum
-
-```
-sum(Expr, ..., Expr)
-```
-
-Produces the sum of it's arguments.
+Call the netidx rpc specified by the first argument, passing the
+specified keyword arguments, and producing the return value of the
+call. Keyword arguments are encoded as pairs of a name followed by a
+value.
 
 e.g.
 ```
-sum(load("/offset"), load("/random"))
+store_var(
+  "sessionid",
+  call(
+    "/solar/archive/session", 
+    "start", "-10d", 
+    "speed", "unlimited", 
+    "play_after", "2s"
+  )
+)
 ```
 
-sums `/offset` and `/random`
+call `/solar/archive/session` with arguments to replay the last 10
+days, starting 2 seconds after the call finishes, at unlimited speed,
+and store the resulting session id in the variable sessionid.
 
-## product
+## cast
 
 ```
-product(Expr, ..., Expr)
+cast(Expr, Expr)
 ```
 
-Produces the product of it's arguments.
+Attempt to cast the second argument to the type specified by the
+first. Produce a value of the specified type, or an error if the cast
+is not possible.
 
-e.g. 
+e.g.
 ```
-product(2, 2)
+cast("f32", load("/volume"))
 ```
+
+Changes volume into a single precision float if possible.
+
+## cmp
+
+```
+cmp(Expr, Expr, Expr)
+```
+
+Produces the result of performing the comparison specified by it's
+first argument to it's 2nd and third arugments. Valid comparisons are
+encoded as strings, and are called,
+
+- eq: true if the arguments are equal
+- lt: true if the first argument is less than the second one
+- lte: true if the first argument is less than or equal to the second one
+- gt: true if the first argument is greater than the second one
+- gte: true if the first argument is greater than or equal to the second one
+
+e.g.
+```
+cmp("lt", load("/volume"), 11)
+```
+
+is true if the volume is less than 11, false otherwise.
+
+## confirm
+
+```
+confirm(msg: Expr, val: Expr)
+```
+
+Asks the user msg with val appended, and if they say yes produces it's
+second argument, otherwise does not produce anything.
+
+e.g.
+```
+store(
+  "[base]/volume", 
+  confirm(
+    "are you sure you want to change the volume to ", 
+    volume
+  )
+)
+```
+
+Asks the user to confirm before writing the value of the variable
+`volume` to `[base]/volume`.
+
+## count
+
+```
+count(Expr)
+```
+
+Produces the count of events produced by expr since we started
+execution of the pipeline.
+
+e.g.
+```
+count(load("/volume"))
+```
+
+will increment every time volume changes.
 
 ## divide
 
@@ -260,6 +339,132 @@ divide(load("/volume"), 2, load("/additional_divisor"))
 
 First divides `"/volume"` by 2 and then divides it by
 "/additional_divisor".
+
+## eval
+
+```
+eval(Expr)
+```
+
+Compiles and executes the browser script program specified by it's
+argument, or produces an error if the program is invalid.
+
+e.g.
+```
+eval(load("[base]/program"))
+```
+
+Load and execute browser script from `[base]/program`.
+
+## event
+
+```
+event()
+```
+
+Produces a widget specific event depending on which widget and which
+event handler the pipeline containing it is attached to. For example,
+when attached to an entry `on_change` handler it produces the string
+value of the entry whenever the user changes the text. When attached
+to the on_activate handler of the entry, it produces the string value
+of the entry when the user presses the Enter key. When attached to the
+`on_click` handler of a button, it produces Null every time the button
+is clicked.
+
+e.g.
+```
+store("/text", event())
+```
+
+When attached to the `on_change` event of an entry would write the
+text to `/text` every time the user changes it.
+
+## if
+
+```
+if(Expr, Expr, [Expr])
+```
+
+Produces the value of it's 2nd argument if it's first argument is
+true, otherwise produces the value of it's third argument, or nothing
+if it has no third argument.
+
+e.g.
+```
+if(
+    cmp("lt", load("/volume"), 11),
+    load("/normal_amp"),
+    load("/this_one_goes_to_11")
+)
+```
+
+If "/volume" is less than 11 then the value is `"/normal_amp"`,
+otherwise the value is `"/this_one_goes_to_11"`.
+
+e.g.
+```
+if(cmp("eq", 11, load("/volume")), "huzzah!")
+```
+
+Produces `"huzzah!"` if `/volume` is `11`, otherwise nothing.
+
+## isa
+
+```
+isa(Expr, Expr)
+```
+
+Produce true if the 2nd argument is the type named by the first
+argument, false otherwise.
+
+e.g.
+```
+isa("f32", 10)
+```
+
+would produce false.
+
+## load
+
+```
+load(Expr)
+```
+
+Subscribes to the netidx path specified by it's argument, which must
+evaluate to a string.
+
+e.g.
+```
+load("/some/path/in/netidx")
+load("[base]/thing")
+```
+
+## load_var
+
+```
+load_var(var: Expr)
+var
+```
+
+Produce the value of the variable specified by var, or an error if var
+is not a valid variable name. The second form is syntactic sugar that
+translates into `load_var("var")`.
+
+## max
+
+```
+max(Expr, ..., Expr)
+```
+
+Produces the largest value of any of it's arguments.
+
+e.g.
+```
+max(5, load("/volume"))
+```
+
+produces the value of "/volume" if it is greater than 5, otherwise it
+produces 5.
 
 ## mean
 
@@ -292,297 +497,6 @@ min(42, load("/volume"))
 produces the value of `"/volume"` if it is less than 42, otherwise it
 produces 42.
 
-## max
-
-```
-max(Expr, ..., Expr)
-```
-
-Produces the largest value of any of it's arguments.
-
-e.g.
-```
-max(5, load("/volume"))
-```
-
-produces the value of "/volume" if it is greater than 5, otherwise it
-produces 5.
-
-## and
-
-```
-and(Expr, ..., Expr)
-```
-
-Produces true if all of it's arguments are true, otherwise false.
-
-e.g.
-```
-and(load("/cake"), load("/diet"))
-```
-
-Would produce false.
-
-## or
-
-```
-or(Expr, ..., Expr)
-```
-
-Produces true if any of it's arguments is true, otherwise false.
-
-e.g.
-```
-or(load("/cake"), load("/death"))
-```
-
-Would produce true.
-
-## not
-
-```
-not(Expr)
-```
-
-Produces the opposite of it's argument, e.g. true if it's argument is
-false, false otherwise.
-
-e.g.
-```
-not(load("/solar/control/charging"))
-```
-
-true if the battery is not charging.
-
-## cmp
-
-```
-cmp(Expr, Expr, Expr)
-```
-
-Produces the result of performing the comparison specified by it's
-first argument to it's 2nd and third arugments. Valid comparisons are
-encoded as strings, and are called,
-
-- eq: true if the arguments are equal
-- lt: true if the first argument is less than the second one
-- lte: true if the first argument is less than or equal to the second one
-- gt: true if the first argument is greater than the second one
-- gte: true if the first argument is greater than or equal to the second one
-
-e.g.
-```
-cmp("lt", load("/volume"), 11)
-```
-
-is true if the volume is less than 11, false otherwise.
-
-## if
-
-```
-if(Expr, Expr, [Expr])
-```
-
-Produces the value of it's 2nd argument if it's first argument is
-true, otherwise produces the value of it's third argument, or nothing
-if it has no third argument.
-
-e.g.
-```
-if(
-    cmp("lt", load("/volume"), 11),
-    load("/normal_amp"),
-    load("/this_one_goes_to_11")
-)
-```
-
-If "/volume" is less than 11 then the value is `"/normal_amp"`,
-otherwise the value is `"/this_one_goes_to_11"`.
-
-e.g.
-```
-if(cmp("eq", 11, load("/volume")), "huzzah!")
-```
-
-Produces `"huzzah!"` if `/volume` is `11`, otherwise nothing.
-
-## cast
-
-```
-cast(Expr, Expr)
-```
-
-Attempt to cast the second argument to the type specified by the
-first. Produce a value of the specified type, or an error if the cast
-is not possible.
-
-e.g.
-```
-cast("f32", load("/volume"))
-```
-
-Changes volume into a single precision float if possible.
-
-## isa
-
-```
-isa(Expr, Expr)
-```
-
-Produce true if the 2nd argument is the type named by the first
-argument, false otherwise.
-
-e.g.
-```
-isa("f32", 10)
-```
-
-would produce false.
-
-## eval
-
-```
-eval(Expr)
-```
-
-Compiles and executes the browser script program specified by it's
-argument, or produces an error if the program is invalid.
-
-e.g.
-```
-eval(load("[base]/program"))
-```
-
-Load and execute browser script from `[base]/program`.
-
-## count
-
-```
-count(Expr)
-```
-
-Produces the count of events produced by expr since we started
-execution of the pipeline.
-
-e.g.
-```
-count(load("/volume"))
-```
-
-will increment every time volume changes.
-
-## sample
-
-```
-sample(Expr, Expr)
-```
-
-Produces the value of it's second argument when it's first argument
-updates.
-
-e.g.
-```
-sample(load("[base]/timestamp"), load("[base]/voltage"))
-```
-
-Produces `[base]/voltage` whenever `[base]/timestamp` updates.
-
-## uniq
-
-```
-uniq(Expr)
-```
-
-Produces the value of it's argument only if that value is different
-from the previous one.
-
-e.g.
-```
-uniq(load("[stock_base]/ibm/last"))
-```
-
-Would produce an event only when the last trade price of IBM changes.
-
-## string_join
-
-```
-string_join(sep: Expr, ..., Expr)
-```
-
-Concatinate all arguments from 2 ... n using the first argument as a
-separator.
-
-e.g.
-
-```
-string_join("/", base, "foo", "bar")
-```
-
-is the same a writing `"[base]/foo/bar"`
-
-## string_concat
-
-```
-string_concat(Expr, ..., Expr)
-```
-
-Concatinate all arguments.
-
-e.g.
-
-```
-string_concat(load("/foo"), load("/bar"), "baz")
-```
-
-is the same as writing `"[load("/foo")][load("/bar")]baz"`. And in
-fact string interpolations are just syntactic sugar for this function.
-
-## event
-
-```
-event()
-```
-
-Produces a widget specific event depending on which widget and which
-event handler the pipeline containing it is attached to. For example,
-when attached to an entry `on_change` handler it produces the string
-value of the entry whenever the user changes the text. When attached
-to the on_activate handler of the entry, it produces the string value
-of the entry when the user presses the Enter key. When attached to the
-`on_click` handler of a button, it produces Null every time the button
-is clicked.
-
-e.g.
-```
-store("/text", event())
-```
-
-When attached to the `on_change` event of an entry would write the
-text to `/text` every time the user changes it.
-
-## confirm
-
-```
-confirm(msg: Expr, val: Expr)
-```
-
-Asks the user msg with val appended, and if they say yes produces it's
-second argument, otherwise does not produce anything.
-
-e.g.
-```
-store(
-  "[base]/volume", 
-  confirm(
-    "are you sure you want to change the volume to ", 
-    volume
-  )
-)
-```
-
-Asks the user to confirm before writing the value of the variable
-`volume` to `[base]/volume`.
-
 ## navigate
 
 ```
@@ -601,44 +515,65 @@ e.g.
 navigate(confirm("go to ", "file:[next_view]"))
 ```
 
-## call
+## not
 
 ```
-call(rpc: Expr, Expr, ..., Expr)
+not(Expr)
 ```
 
-Call the netidx rpc specified by the first argument, passing the
-specified keyword arguments, and producing the return value of the
-call. Keyword arguments are encoded as pairs of a name followed by a
-value.
+Produces the opposite of it's argument, e.g. true if it's argument is
+false, false otherwise.
 
 e.g.
 ```
-store_var(
-  "sessionid",
-  call(
-    "/solar/archive/session", 
-    "start", "-10d", 
-    "speed", "unlimited", 
-    "play_after", "2s"
-  )
-)
+not(load("/solar/control/charging"))
 ```
 
-call `/solar/archive/session` with arguments to replay the last 10
-days, starting 2 seconds after the call finishes, at unlimited speed,
-and store the resulting session id in the variable sessionid.
+true if the battery is not charging.
 
-## load_var
+## or
 
 ```
-load_var(var: Expr)
-var
+or(Expr, ..., Expr)
 ```
 
-Produce the value of the variable specified by var, or an error if var
-is not a valid variable name. The second form is syntactic sugar that
-translates into `load_var("var")`.
+Produces true if any of it's arguments is true, otherwise false.
+
+e.g.
+```
+or(load("/cake"), load("/death"))
+```
+
+Would produce true.
+
+## product
+
+```
+product(Expr, ..., Expr)
+```
+
+Produces the product of it's arguments.
+
+e.g. 
+```
+product(2, 2)
+```
+
+## sample
+
+```
+sample(Expr, Expr)
+```
+
+Produces the value of it's second argument when it's first argument
+updates.
+
+e.g.
+```
+sample(load("[base]/timestamp"), load("[base]/voltage"))
+```
+
+Produces `[base]/voltage` whenever `[base]/timestamp` updates.
 
 ## store_var
 
@@ -653,3 +588,68 @@ e.g.
 ```
 store_var("volume", cast("f32", event()))
 ```
+
+## string_concat
+
+```
+string_concat(Expr, ..., Expr)
+```
+
+Concatinate all arguments.
+
+e.g.
+
+```
+string_concat(load("/foo"), load("/bar"), "baz")
+```
+
+is the same as writing `"[load("/foo")][load("/bar")]baz"`. And in
+fact string interpolations are just syntactic sugar for this function.
+
+## string_join
+
+```
+string_join(sep: Expr, ..., Expr)
+```
+
+Concatinate all arguments from 2 ... n using the first argument as a
+separator.
+
+e.g.
+
+```
+string_join("/", base, "foo", "bar")
+```
+
+is the same a writing `"[base]/foo/bar"`
+
+## sum
+
+```
+sum(Expr, ..., Expr)
+```
+
+Produces the sum of it's arguments.
+
+e.g.
+```
+sum(load("/offset"), load("/random"))
+```
+
+sums `/offset` and `/random`
+
+## uniq
+
+```
+uniq(Expr)
+```
+
+Produces the value of it's argument only if that value is different
+from the previous one.
+
+e.g.
+```
+uniq(load("[stock_base]/ibm/last"))
+```
+
+Would produce an event only when the last trade price of IBM changes.
