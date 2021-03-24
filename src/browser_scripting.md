@@ -172,7 +172,8 @@ edit the expression by manipulating the tree.
 all(Expr, ..., Expr)
 ```
 
-All produces an if the current values of all it's arguments are equal.
+All produces the value of it's first argument if the values of all
+it's arguments are equal.
 
 ```
 all(11, load("/volume"))
