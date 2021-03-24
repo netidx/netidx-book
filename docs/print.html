@@ -2379,7 +2379,8 @@ expressions will be cast to strings, and any expression that cannot be
 cast to a string will be replaced with the empty string.</p>
 <p>e.g.</p>
 <pre><code>&quot;[base]/some/path&quot; =&gt; string_concat(load_var(&quot;base&quot;), &quot;/some/path&quot;)
-&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot; =&gt; 
+</code></pre>
+<pre><code>&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot; =&gt; 
 string_concat(
     load_var(&quot;base&quot;),
     &quot;/bar/&quot;,

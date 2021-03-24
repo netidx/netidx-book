@@ -130,6 +130,9 @@ cast to a string will be replaced with the empty string.
 e.g.
 ```
 "[base]/some/path" => string_concat(load_var("base"), "/some/path")
+```
+
+```
 "[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing" => 
 string_concat(
     load_var("base"),
