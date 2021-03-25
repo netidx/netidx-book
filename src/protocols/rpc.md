@@ -6,15 +6,15 @@ of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.
 
 ```
-/app/rpcs/do_thing      <- the procedure
-/app/rpcs/do_thing/doc  <- procedure doc string
-/app/rpcs/do_thing/arg0/val <- arguments are all named, this is 'arg0'
-/app/rpcs/do_thing/arg0/doc <- doc string for arg0
-/app/rpcs/do_thing/arg1/val <- 'arg1'
-/app/rpcs/do_thing/arg1/doc <- arg1 doc string
+/app/rpcs/do_thing                            <- the procedure
+/app/rpcs/do_thing/doc                        <- procedure doc string
+/app/rpcs/do_thing/arg0/val                   <- arguments are all named, this is 'arg0'
+/app/rpcs/do_thing/arg0/doc                   <- doc string for arg0
+/app/rpcs/do_thing/arg1/val                   <- 'arg1'
+/app/rpcs/do_thing/arg1/doc                   <- arg1 doc string
 ...
 /app/rpcs/do_thing/args-can-have-any-name/val <- args can be called anything
-/app/rpcs/do_thing/args-can-have-any-name/val <- doc string
+/app/rpcs/do_thing/args-can-have-any-name/doc <- doc string
 ```
 
 We set arguments by writing to `.../arg-name/val`, and we call the
