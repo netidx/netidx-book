@@ -2706,15 +2706,15 @@ things can be constructed.</p>
 RPC. The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.</p>
-<pre><code>/app/rpcs/do_thing      &lt;- the procedure
-/app/rpcs/do_thing/doc  &lt;- procedure doc string
-/app/rpcs/do_thing/arg0/val &lt;- arguments are all named, this is 'arg0'
-/app/rpcs/do_thing/arg0/doc &lt;- doc string for arg0
-/app/rpcs/do_thing/arg1/val &lt;- 'arg1'
-/app/rpcs/do_thing/arg1/doc &lt;- arg1 doc string
+<pre><code>/app/rpcs/do_thing                            &lt;- the procedure
+/app/rpcs/do_thing/doc                        &lt;- procedure doc string
+/app/rpcs/do_thing/arg0/val                   &lt;- arguments are all named, this is 'arg0'
+/app/rpcs/do_thing/arg0/doc                   &lt;- doc string for arg0
+/app/rpcs/do_thing/arg1/val                   &lt;- 'arg1'
+/app/rpcs/do_thing/arg1/doc                   &lt;- arg1 doc string
 ...
 /app/rpcs/do_thing/args-can-have-any-name/val &lt;- args can be called anything
-/app/rpcs/do_thing/args-can-have-any-name/val &lt;- doc string
+/app/rpcs/do_thing/args-can-have-any-name/doc &lt;- doc string
 </code></pre>
 <p>We set arguments by writing to <code>.../arg-name/val</code>, and we call the
 procedure by writing <code>null</code> to the procedure. The return value of the
