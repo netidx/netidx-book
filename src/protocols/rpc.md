@@ -63,8 +63,8 @@ subscriber will pick a new random rpc publisher).
 
 Depending on what your RPC actually does you may need more or less
 coordination between publishers, and the cluster protocol can help you
-there, but in many simple cases load balancing is as simple as
-starting more publishers to handle additional traffic.
+there, but in many cases load balancing is as simple as starting more
+publishers to handle additional traffic.
 
 ## Overhead
 

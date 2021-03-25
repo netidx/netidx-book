@@ -214,8 +214,8 @@ and thereafter they will always use that publisher (if it fails then
 subscriber will pick a new random rpc publisher).</p>
 <p>Depending on what your RPC actually does you may need more or less
 coordination between publishers, and the cluster protocol can help you
-there, but in many simple cases load balancing is as simple as
-starting more publishers to handle additional traffic.</p>
+there, but in many cases load balancing is as simple as starting more
+publishers to handle additional traffic.</p>
 <h2><a class="header" href="#overhead" id="overhead">Overhead</a></h2>
 <p>Once subscribed, the network overhead of calling a netidx rpc is quite
 low. For example, consider a procedure with 3 double precision
