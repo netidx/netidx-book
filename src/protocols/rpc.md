@@ -105,12 +105,12 @@ value:
 11 bytes for the return, 8 of which are the actual return value
 data. Clearly data size on the wire should be no impedement to using
 netidx rpc in high performance applications. Aside from data size on
-the wire netidx has some beneficial characteristics for high
-performance applications, for example, because of the way subscriber
-and publisher are designed it is possible for a single client to
-concurrently issue many rpc calls to the same publisher, and in that
-case the messages will automatically batch allowing processing
-overhead to be amortized on both sides. e.g.
+the wire netidx has some additional beneficial characteristics, for
+example, because of the way subscriber and publisher are designed it
+is possible for a single client to concurrently issue many rpc calls
+to the same publisher, and in that case the messages will
+automatically batch allowing processing overhead to be amortized on
+both sides. e.g.
 
 ``` rust
 futures::join_all(vec![
