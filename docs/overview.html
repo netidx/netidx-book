@@ -235,10 +235,10 @@ immediate superior and immediate children. It's entirely possible for
 a large organization to run a central 'root' resolver server cluster
 without needing to micro manage the delegation going on in various
 organizational units.</p>
-<p>I've focused on designing a scaleable architecture, but I should also
-mention that the resolver server itself is pretty fast, and uses a
-number of strategies to minimize memory use. It's entirely possible to
-put 100 million names in a single instance on a single machine with
+<p>The primary design goal was a scaleable architecture, but I should
+also mention that the resolver server itself is pretty fast, and uses
+a number of strategies to minimize memory use. It's entirely possible
+to put 100 million names in a single instance on a single machine with
 32 - 64 gig of ram. You get roughly 1 million names per 500 MB of ram,
 assuming your paths aren't crazy long. I have not explicitly tested
 the resolve throughput, but given that it uses the same infrastructure
@@ -265,9 +265,8 @@ many millions of messages per second is possible. As of this writing a
 fast machine can send about 15 million kerberos encrypted
 messages/second and more then 20 million in the clear. The per message
 overhead is on the order of about 50ns of wall clock time per message
-with kerberos encryption on. Obviously that number depends on the
-exact hardware you're running on, and it depends on your workload
-batching well.</p>
+with kerberos encryption on. That depends on the exact hardware you're
+running on, and it depends on your workload batching well.</p>
 <p>The subscriber library also implements zero copy decoding for strings
 and byte arrays, so it is possible to receive large binary encoded
 things quite efficiently.</p>
@@ -275,10 +274,7 @@ things quite efficiently.</p>
 <p>No system like netidx can be taken seriously without a plausible
 design for securing data against unauthorized access, interception,
 manipulation, etc.</p>
-<p>The heart of netidx security is Kerberos v5. There are a lot of
-systems I might have used, e.g. openssl + certificates, oauth +
-openssl, and I'm sure many others. The reason I chose to use Kerberos
-v5 is that most users who I think might want to deploy netidx services
+<p>The heart of netidx security is Kerberos v5, mainly because most users
 already have Kerberos set up (even if they don't know it) in the form
 of Microsoft Active Directory, Samba ADS, Redhat Directory Server, or
 one of the many other compatible solutions.</p>
