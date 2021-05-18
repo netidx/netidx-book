@@ -90,12 +90,12 @@ a large organization to run a central 'root' resolver server cluster
 without needing to micro manage the delegation going on in various
 organizational units.
 
-The primary design goal was a scaleable architecture, but I should
-also mention that the resolver server itself is pretty fast, and uses
-a number of strategies to minimize memory use. It's entirely possible
+While the primary design goal was a scaleable architecture, the
+resolver server itself is also architected for efficiency, and uses a
+number of strategies to minimize memory use. As a result it's possible
 to put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. You get roughly 1 million names per 500 MB of ram,
-assuming your paths aren't crazy long.
+32 - 64 gig of ram. As a rule of thumb you get roughly 1 million names
+per 500 MB of ram, assuming your paths are a reasonable length.
 
 ### Publisher/Subscriber
 
