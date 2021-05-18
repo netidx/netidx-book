@@ -8,8 +8,9 @@ and performant is the essential goal.
 
 ## The Namespace
 
-Netidx values are published to a hierarchical tuple space. The
-structure of the names look just like a filename, e.g.
+Netidx values are published to a hierarchical [tuple
+space](https://en.wikipedia.org/wiki/Tuple_space). The structure of
+the names look just like a filename, e.g.
 
     /apps/solar/stats/battery_sense_voltage
 
