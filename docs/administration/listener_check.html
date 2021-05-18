@@ -161,13 +161,13 @@
                     <main>
                         <h1><a class="header" href="#listener-check" id="listener-check">Listener Check</a></h1>
 <p>The listener check is an extra security measure that is intended to
-prevent an authenticated user from hijacking the gssapi session of
-another publisher. When a client connects to the resolver server for
-write, and kerberos is enabled, then after authentication the resolver
-server encrypts a challenge using the newly created gssapi session. It
-then connects to the write address proposed by this new publisher and
-presents the challenge, which the publisher must answer correctly,
-otherwise the old session, if any, tied to the write address will be
+prevent an authenticated user from denying service to another
+publisher by overwriting it's gssapi session. When a client connects
+to the resolver server for write, and kerberos is enabled, then after
+authentication the resolver server encrypts a challenge using the
+newly created gssapi session. It then connects to the write address
+proposed by this new publisher and presents the challenge, which the
+publisher must answer correctly, otherwise the old session will be
 kept, and the new client will be disconnected. So in order to publish
 at a given address you must,</p>
 <ul>

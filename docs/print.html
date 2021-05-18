@@ -430,8 +430,8 @@ procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
 <p><code>-n</code> means only print the header once, and <code>1</code> means print a line
 every second until killed. Next we pass these lines to a shell while
 loop that reads the line using the builtin <code>read</code> command into a shell
-variable for each field. I've given the fields more verbose names than
-vmstat did. In the body of the while loop I echo a <code>path|typ|value</code>
+variable for each field. The field names were changed to be more
+descriptive. In the body of the while loop we echo a <code>path|typ|value</code>
 triple for each field. e.g. if we don't run the final pipe to <code>netidx publisher</code> the output of the while loop looks something like this.</p>
 <pre><code>/sys/vmstat/ken-ohki.ryu-oh.org/running|z32|1
 /sys/vmstat/ken-ohki.ryu-oh.org/blocked|z32|0
@@ -1393,13 +1393,13 @@ resolver server with</p>
 <p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging kerberos issues.</p>
 <h1><a class="header" href="#listener-check" id="listener-check">Listener Check</a></h1>
 <p>The listener check is an extra security measure that is intended to
-prevent an authenticated user from hijacking the gssapi session of
-another publisher. When a client connects to the resolver server for
-write, and kerberos is enabled, then after authentication the resolver
-server encrypts a challenge using the newly created gssapi session. It
-then connects to the write address proposed by this new publisher and
-presents the challenge, which the publisher must answer correctly,
-otherwise the old session, if any, tied to the write address will be
+prevent an authenticated user from denying service to another
+publisher by overwriting it's gssapi session. When a client connects
+to the resolver server for write, and kerberos is enabled, then after
+authentication the resolver server encrypts a challenge using the
+newly created gssapi session. It then connects to the write address
+proposed by this new publisher and presents the challenge, which the
+publisher must answer correctly, otherwise the old session will be
 kept, and the new client will be disconnected. So in order to publish
 at a given address you must,</p>
 <ul>

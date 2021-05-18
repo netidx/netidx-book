@@ -74,8 +74,8 @@ procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
 `-n` means only print the header once, and `1` means print a line
 every second until killed. Next we pass these lines to a shell while
 loop that reads the line using the builtin `read` command into a shell
-variable for each field. I've given the fields more verbose names than
-vmstat did. In the body of the while loop I echo a `path|typ|value`
+variable for each field. The field names were changed to be more
+descriptive. In the body of the while loop we echo a `path|typ|value`
 triple for each field. e.g. if we don't run the final pipe to `netidx
 publisher` the output of the while loop looks something like this.
 
