@@ -95,11 +95,7 @@ also mention that the resolver server itself is pretty fast, and uses
 a number of strategies to minimize memory use. It's entirely possible
 to put 100 million names in a single instance on a single machine with
 32 - 64 gig of ram. You get roughly 1 million names per 500 MB of ram,
-assuming your paths aren't crazy long. I have not explicitly tested
-the resolve throughput, but given that it uses the same infrastructure
-as the publisher/subscriber (which I have tested), and what it's
-doing, I would not be at all surprised if you could support millions
-of resolutions per second per core (yes it will use all your cores).
+assuming your paths aren't crazy long.
 
 ### Publisher/Subscriber
 
@@ -138,9 +134,9 @@ design for securing data against unauthorized access, interception,
 manipulation, etc.
 
 The heart of netidx security is Kerberos v5, mainly because most users
-already have Kerberos set up (even if they don't know it) in the form
-of Microsoft Active Directory, Samba ADS, Redhat Directory Server, or
-one of the many other compatible solutions.
+already have it set up in the form of Microsoft Active Directory,
+Samba ADS, Redhat Directory Server, or one of the many other
+compatible solutions.
 
 That said security is optional in netidx. It's possible to deploy a
 netidx system with no security at all, and it's possible to deploy a
@@ -172,5 +168,4 @@ When security is enabled you get the following guarantees,
 ## Cross Platform
 
 While netidx is primarily developed on Linux, it has been tested on
-Windows, and even Mac OS. It will probably work on many platforms I
-haven't tried.
+Windows, and Mac OS.
