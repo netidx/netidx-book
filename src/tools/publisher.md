@@ -23,6 +23,17 @@ or the special form
 
 e.g. `DROP|/foo/bar` stops publishing `/foo/bar`
 
+or the special form
+
+- WRITE
+- the path
+
+e.g. `WRITE|/foo/bar`
+
+enables writing to `/foo/bar`, and publishes it as `null` if it was
+not already published. Written values will be sent to stdout in the
+same format as is written by subscriber.
+
 If you want to publish to a path that has a `|` character in it then
 you must escape the `|` with `\`, e.g. `\|`. If you want to publish a
 path that has a `\` in it, then you must also escape it,

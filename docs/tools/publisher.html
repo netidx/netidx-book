@@ -181,6 +181,15 @@ delimited. e.g.</p>
 <li>the path</li>
 </ul>
 <p>e.g. <code>DROP|/foo/bar</code> stops publishing <code>/foo/bar</code></p>
+<p>or the special form</p>
+<ul>
+<li>WRITE</li>
+<li>the path</li>
+</ul>
+<p>e.g. <code>WRITE|/foo/bar</code></p>
+<p>enables writing to <code>/foo/bar</code>, and publishes it as <code>null</code> if it was
+not already published. Written values will be sent to stdout in the
+same format as is written by subscriber.</p>
 <p>If you want to publish to a path that has a <code>|</code> character in it then
 you must escape the <code>|</code> with <code>\</code>, e.g. <code>\|</code>. If you want to publish a
 path that has a <code>\</code> in it, then you must also escape it,
