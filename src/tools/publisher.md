@@ -87,8 +87,7 @@ values without restarting it.
 
 ## Limitations
 
-The command line publisher cannot respond to write requests, and
-cannot be a default publisher.
+The command line publisher cannot be a default publisher.
 
 ## Environment Variables
 

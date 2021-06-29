@@ -246,8 +246,7 @@ value. If stdin is closed publisher does not stop, however it is no
 longer possible to update existing published values, or publish new
 values without restarting it.</p>
 <h2><a class="header" href="#limitations" id="limitations">Limitations</a></h2>
-<p>The command line publisher cannot respond to write requests, and
-cannot be a default publisher.</p>
+<p>The command line publisher cannot be a default publisher.</p>
 <h2><a class="header" href="#environment-variables" id="environment-variables">Environment Variables</a></h2>
 <p>In addition to all the krb5 environment variables, the command line
 publisher uses envlogger, and so will respond to <code>RUST_LOG</code>,
