@@ -208,6 +208,11 @@ one call. formula, and on-write may be specified zero or more
 times. If formula and/or on write are not specified they will be set
 to null.
 
+after `set-formula` has been called for a cell, the formula text and
+the on-write formula text will be published under `path/.formula` and
+`path/.on-write`. The formula and the on-write formula may be edited
+by writing to those paths as well as by calling this rpc.
+
 e.g.
 ```
 set-formula(

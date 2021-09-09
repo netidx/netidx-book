@@ -323,6 +323,10 @@ their subtree.</p>
 one call. formula, and on-write may be specified zero or more
 times. If formula and/or on write are not specified they will be set
 to null.</p>
+<p>after <code>set-formula</code> has been called for a cell, the formula text and
+the on-write formula text will be published under <code>path/.formula</code> and
+<code>path/.on-write</code>. The formula and the on-write formula may be edited
+by writing to those paths as well as by calling this rpc.</p>
 <p>e.g.</p>
 <pre><code>set-formula(
     path=string:/tmp/sheet/00/01,
