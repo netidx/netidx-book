@@ -168,7 +168,7 @@ it's published values it updates that value in the database, and then
 updates the published value for subscribers. To allow creation of new
 values it installs a default publisher at one or more user chosen
 roots. If an authorized user subscribes to a path that isn't in the
-database, then it will add a new empty value to the databse at that
+database, then it will add a new empty value to the database at that
 path. The user can then write whatever value they wish to the new
 path, and it will persist in the database.</p>
 <p>As well as storing values, cells can be bscript formulas. In that case
@@ -176,10 +176,10 @@ instead of storing the cell value in the database the formula text is
 stored, and the published value will be whatever the formula evaluates
 to. An additional bscript expression can be added to a formula cell to
 define what happens when it is written to, so a formula cell can form
-a proper lense. The entire bscript api is supported, except for the
+a proper lens. The entire bscript api is supported, except for the
 browser specific functions confirm, and navigate. There are two
 additional functions specific to the container. ref and rel. ref
-referrs to a path that must be hosted by the same container, in
+refers to a path that must be hosted by the same container, in
 exchange for this restriction it's quite a bit faster than load. rel
 takes advantage of the fact that trees can often be seen as tables to
 allow you to get the path of a cell by offset to the cell rel is
@@ -188,6 +188,39 @@ in. For example rel(-1) gets the path of the cell in the same row, but
 gets the path to the cell in the same column but 1 row up. Together
 ref and rel can help you make tables that are almost like a
 spreadsheet.</p>
+<h2><a class="header" href="#administration" id="administration">Administration</a></h2>
+<h3><a class="header" href="#args" id="args">Args</a></h3>
+<ul>
+<li><code>--compress</code>: enable zstd compression</li>
+<li><code>--compress-level &lt;0-9&gt;</code>: set the zstd compression level</li>
+<li><code>--db</code>: the path to the db</li>
+<li><code>--api-path &lt;path&gt;</code>: where to publish the rpc interface and db stats</li>
+<li><code>--bind &lt;spec&gt;</code>: the ip specification to bind to</li>
+<li><code>--spn &lt;spn&gt;</code>: the kerberos service principal name to publish as</li>
+<li><code>--cache-size &lt;bytes&gt;</code>: the database cache size in bytes, default 1 gigabyte</li>
+<li><code>--timeout &lt;seconds&gt;</code>: the time after which a slow subscriber will be disconnected 0 for no timeout</li>
+<li><code>--sparse</code>: don't even advertise paths in the db</li>
+</ul>
+<h3><a class="header" href="#a-note-about-memory-use" id="a-note-about-memory-use">A Note About Memory Use</a></h3>
+<p>There were some lies in the introduction. If you're a seasoned
+sysadmin or DBA you might have cringed when you read &quot;reads and
+publishes all the data in it's database&quot;. From the point of view of
+the casual user that is what happens, but the reality is more complex,
+and a lot more efficient. The container does scan the database at
+startup, but it doesn't immediately publish anything except
+formulas. Instead it advertises all of the paths it has, which is a
+middle way between just becoming a default publisher, and a full
+publish. It tells the resolver server every path it could publish, but
+doesn't actually publish any of them until right before a subscriber
+asks for one. That means that it doesn't keep any of the data in the
+database in memory unless there is a client subscribed to it, and as
+soon as no client is subscribed it stops publishing and evicts the
+data from memory (though the db layer may cache it for a while). You
+can even turn off advertisements if you want to publish a truly huge
+data set. Though, in that case the user is going to have to know the
+name of the data they want, there will be no way to browse it, or
+search it, only data that someone is subscribed to will even show up
+in the resolver server.</p>
 <h2><a class="header" href="#rpcs" id="rpcs">RPCs</a></h2>
 <p>The container has an extensive rpc api, and that is the only way to do
 many things e.g. make a cell a formula, or add a root. Under it's
@@ -202,7 +235,7 @@ default publisher for the subtree rooted at <code>path</code>. At least 1 root
 must be added before the container will do anything. Roots can be
 completely disjoint, however it is an error to add a root under an
 existing root. It is not an error to add a new root above existing
-roots, but for tidyness you should probably remove the child roots
+roots, but for tidiness you should probably remove the child roots
 after adding the parent.</p>
 <p>e.g.</p>
 <pre><code>add-root(&quot;/solar/gui&quot;);
@@ -296,7 +329,7 @@ cell in the first column.</p>
 <p>remove the specified path(s) from the database, whether data or
 formula, and stop publishing them. Any current subscribers will be
 unsubscribed. If the subtree isn't locked, durable subscribers may
-readd the path(s) by immediatly resubscribing (but the data is gone).</p>
+readd the path(s) by immediately resubscribing (but the data is gone).</p>
 <h3><a class="header" href="#delete-subtree" id="delete-subtree">delete-subtree</a></h3>
 <pre><code>delete-subtree(path)
 </code></pre>
