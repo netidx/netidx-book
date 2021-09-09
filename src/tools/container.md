@@ -146,7 +146,7 @@ path      locked
 /tmp/ffa  false
 ```
 
-Everything under /tmp is locked, so you can't accidentally create e.g
+Everything under /tmp is locked, so you can't accidentally create e.g.
 /tmp/foo, but everything under /tmp/ffa is unlocked, so it is once
 again a free for all. Later we could lock /tmp/ffa/important-thing and
 that would again be not a free for all. You get to the above table by
