@@ -18,6 +18,7 @@
   - [subscriber](./tools/subscriber.md)
   - [resolver](./tools/resolver.md)
   - [recorder](./tools/recorder.md)
+  - [container](./tools/container.md)
   - [stress](./tools/stress.md)
 - [Browser](./browser/overview.md)
   - [Constructing Custom Views](./browser/views.md)
