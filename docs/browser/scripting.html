@@ -387,6 +387,15 @@ second argument, otherwise does not produce anything.</p>
 </code></pre>
 <p>Asks the user to confirm before writing the value of the variable
 <code>volume</code> to <code>[base]/volume</code>.</p>
+<h2><a class="header" href="#contains" id="contains">contains</a></h2>
+<pre><code>contains(sub: Expr, string: Expr)
+</code></pre>
+<p>contains is true if it's arguments are both strings, and it's first
+argument is a substring of it's second argument.</p>
+<p>e.g</p>
+<pre><code>contains(&quot;bar&quot;, &quot;foobarbaz&quot;)
+</code></pre>
+<p>is true</p>
 <h2><a class="header" href="#count" id="count">count</a></h2>
 <pre><code>count(Expr)
 </code></pre>
@@ -404,6 +413,30 @@ execution of the pipeline.</p>
 </code></pre>
 <p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
 &quot;/additional_divisor&quot;.</p>
+<h2><a class="header" href="#do" id="do">do</a></h2>
+<pre><code>do(Expr, ..., Expr)
+</code></pre>
+<p>Do evaluates to the value of it's final argument, all other arguments
+are evaluated for side effect.</p>
+<p>e.g.</p>
+<pre><code>do(
+    store_var(&quot;foo&quot;, &quot;Hello world!&quot;),
+    store(&quot;/tmp/foo&quot;, &quot;[foo]&quot;),
+    foo
+)
+</code></pre>
+<p>evaluates to &quot;Hello world!&quot;, but also sets the variable &quot;foo&quot;, and
+stores it's value to &quot;/tmp/foo&quot;.</p>
+<h2><a class="header" href="#ends_with" id="ends_with">ends_with</a></h2>
+<pre><code>ends_with(Expr, Expr)
+</code></pre>
+<p>ends_with is true if both it's arguments are strings, and the second
+argument ends with the first argument.</p>
+<p>e.g.</p>
+<pre><code>ends_with(&quot;foo&quot;, &quot;metasyntacticfoo&quot;)
+ends_with(&quot;hello&quot;, &quot;hello world&quot;)
+</code></pre>
+<p>The first ends_with is true, and the second one is false</p>
 <h2><a class="header" href="#eval" id="eval">eval</a></h2>
 <pre><code>eval(Expr)
 </code></pre>
@@ -429,6 +462,18 @@ is clicked.</p>
 </code></pre>
 <p>When attached to the <code>on_change</code> event of an entry would write the
 text to <code>/text</code> every time the user changes it.</p>
+<h2><a class="header" href="#filter" id="filter">filter</a></h2>
+<pre><code>filter(predicate: Expr, Expr)
+</code></pre>
+<p>filter evaluates to it's second argument if it's first argument
+evaluates to true, otherwise it does not pass any events. Note: When
+the predicate transitions from false to true then filter will
+immediatly evaluate to the last value of it's second argument that it
+saw.</p>
+<p>e.g.</p>
+<pre><code>filter(load(&quot;[enabled]&quot;), load(&quot;[thing]&quot;))
+</code></pre>
+<p>Passes on updates to &quot;[thing]&quot; only if &quot;[enabled]&quot; is true</p>
 <h2><a class="header" href="#if" id="if">if</a></h2>
 <pre><code>if(Expr, Expr, [Expr])
 </code></pre>
@@ -457,6 +502,18 @@ argument, false otherwise.</p>
 <pre><code>isa(&quot;f32&quot;, 10)
 </code></pre>
 <p>would produce false.</p>
+<h2><a class="header" href="#is_error" id="is_error">is_error</a></h2>
+<pre><code>is_error(Expr)
+</code></pre>
+<p>is_error evaluates to true if it's argument evaluates to an error.</p>
+<p>e.g.</p>
+<pre><code>do(
+    store_var(&quot;val&quot;, load(&quot;/tmp/thing&quot;)),
+    if(is_error(val), &quot;#REF&quot;, val)
+)
+</code></pre>
+<p>if load(&quot;/tmp/thing&quot;) fails then evaluate to &quot;#REF&quot; otherwise to the
+value of load(&quot;/tmp/thing&quot;).</p>
 <h2><a class="header" href="#load" id="load">load</a></h2>
 <pre><code>load(Expr)
 </code></pre>
@@ -536,6 +593,15 @@ false, false otherwise.</p>
 <p>e.g. </p>
 <pre><code>product(2, 2)
 </code></pre>
+<h2><a class="header" href="#replace" id="replace">replace</a></h2>
+<pre><code>replace(pat: Expr, replacement: Expr, val: Expr)
+</code></pre>
+<p>assuming all it's arguments are strings then replace evaluates to val
+with all instances of pat replaced with replacement.</p>
+<p>e.g.</p>
+<pre><code>replace(&quot;foo&quot;, &quot;bar&quot;, &quot;foobarbaz&quot;)
+</code></pre>
+<p>evaluates to &quot;barbarbaz&quot;</p>
 <h2><a class="header" href="#sample" id="sample">sample</a></h2>
 <pre><code>sample(Expr, Expr)
 </code></pre>
@@ -545,6 +611,28 @@ updates.</p>
 <pre><code>sample(load(&quot;[base]/timestamp&quot;), load(&quot;[base]/voltage&quot;))
 </code></pre>
 <p>Produces <code>[base]/voltage</code> whenever <code>[base]/timestamp</code> updates.</p>
+<h2><a class="header" href="#starts_with" id="starts_with">starts_with</a></h2>
+<pre><code>starts_with(pat: Expr, val: Expr)
+</code></pre>
+<p>evaluates to true if both it's arguments are strings, and the second
+argument starts with the first.</p>
+<p>e.g.</p>
+<pre><code>starts_with(&quot;Hello&quot;, &quot;Hello World!&quot;)
+</code></pre>
+<p>evaluates to true</p>
+<h2><a class="header" href="#store" id="store">store</a></h2>
+<pre><code>store(path: Expr, val: Expr)
+</code></pre>
+<p>store writes val to the specified path assuming it is valid. Store
+does not evaluate to anything (in the future it may evaluate to the
+result of the store).</p>
+<p>A new write will be initiated each time the value of either argument
+changes. For example, if the path changes to a new valid path, then
+the most recent val will be written immediatly to that new path.</p>
+<p>e.g.</p>
+<pre><code>store(&quot;/tmp/thing&quot;, 42)
+</code></pre>
+<p>write 42 to /tmp/thing</p>
 <h2><a class="header" href="#store_var" id="store_var">store_var</a></h2>
 <pre><code>store_var(name: Expr, val: Expr)
 </code></pre>
@@ -571,6 +659,24 @@ separator.</p>
 <pre><code>string_join(&quot;/&quot;, base, &quot;foo&quot;, &quot;bar&quot;)
 </code></pre>
 <p>is the same a writing <code>&quot;[base]/foo/bar&quot;</code></p>
+<h2><a class="header" href="#strip_prefix" id="strip_prefix">strip_prefix</a></h2>
+<pre><code>strip_prefix(pfx: Expr, val: Expr)
+</code></pre>
+<p>assuming both it's arguments are strings, then strip_prefix evaluates
+to val with pfx removed from the beginning.</p>
+<p>e.g.</p>
+<pre><code>strip_prefix(&quot;Hello &quot;, &quot;Hello World!&quot;)
+</code></pre>
+<p>evaluates to &quot;World!&quot;</p>
+<h2><a class="header" href="#strip_suffix" id="strip_suffix">strip_suffix</a></h2>
+<pre><code>strip_suffix(sfx: Expr, val: Expr)
+</code></pre>
+<p>assuming both it's arguments are strings, then strip_suffix evaluates
+to val with sfx removed from the end.</p>
+<p>e.g.</p>
+<pre><code>strip_suffix(&quot; World!&quot;, &quot;Hello World!&quot;)
+</code></pre>
+<p>evaluates to &quot;Hello&quot;</p>
 <h2><a class="header" href="#sum" id="sum">sum</a></h2>
 <pre><code>sum(Expr, ..., Expr)
 </code></pre>
@@ -579,6 +685,33 @@ separator.</p>
 <pre><code>sum(load(&quot;/offset&quot;), load(&quot;/random&quot;))
 </code></pre>
 <p>sums <code>/offset</code> and <code>/random</code></p>
+<h2><a class="header" href="#trim_end" id="trim_end">trim_end</a></h2>
+<pre><code>trim_end(Expr)
+</code></pre>
+<p>if it's argument is a string, then trim_end evaluates to it's argument
+with trailing whitespace removed.</p>
+<p>e.g</p>
+<pre><code>trim_end(&quot;123456   &quot;)
+</code></pre>
+<p>evaluates to &quot;123456&quot;</p>
+<h2><a class="header" href="#trim" id="trim">trim</a></h2>
+<pre><code>trim(Expr)
+</code></pre>
+<p>if it's argument is a string, then trim evalutes to it's argument with
+both leading and trailing whitespace removed.</p>
+<p>e.g.</p>
+<pre><code>trim(&quot; aaaaaaaaahhhg  &quot;)
+</code></pre>
+<p>evaluates to &quot;aaaaaaaaahhhg&quot;</p>
+<h2><a class="header" href="#trim_start" id="trim_start">trim_start</a></h2>
+<pre><code>trim_start(Expr)
+</code></pre>
+<p>if it's argument is a string, then trim_start evaluates to it's argument
+with leading whitespace removed.</p>
+<p>e.g</p>
+<pre><code>trim_start(&quot;   123456&quot;)
+</code></pre>
+<p>evaluates to &quot;123456&quot;</p>
 <h2><a class="header" href="#uniq" id="uniq">uniq</a></h2>
 <pre><code>uniq(Expr)
 </code></pre>

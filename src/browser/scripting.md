@@ -310,6 +310,22 @@ store(
 Asks the user to confirm before writing the value of the variable
 `volume` to `[base]/volume`.
 
+## contains
+
+```
+contains(sub: Expr, string: Expr)
+```
+
+contains is true if it's arguments are both strings, and it's first
+argument is a substring of it's second argument.
+
+e.g
+```
+contains("bar", "foobarbaz")
+```
+
+is true
+
 ## count
 
 ```
@@ -340,6 +356,44 @@ divide(load("/volume"), 2, load("/additional_divisor"))
 
 First divides `"/volume"` by 2 and then divides it by
 "/additional_divisor".
+
+## do
+
+```
+do(Expr, ..., Expr)
+```
+
+Do evaluates to the value of it's final argument, all other arguments
+are evaluated for side effect.
+
+e.g.
+```
+do(
+    store_var("foo", "Hello world!"),
+    store("/tmp/foo", "[foo]"),
+    foo
+)
+```
+
+evaluates to "Hello world!", but also sets the variable "foo", and
+stores it's value to "/tmp/foo".
+
+## ends_with
+
+```
+ends_with(Expr, Expr)
+```
+
+ends_with is true if both it's arguments are strings, and the second
+argument ends with the first argument.
+
+e.g.
+```
+ends_with("foo", "metasyntacticfoo")
+ends_with("hello", "hello world")
+```
+
+The first ends_with is true, and the second one is false
 
 ## eval
 
@@ -379,6 +433,25 @@ store("/text", event())
 
 When attached to the `on_change` event of an entry would write the
 text to `/text` every time the user changes it.
+
+## filter
+
+```
+filter(predicate: Expr, Expr)
+```
+
+filter evaluates to it's second argument if it's first argument
+evaluates to true, otherwise it does not pass any events. Note: When
+the predicate transitions from false to true then filter will
+immediatly evaluate to the last value of it's second argument that it
+saw.
+
+e.g.
+```
+filter(load("[enabled]"), load("[thing]"))
+```
+
+Passes on updates to "[thing]" only if "[enabled]" is true
 
 ## if
 
@@ -424,6 +497,25 @@ isa("f32", 10)
 ```
 
 would produce false.
+
+## is_error
+
+```
+is_error(Expr)
+```
+
+is_error evaluates to true if it's argument evaluates to an error.
+
+e.g.
+```
+do(
+    store_var("val", load("/tmp/thing")),
+    if(is_error(val), "#REF", val)
+)
+```
+
+if load("/tmp/thing") fails then evaluate to "#REF" otherwise to the
+value of load("/tmp/thing").
 
 ## load
 
@@ -560,6 +652,22 @@ e.g.
 product(2, 2)
 ```
 
+## replace
+
+```
+replace(pat: Expr, replacement: Expr, val: Expr)
+```
+
+assuming all it's arguments are strings then replace evaluates to val
+with all instances of pat replaced with replacement.
+
+e.g.
+```
+replace("foo", "bar", "foobarbaz")
+```
+
+evaluates to "barbarbaz"
+
 ## sample
 
 ```
@@ -575,6 +683,43 @@ sample(load("[base]/timestamp"), load("[base]/voltage"))
 ```
 
 Produces `[base]/voltage` whenever `[base]/timestamp` updates.
+
+## starts_with
+
+```
+starts_with(pat: Expr, val: Expr)
+```
+
+evaluates to true if both it's arguments are strings, and the second
+argument starts with the first.
+
+e.g.
+```
+starts_with("Hello", "Hello World!")
+```
+
+evaluates to true
+
+## store
+
+```
+store(path: Expr, val: Expr)
+```
+
+store writes val to the specified path assuming it is valid. Store
+does not evaluate to anything (in the future it may evaluate to the
+result of the store).
+
+A new write will be initiated each time the value of either argument
+changes. For example, if the path changes to a new valid path, then
+the most recent val will be written immediatly to that new path.
+
+e.g.
+```
+store("/tmp/thing", 42)
+```
+
+write 42 to /tmp/thing
 
 ## store_var
 
@@ -624,6 +769,38 @@ string_join("/", base, "foo", "bar")
 
 is the same a writing `"[base]/foo/bar"`
 
+## strip_prefix
+
+```
+strip_prefix(pfx: Expr, val: Expr)
+```
+
+assuming both it's arguments are strings, then strip_prefix evaluates
+to val with pfx removed from the beginning.
+
+e.g.
+```
+strip_prefix("Hello ", "Hello World!")
+```
+
+evaluates to "World!"
+
+## strip_suffix
+
+```
+strip_suffix(sfx: Expr, val: Expr)
+```
+
+assuming both it's arguments are strings, then strip_suffix evaluates
+to val with sfx removed from the end.
+
+e.g.
+```
+strip_suffix(" World!", "Hello World!")
+```
+
+evaluates to "Hello"
+
 ## sum
 
 ```
@@ -638,6 +815,54 @@ sum(load("/offset"), load("/random"))
 ```
 
 sums `/offset` and `/random`
+
+## trim_end
+
+```
+trim_end(Expr)
+```
+
+if it's argument is a string, then trim_end evaluates to it's argument
+with trailing whitespace removed.
+
+e.g
+```
+trim_end("123456   ")
+```
+
+evaluates to "123456"
+
+## trim
+
+```
+trim(Expr)
+```
+
+if it's argument is a string, then trim evalutes to it's argument with
+both leading and trailing whitespace removed.
+
+e.g.
+```
+trim(" aaaaaaaaahhhg  ")
+```
+
+evaluates to "aaaaaaaaahhhg"
+
+## trim_start
+
+```
+trim_start(Expr)
+```
+
+if it's argument is a string, then trim_start evaluates to it's argument
+with leading whitespace removed.
+
+e.g
+```
+trim_start("   123456")
+```
+
+evaluates to "123456"
 
 ## uniq
 
