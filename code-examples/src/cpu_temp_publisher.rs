@@ -6,7 +6,6 @@ use netidx::{
     resolver::Auth,
 };
 
-#[derive(Clone)]
 pub struct HwPub {
     publisher: Publisher,
     cpu_temp: Val,
@@ -36,18 +35,22 @@ impl HwPub {
         // and organized.
         let path = Path::from(format!("/hw/{}/cpu-temp", host));
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
-        // flush our publish request to the resolver server. Nothing
-        // happens until you do this.
-        publisher.flush(None).await;
+
+        // Wait for the publish operation to be sent to the resolver
+        // server.
+        publisher.flushed().await;
         Ok(HwPub { publisher, cpu_temp })
     }
 
     pub async fn update(&self, current: f64) {
-        // update the current cpu-temp
-        self.cpu_temp.update(Value::F64(current));
+        // start a new batch of updates. 
+        let mut batch = self.publisher.start_batch();
 
-        // flush the updated values out to subscribers
-        self.publisher.flush(None).await
+        // queue the current cpu-temp in the batch
+        self.cpu_temp.update(&mut batch, Value::F64(current));
+
+        // send the updated value out to subscribers
+        batch.commit(None).await
     }
 }
 

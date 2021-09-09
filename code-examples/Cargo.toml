@@ -16,5 +16,5 @@ path = "src/cpu_temp_publisher.rs"
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
 futures = "0.3"
-netidx = "0.7"
+netidx = "0.9"
 anyhow = "1"

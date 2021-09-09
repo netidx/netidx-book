@@ -85,8 +85,9 @@ async fn watch_hosts(
                 }
             }
         }
-        // flush anything new we've published to the resolver server
-        publisher.flush(None).await;
+        // wait for anything new we've published to be flushed to the
+        // resolver server.
+        publisher.flushed().await;
         // wait 1 second before polling the resolver server again
         time::sleep(Duration::from_secs(1)).await
     }
@@ -111,6 +112,7 @@ pub async fn main() -> Result<()> {
         temps.clone(),
     ));
     while let Some(mut batch) = rx_current.next().await {
+        let mut updates = publisher.start_batch();
         {
             let temps = temps.lock().unwrap();
             for (id, ev) in batch.drain(..) {
@@ -120,15 +122,17 @@ pub async fn main() -> Result<()> {
                         if let Ok(temp) = v.cast_to::<f64>() {
                             if temp > 75. {
                                 let tr = &temps[&id];
-                                tr.timestamp.update(Value::DateTime(Utc::now()));
-                                tr.temperature.update(Value::F64(temp));
+                                tr.timestamp.update(&mut updates, Value::DateTime(Utc::now()));
+                                tr.temperature.update(&mut updates, Value::F64(temp));
                             }
                         }
                     }
                 }
             }
         } // release the lock before we do any async operations
-        publisher.flush(None).await
+        if updates.len() > 0 {
+            updates.commit(None).await
+        }
     }
     Ok(())
 }
