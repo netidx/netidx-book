@@ -1844,6 +1844,13 @@ escape it, e.g. <code>\|</code>. If it has a literal <code>\</code> in it, then 
 must escape it e.g. <code>\\</code>.</li>
 </ul>
 </li>
+<li>call a netidx rpc
+<ul>
+<li><code>CALL|/path/to/the/rpc|arg=typ:val,...,arg=typ:val</code></li>
+<li>commas in the val may be escaped with <code>\</code></li>
+<li>args may be specified multiple times</li>
+</ul>
+</li>
 </ul>
 <p>If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber

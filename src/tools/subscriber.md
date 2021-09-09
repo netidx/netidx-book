@@ -24,6 +24,10 @@ The command line subscriber reads commands from stdin which can direct it to,
   - if the path you are writing to has a `|` in it, then you must
     escape it, e.g. `\|`. If it has a literal `\` in it, then you also
     must escape it e.g. `\\`.
+- call a netidx rpc
+  - `CALL|/path/to/the/rpc|arg=typ:val,...,arg=typ:val`
+  - commas in the val may be escaped with `\`
+  - args may be specified multiple times
 
 If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber
