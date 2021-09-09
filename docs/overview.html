@@ -159,12 +159,36 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#overview-of-netidx" id="overview-of-netidx">Overview of Netidx</a></h1>
-<p>Netidx is a library, protocol, and server that facilitates publishing
-the value of a variable in one program and consuming it in another
-program, possibly on another computer. There are a lot of details, but
-making that transaction as easy as possible, while still being secure
-and performant is the essential goal.</p>
+                        <h1><a class="header" href="#what-is-netidx" id="what-is-netidx">What is Netidx</a></h1>
+<ul>
+<li>
+<p>It's a directory service; like LDAP or X.500</p>
+<ul>
+<li>It keeps track of a hierarchical directory of things</li>
+<li>It's browsable and queryable</li>
+<li>It's distributed, lightweight, and scalable</li>
+</ul>
+</li>
+<li>
+<p>It's a tuple space; like JavaSpaces, zookeeper, or memcached</p>
+<ul>
+<li>Except it's distributed. The directory server keeps track of where
+things are, publishers keep the data.</li>
+<li>Each tuple is identified by a unique path in the directory server,
+and holds a flexible set of primitive data types</li>
+</ul>
+</li>
+<li>
+<p>It's a publish/subscribe messaging system; like MQTT</p>
+<ul>
+<li>Except there is no centralized broker. Communication happens
+directly between publishers and subscribers</li>
+<li>Message archiving and other services provided by MQTT brokers can
+be provided by normal publishers, or omitted if they aren't needed</li>
+<li>Decentralization allows it to scale to huge message rates</li>
+</ul>
+</li>
+</ul>
 <h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
 <p>Netidx values are published to a hierarchical <a href="https://en.wikipedia.org/wiki/Tuple_space">tuple
 space</a>. The structure of

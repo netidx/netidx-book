@@ -211,12 +211,36 @@ gtk development files installed to build it, on debian/ubuntu add those with </p
 <p><code>sudo apt install libgtk-3-dev</code></p>
 <p>and then</p>
 <p><code>cargo install netidx-browser</code></p>
-<h1><a class="header" href="#overview-of-netidx" id="overview-of-netidx">Overview of Netidx</a></h1>
-<p>Netidx is a library, protocol, and server that facilitates publishing
-the value of a variable in one program and consuming it in another
-program, possibly on another computer. There are a lot of details, but
-making that transaction as easy as possible, while still being secure
-and performant is the essential goal.</p>
+<h1><a class="header" href="#what-is-netidx" id="what-is-netidx">What is Netidx</a></h1>
+<ul>
+<li>
+<p>It's a directory service; like LDAP or X.500</p>
+<ul>
+<li>It keeps track of a hierarchical directory of things</li>
+<li>It's browsable and queryable</li>
+<li>It's distributed, lightweight, and scalable</li>
+</ul>
+</li>
+<li>
+<p>It's a tuple space; like JavaSpaces, zookeeper, or memcached</p>
+<ul>
+<li>Except it's distributed. The directory server keeps track of where
+things are, publishers keep the data.</li>
+<li>Each tuple is identified by a unique path in the directory server,
+and holds a flexible set of primitive data types</li>
+</ul>
+</li>
+<li>
+<p>It's a publish/subscribe messaging system; like MQTT</p>
+<ul>
+<li>Except there is no centralized broker. Communication happens
+directly between publishers and subscribers</li>
+<li>Message archiving and other services provided by MQTT brokers can
+be provided by normal publishers, or omitted if they aren't needed</li>
+<li>Decentralization allows it to scale to huge message rates</li>
+</ul>
+</li>
+</ul>
 <h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
 <p>Netidx values are published to a hierarchical <a href="https://en.wikipedia.org/wiki/Tuple_space">tuple
 space</a>. The structure of
@@ -580,7 +604,6 @@ use netidx::{
     resolver::Auth,
 };
 
-#[derive(Clone)]
 pub struct HwPub {
     publisher: Publisher,
     cpu_temp: Val,
@@ -610,21 +633,22 @@ impl HwPub {
         // and organized.
         let path = Path::from(format!(&quot;/hw/{}/cpu-temp&quot;, host));
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
-        // flush our publish request to the resolver server. Nothing
-        // happens until you do this.
-        publisher.flush(None).await;
-        Ok(HwPub {
-            publisher,
-            cpu_temp,
-        })
+
+        // Wait for the publish operation to be sent to the resolver
+        // server.
+        publisher.flushed().await;
+        Ok(HwPub { publisher, cpu_temp })
     }
 
     pub async fn update(&amp;self, current: f64) {
-        // update the current cpu-temp
-        self.cpu_temp.update(Value::F64(current));
+        // start a new batch of updates. 
+        let mut batch = self.publisher.start_batch();
 
-        // flush the updated values out to subscribers
-        self.publisher.flush(None).await
+        // queue the current cpu-temp in the batch
+        self.cpu_temp.update(&amp;mut batch, Value::F64(current));
+
+        // send the updated value out to subscribers
+        batch.commit(None).await
     }
 }
 <span class="boring">}
@@ -835,8 +859,9 @@ async fn watch_hosts(
                 }
             }
         }
-        // flush anything new we've published to the resolver server
-        publisher.flush(None).await;
+        // wait for anything new we've published to be flushed to the
+        // resolver server.
+        publisher.flushed().await;
         // wait 1 second before polling the resolver server again
         time::sleep(Duration::from_secs(1)).await
     }
@@ -846,7 +871,7 @@ async fn watch_hosts(
 pub async fn main() -&gt; Result&lt;()&gt; {
     // load the default netidx config
     let config = Config::load_default()?;
-    let auth = Auth::Anonymous;
+    let auth = Auth::Krb5 {upn: None, spn: Some(&quot;publish/blackbird.ryu-oh.org@RYU-OH.ORG&quot;.into())};
     // setup subscriber and publisher
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
     let publisher = Publisher::new(config, auth, &quot;192.168.0.0/24&quot;.parse()?).await?;
@@ -861,6 +886,7 @@ pub async fn main() -&gt; Result&lt;()&gt; {
         temps.clone(),
     ));
     while let Some(mut batch) = rx_current.next().await {
+        let mut updates = publisher.start_batch();
         {
             let temps = temps.lock().unwrap();
             for (id, ev) in batch.drain(..) {
@@ -870,15 +896,17 @@ pub async fn main() -&gt; Result&lt;()&gt; {
                         if let Ok(temp) = v.cast_to::&lt;f64&gt;() {
                             if temp &gt; 75. {
                                 let tr = &amp;temps[&amp;id];
-                                tr.timestamp.update(Value::DateTime(Utc::now()));
-                                tr.temperature.update(Value::F64(temp));
+                                tr.timestamp.update(&amp;mut updates, Value::DateTime(Utc::now()));
+                                tr.temperature.update(&amp;mut updates, Value::F64(temp));
                             }
                         }
                     }
                 }
             }
         } // release the lock before we do any async operations
-        publisher.flush(None).await
+        if updates.len() &gt; 0 {
+            updates.commit(None).await
+        }
     }
     Ok(())
 }
