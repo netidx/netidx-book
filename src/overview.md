@@ -1,10 +1,22 @@
-# Overview of Netidx
+# What is Netidx
 
-Netidx is a library, protocol, and server that facilitates publishing
-the value of a variable in one program and consuming it in another
-program, possibly on another computer. There are a lot of details, but
-making that transaction as easy as possible, while still being secure
-and performant is the essential goal.
+- It's a directory service; like LDAP or X.500
+  - It keeps track of a hierarchical directory of things
+  - It's browsable and queryable
+  - It's distributed, lightweight, and scalable
+
+- It's a tuple space; like JavaSpaces, zookeeper, or memcached
+  - Except it's distributed. The directory server keeps track of where
+    things are, publishers keep the data.
+  - Each tuple is identified by a unique path in the directory server,
+    and holds a flexible set of primitive data types
+
+- It's a publish/subscribe messaging system; like MQTT
+  - Except there is no centralized broker. Communication happens
+    directly between publishers and subscribers
+  - Message archiving and other services provided by MQTT brokers can
+    be provided by normal publishers, or omitted if they aren't needed
+  - Decentralization allows it to scale to huge message rates
 
 ## The Namespace
 

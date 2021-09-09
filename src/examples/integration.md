@@ -22,7 +22,6 @@ use netidx::{
     resolver::Auth,
 };
 
-#[derive(Clone)]
 pub struct HwPub {
     publisher: Publisher,
     cpu_temp: Val,
@@ -52,21 +51,22 @@ impl HwPub {
         // and organized.
         let path = Path::from(format!("/hw/{}/cpu-temp", host));
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
-        // flush our publish request to the resolver server. Nothing
-        // happens until you do this.
-        publisher.flush(None).await;
-        Ok(HwPub {
-            publisher,
-            cpu_temp,
-        })
+
+        // Wait for the publish operation to be sent to the resolver
+        // server.
+        publisher.flushed().await;
+        Ok(HwPub { publisher, cpu_temp })
     }
 
     pub async fn update(&self, current: f64) {
-        // update the current cpu-temp
-        self.cpu_temp.update(Value::F64(current));
+        // start a new batch of updates. 
+        let mut batch = self.publisher.start_batch();
 
-        // flush the updated values out to subscribers
-        self.publisher.flush(None).await
+        // queue the current cpu-temp in the batch
+        self.cpu_temp.update(&mut batch, Value::F64(current));
+
+        // send the updated value out to subscribers
+        batch.commit(None).await
     }
 }
 ```
@@ -295,8 +295,9 @@ async fn watch_hosts(
                 }
             }
         }
-        // flush anything new we've published to the resolver server
-        publisher.flush(None).await;
+        // wait for anything new we've published to be flushed to the
+        // resolver server.
+        publisher.flushed().await;
         // wait 1 second before polling the resolver server again
         time::sleep(Duration::from_secs(1)).await
     }
@@ -306,7 +307,7 @@ async fn watch_hosts(
 pub async fn main() -> Result<()> {
     // load the default netidx config
     let config = Config::load_default()?;
-    let auth = Auth::Anonymous;
+    let auth = Auth::Krb5 {upn: None, spn: Some("publish/blackbird.ryu-oh.org@RYU-OH.ORG".into())};
     // setup subscriber and publisher
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
     let publisher = Publisher::new(config, auth, "192.168.0.0/24".parse()?).await?;
@@ -321,6 +322,7 @@ pub async fn main() -> Result<()> {
         temps.clone(),
     ));
     while let Some(mut batch) = rx_current.next().await {
+        let mut updates = publisher.start_batch();
         {
             let temps = temps.lock().unwrap();
             for (id, ev) in batch.drain(..) {
@@ -330,15 +332,17 @@ pub async fn main() -> Result<()> {
                         if let Ok(temp) = v.cast_to::<f64>() {
                             if temp > 75. {
                                 let tr = &temps[&id];
-                                tr.timestamp.update(Value::DateTime(Utc::now()));
-                                tr.temperature.update(Value::F64(temp));
+                                tr.timestamp.update(&mut updates, Value::DateTime(Utc::now()));
+                                tr.temperature.update(&mut updates, Value::F64(temp));
                             }
                         }
                     }
                 }
             }
         } // release the lock before we do any async operations
-        publisher.flush(None).await
+        if updates.len() > 0 {
+            updates.commit(None).await
+        }
     }
     Ok(())
 }
