@@ -160,17 +160,17 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#container" id="container">Container</a></h1>
-<p>The container is a persistent store for netidx values and bscript
-formulas, a bit like a global pasteboard, or a nosql database. At
-startup it reads and publishes all the data in it's database, and then
-waits for user interaction. When an authorized user writes to one of
-it's published values it updates that value in the database, and then
-updates the published value for subscribers. To allow creation of new
-values it installs a default publisher at one or more user chosen
-roots. If an authorized user subscribes to a path that isn't in the
-database, then it will add a new empty value to the database at that
-path. The user can then write whatever value they wish to the new
-path, and it will persist in the database.</p>
+<p>The container is a persistent store for netidx values, a bit like a
+pasteboard, or a nosql database. At startup it reads and publishes all
+the data in it's database, and then waits for user interaction. When
+an authorized user writes to one of it's published values it updates
+that value in the database, and then updates the published value for
+subscribers. To allow creation of new values it installs a default
+publisher at one or more user chosen roots. If an authorized user
+subscribes to a path that isn't in the database, then it will add a
+new empty value to the database at that path. The user can then write
+whatever value they wish to the new path, and it will persist in the
+database.</p>
 <p>As well as storing values, cells can be bscript formulas. In that case
 instead of storing the cell value in the database the formula text is
 stored, and the published value will be whatever the formula evaluates
@@ -182,12 +182,24 @@ additional functions specific to the container. ref and rel. ref
 refers to a path that must be hosted by the same container, in
 exchange for this restriction it's quite a bit faster than load. rel
 takes advantage of the fact that trees can often be seen as tables to
-allow you to get the path of a cell by offset to the cell rel is
-in. For example rel(-1) gets the path of the cell in the same row, but
-1 column to the left. rel(1) goes 1 column to the right. rel(-1, 0)
-gets the path to the cell in the same column but 1 row up. Together
-ref and rel can help you make tables that are almost like a
-spreadsheet.</p>
+allow you to get the path of a cell by offset to current cell. For
+example rel(-1) gets the path of the cell in the same row, but 1
+column to the left. rel(1) goes 1 column to the right. rel(-1, 0) gets
+the path to the cell in the same column but 1 row up.</p>
+<p>Because bscript is an incremental language it automatically recomputes
+the value of a formula when something it depends on changes. Using the
+helpers to create &quot;sheets&quot; you can create something a lot like a
+google sheet or cloud excel sheet, multiple users can edit and view it
+concurrently while keeping a consistent view. With a little browser
+bscript you can even make it look like a spreadsheet.</p>
+<p>Probably more interesting than replicating a cloud sheet is that you
+aren't limited to &quot;spreadsheet like things&quot;, you can use bscript
+formulas to e.g. select and project data from elsewhere in netidx,
+combine it with local data and compute interesting things. However the
+most important difference of all is that unlike a spreadsheet the
+things you compute in a container sheet are not locked into some gui,
+they are available to be consumed by any authorized subscriber on the
+network, just like anything else in netidx.</p>
 <h2><a class="header" href="#administration" id="administration">Administration</a></h2>
 <h3><a class="header" href="#args" id="args">Args</a></h3>
 <ul>
