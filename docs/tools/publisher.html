@@ -274,7 +274,7 @@ number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire
 <li><code>bool</code>: true, or false. 1 byte on the wire</li>
 <li><code>string</code>: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)</li>
 <li><code>bytes</code>: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire</li>
-<li><code>array</code>: an array of values, syntax [ v0, v1, ... ], consumes 1+zlen array+len of each element</li>
+<li><code>array</code>: an array of netidx values, consuming 1+zlen(array)+sum(len(elts))</li>
 <li><code>result</code>: OK, or Error + string, consuming 1-1+string length bytes</li>
 </ul>
 

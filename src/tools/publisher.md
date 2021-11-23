@@ -118,5 +118,5 @@ The following types are supported,
   - `bool`: true, or false. 1 byte on the wire
   - `string`: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)
   - `bytes`: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire
-  - `array`: an array of values, syntax [ v0, v1, ... ], consumes 1+zlen array+len of each element
+  - `array`: an array of netidx values, consuming 1+zlen(array)+sum(len(elts))
   - `result`: OK, or Error + string, consuming 1-1+string length bytes

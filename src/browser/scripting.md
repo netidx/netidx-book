@@ -12,7 +12,7 @@ destination.
 
 For example the event handler for a button might look like so,
 ```
-store(string_concat(get("base"), "/app/do_action"), event())
+store("[base]/app/do_action", event())
 ```
 
 The store function writes it's 2nd argument to the netidx path
@@ -24,7 +24,7 @@ think of this expression as building an event pipeline that looks
 something like this,
 
 ```
-get("base") ------------1-> string_concat -------
+get(base) ------------1-> concat_string ---------
                                 ^                |
                                 |                |
 "/app/do_action" -------------2-                 1
@@ -76,7 +76,7 @@ to set it's value would be to put it's initialization expression in an
 action. e.g.
 
 ```
-set(
+store_var(
   "base",
   load("/where")
 )
@@ -100,7 +100,7 @@ named,
 - bool: boolean
 - string: unicode string
 - bytes: byte array
-- array: an array of values
+- array: an array of values (including arrays)
 - result: ok or error:description of error
 
 Constants may be prefixed with the type name followed by a colon, e.g.
@@ -118,8 +118,36 @@ However constant expressions have a default type if none is specified,
 e.g. `3.1415` is the same as `f64:3.1415`, and both forms will be
 accepted.
 
-Arrays are written as `[ v0, v1, ... vn ]`, where all the vs follow
-these same rules.
+Array literals may be specified with the syntax `[ v0, v1, ... ]`
+
+# Expression Interpolation
+
+In a string literal you may substitute any number of expressions by
+surrounding them with `[]`. To produce a literal `[` or `]` you must
+escape them with `\`, e.g. `\[` and `\]`. To produce a literal `\` you
+may escape it as well, e.g. `\\`. Any expression is a valid
+interpolation (including another interpolation). Non string valued
+expressions will be cast to strings, and any expression that cannot be
+cast to a string will be replaced with the empty string.
+
+e.g.
+```
+"[base]/some/path" => string_concat(get("base"), "/some/path")
+```
+
+```
+"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing" => 
+string_concat(
+    get("base"),
+    "/bar/",
+    if(
+        load(string_concat(get("base"), "/enabled")),
+        "enabled",
+        "disabled"
+    ),
+    "/thing"
+)
+```
 
 # The Expression Inspector
 
@@ -132,12 +160,11 @@ corresponding expression in it's second.
 In this case the expression being inspected is,
 
 ```
-set("base", string_concat(get("archive_base"), "/", get("sessionid"), "/data"))
+base <- "[archive_base]/[sessionid]/data"
 ``` 
 
 You can access the expression inspector by pressing the toggle button
-to the right of the expression box. The inspector can also be used to
-edit the expression by manipulating the tree.
+to the right of the expression box.
 
 # Reference
 
@@ -207,7 +234,7 @@ value.
 
 e.g.
 ```
-store_var(
+set(
   "sessionid",
   call(
     "/solar/archive/session", 
@@ -274,7 +301,7 @@ second argument, otherwise does not produce anything.
 e.g.
 ```
 store(
-  string_concat(get("base"), "/volume"), 
+  "[base]/volume", 
   confirm(
     "are you sure you want to change the volume to ", 
     volume
@@ -336,20 +363,21 @@ First divides `"/volume"` by 2 and then divides it by
 
 ```
 do(Expr, ..., Expr)
+{ Expr; ...; Expr }
 ```
 
 Do evaluates to the value of it's final argument, all other arguments
-are evaluated for side effect. nested `do` expressions introduce a new
-scope, any `let` variable within such a scope will only be visible in
-that scope, and child scopes.
+are evaluated for side effect. Each do block aside from the toplevel
+one introduces a new lexical scope, let variables defined in such a
+scope are not visible outside it.
 
 e.g.
 ```
-do(
-    set("foo", "Hello world!"),
-    store("/tmp/foo", get("foo")),
-    get("foo")
-)
+{
+    let foo <- "Hello world!";
+    store("/tmp/foo", foo);
+    foo
+}
 ```
 
 evaluates to "Hello world!", but also sets the variable "foo", and
@@ -383,7 +411,7 @@ argument, or produces an error if the program is invalid.
 
 e.g.
 ```
-eval(load(string_concat(get("base"), "/program")))
+eval(load("[base]/program"))
 ```
 
 Load and execute browser script from `[base]/program`.
@@ -425,7 +453,7 @@ saw.
 
 e.g.
 ```
-filter(load(get("enabled")), load(get("thing")))
+filter(load("[enabled]"), load("[thing]"))
 ```
 
 Passes on updates to "[thing]" only if "[enabled]" is true
@@ -486,7 +514,7 @@ is_error evaluates to true if it's argument evaluates to an error.
 e.g.
 ```
 do(
-    store_var("val", load("/tmp/thing")),
+    set("val", load("/tmp/thing")),
     if(is_error(val), "#REF", val)
 )
 ```
@@ -506,17 +534,19 @@ evaluate to a string.
 e.g.
 ```
 load("/some/path/in/netidx")
-load(string_concat(get("base"), "/thing"))
+load("[base]/thing")
 ```
 
 ## get
 
 ```
 get(var: Expr)
+var
 ```
 
 Produce the value of the variable specified by var, or an error if var
-is not a valid variable name.
+is not a valid variable name. The second form is syntactic sugar that
+translates into `get("var")`.
 
 ## max
 
@@ -580,7 +610,7 @@ argument. The syntax of a location is one of,
 
 e.g.
 ```
-navigate(confirm("go to ", string_concat("file:", get("next_view"))))
+navigate(confirm("go to ", "file:[next_view]"))
 ```
 
 ## not
@@ -654,10 +684,7 @@ updates.
 
 e.g.
 ```
-sample(
-  load(string_concat(get("base"), "/timestamp")), 
-  load(string_concat(get("base"), "/voltage"))
-)
+sample(load("[base]/timestamp"), load("[base]/voltage"))
 ```
 
 Produces `[base]/voltage` whenever `[base]/timestamp` updates.
@@ -703,14 +730,16 @@ write 42 to /tmp/thing
 
 ```
 set(name: Expr, val: Expr)
+name <- val
 ```
 
 Store the value of val in the variable specified by name. Return
 nothing, or an error if name is not a valid variable name. Set will
-set the variable in the scope closest to it's own lexical
-scope. e.g. if `let` has been used in the same or a parent scope, then
-set will refer to that binding, if there is currently no binding then
-the variable will be set in the global scope.
+set the variable defined in the lexical scope closest to it. If the
+variable is not defined yet, then set will set it in the global
+scope. The second form is a more consise syntax for the first, however
+it is less powerful, as name must be a literal name and may not be an
+expression.
 
 e.g.
 ```
@@ -721,20 +750,25 @@ set("volume", cast("f32", event()))
 
 ```
 let(name: Expr, val: Expr)
+let name <- val
 ```
 
-`let` defines a variable called `name` in the current lexical scope,
-and sets it's value to `val`. It is similar to `set` except that `let`
-always defines a variable in the current scope, even if the variable
-is already defined in a parent scope.
+Let is does the same thing as set except that it always sets the
+variable in it's own lexical scope. If no variable is defined in it's
+lexical scope, then it will define it there. If the variable is
+defined in a parent scope, let will cause it to be masked in the
+current scope and it's children.
 
 e.g.
 ```
-do(
-    let("v", 42), 
-    do(let("v", 43), get("v")), -> 43
-    get("v") -> 42
-) -> 42
+{
+    let v <- 42;
+    {
+        let v <- 43;
+        v
+    }; # evals to 43
+    v
+} # evals to 42
 ```
 
 ## string_concat
@@ -751,7 +785,8 @@ e.g.
 string_concat(load("/foo"), load("/bar"), "baz")
 ```
 
-concatanates it's arguments into a single string.
+is the same as writing `"[load("/foo")][load("/bar")]baz"`. And in
+fact string interpolations are just syntactic sugar for this function.
 
 ## string_join
 
@@ -765,8 +800,10 @@ separator.
 e.g.
 
 ```
-string_join("/", get("base"), "foo", "bar")
+string_join("/", base, "foo", "bar")
 ```
+
+is the same a writing `"[base]/foo/bar"`
 
 ## strip_prefix
 
@@ -874,7 +911,7 @@ from the previous one.
 
 e.g.
 ```
-uniq(load(string_concat(get("stock_base"), "/ibm/last")))
+uniq(load("[stock_base]/ibm/last"))
 ```
 
 Would produce an event only when the last trade price of IBM changes.
