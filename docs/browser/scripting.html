@@ -170,7 +170,7 @@ I click the button&quot; like most other languages browser script describes
 the plumbing that events flow through on their way to their final
 destination.</p>
 <p>For example the event handler for a button might look like so,</p>
-<pre><code>store(&quot;[base]/app/do_action&quot;, event())
+<pre><code>store(string_concat(get(&quot;base&quot;), &quot;/app/do_action&quot;), event())
 </code></pre>
 <p>The store function writes it's 2nd argument to the netidx path
 specified by it's first argument. The event function produces a widget
@@ -179,7 +179,7 @@ clicked. The path argument is actually a string with an expression
 interpolation that will generate the path we will write to. So we can
 think of this expression as building an event pipeline that looks
 something like this,</p>
-<pre><code>load_var(base) ------------1-&gt; concat_string ----
+<pre><code>get(&quot;base&quot;) ------------1-&gt; string_concat -------
                                 ^                |
                                 |                |
 &quot;/app/do_action&quot; -------------2-                 1
@@ -223,7 +223,7 @@ that contains the base relative to which our view will operate. We can
 easily reference this variable in all our widgets, and the correct way
 to set it's value would be to put it's initialization expression in an
 action. e.g.</p>
-<pre><code>store_var(
+<pre><code>set(
   &quot;base&quot;,
   load(&quot;/where&quot;)
 )
@@ -245,6 +245,7 @@ named,</p>
 <li>bool: boolean</li>
 <li>string: unicode string</li>
 <li>bytes: byte array</li>
+<li>array: an array of values</li>
 <li>result: ok or error:description of error</li>
 </ul>
 <p>Constants may be prefixed with the type name followed by a colon, e.g.</p>
@@ -259,36 +260,15 @@ named,</p>
 </ul>
 <p>e.g. <code>3.1415</code> is the same as <code>f64:3.1415</code>, and both forms will be
 accepted.</p>
-<h1><a class="header" href="#expression-interpolation" id="expression-interpolation">Expression Interpolation</a></h1>
-<p>In a string literal you may substitute any number of expressions by
-surrounding them with <code>[]</code>. To produce a literal <code>[</code> or <code>]</code> you must
-escape them with <code>\</code>, e.g. <code>\[</code> and <code>\]</code>. To produce a literal <code>\</code> you
-may escape it as well, e.g. <code>\\</code>. Any expression is a valid
-interpolation (including another interpolation). Non string valued
-expressions will be cast to strings, and any expression that cannot be
-cast to a string will be replaced with the empty string.</p>
-<p>e.g.</p>
-<pre><code>&quot;[base]/some/path&quot; =&gt; string_concat(load_var(&quot;base&quot;), &quot;/some/path&quot;)
-</code></pre>
-<pre><code>&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot; =&gt; 
-string_concat(
-    load_var(&quot;base&quot;),
-    &quot;/bar/&quot;,
-    if(
-        load(string_concat(load_var(&quot;base&quot;), &quot;/enabled&quot;)),
-        &quot;enabled&quot;,
-        &quot;disabled&quot;
-    ),
-    &quot;/thing&quot;
-)
-</code></pre>
+<p>Arrays are written as <code>[ v0, v1, ... vn ]</code>, where all the vs follow
+these same rules.</p>
 <h1><a class="header" href="#the-expression-inspector" id="the-expression-inspector">The Expression Inspector</a></h1>
 <p>The expression inspector shows a tree representation of a BScript
 expression in it's first column, and the current value of the
 corresponding expression in it's second.</p>
 <p><img src="./expression-inspector.png" alt="Expression Inspector" /></p>
 <p>In this case the expression being inspected is,</p>
-<pre><code>store_var(&quot;base&quot;, &quot;[archive_base]/[sessionid]/data&quot;)
+<pre><code>set(&quot;base&quot;, string_concat(get(&quot;archive_base&quot;), &quot;/&quot;, get(&quot;sessionid&quot;), &quot;/data&quot;))
 </code></pre>
 <p>You can access the expression inspector by pressing the toggle button
 to the right of the expression box. The inspector can also be used to
@@ -378,7 +358,7 @@ encoded as strings, and are called,</p>
 second argument, otherwise does not produce anything.</p>
 <p>e.g.</p>
 <pre><code>store(
-  &quot;[base]/volume&quot;, 
+  string_concat(get(&quot;base&quot;), &quot;/volume&quot;), 
   confirm(
     &quot;are you sure you want to change the volume to &quot;, 
     volume
@@ -417,12 +397,14 @@ execution of the pipeline.</p>
 <pre><code>do(Expr, ..., Expr)
 </code></pre>
 <p>Do evaluates to the value of it's final argument, all other arguments
-are evaluated for side effect.</p>
+are evaluated for side effect. nested <code>do</code> expressions introduce a new
+scope, any <code>let</code> variable within such a scope will only be visible in
+that scope, and child scopes.</p>
 <p>e.g.</p>
 <pre><code>do(
-    store_var(&quot;foo&quot;, &quot;Hello world!&quot;),
-    store(&quot;/tmp/foo&quot;, &quot;[foo]&quot;),
-    foo
+    set(&quot;foo&quot;, &quot;Hello world!&quot;),
+    store(&quot;/tmp/foo&quot;, get(&quot;foo&quot;)),
+    get(&quot;foo&quot;)
 )
 </code></pre>
 <p>evaluates to &quot;Hello world!&quot;, but also sets the variable &quot;foo&quot;, and
@@ -443,7 +425,7 @@ ends_with(&quot;hello&quot;, &quot;hello world&quot;)
 <p>Compiles and executes the browser script program specified by it's
 argument, or produces an error if the program is invalid.</p>
 <p>e.g.</p>
-<pre><code>eval(load(&quot;[base]/program&quot;))
+<pre><code>eval(load(string_concat(get(&quot;base&quot;), &quot;/program&quot;)))
 </code></pre>
 <p>Load and execute browser script from <code>[base]/program</code>.</p>
 <h2><a class="header" href="#event" id="event">event</a></h2>
@@ -471,7 +453,7 @@ the predicate transitions from false to true then filter will
 immediatly evaluate to the last value of it's second argument that it
 saw.</p>
 <p>e.g.</p>
-<pre><code>filter(load(&quot;[enabled]&quot;), load(&quot;[thing]&quot;))
+<pre><code>filter(load(get(&quot;enabled&quot;)), load(get(&quot;thing&quot;)))
 </code></pre>
 <p>Passes on updates to &quot;[thing]&quot; only if &quot;[enabled]&quot; is true</p>
 <h2><a class="header" href="#if" id="if">if</a></h2>
@@ -521,15 +503,13 @@ value of load(&quot;/tmp/thing&quot;).</p>
 evaluate to a string.</p>
 <p>e.g.</p>
 <pre><code>load(&quot;/some/path/in/netidx&quot;)
-load(&quot;[base]/thing&quot;)
+load(string_concat(get(&quot;base&quot;), &quot;/thing&quot;))
 </code></pre>
-<h2><a class="header" href="#load_var" id="load_var">load_var</a></h2>
-<pre><code>load_var(var: Expr)
-var
+<h2><a class="header" href="#get" id="get">get</a></h2>
+<pre><code>get(var: Expr)
 </code></pre>
 <p>Produce the value of the variable specified by var, or an error if var
-is not a valid variable name. The second form is syntactic sugar that
-translates into <code>load_var(&quot;var&quot;)</code>.</p>
+is not a valid variable name.</p>
 <h2><a class="header" href="#max" id="max">max</a></h2>
 <pre><code>max(Expr, ..., Expr)
 </code></pre>
@@ -567,7 +547,7 @@ argument. The syntax of a location is one of, </p>
 <li>a netidx: prefixed netidx path, e.g. netidx:/foo/bar/baz</li>
 </ul>
 <p>e.g.</p>
-<pre><code>navigate(confirm(&quot;go to &quot;, &quot;file:[next_view]&quot;))
+<pre><code>navigate(confirm(&quot;go to &quot;, string_concat(&quot;file:&quot;, get(&quot;next_view&quot;))))
 </code></pre>
 <h2><a class="header" href="#not" id="not">not</a></h2>
 <pre><code>not(Expr)
@@ -608,7 +588,10 @@ with all instances of pat replaced with replacement.</p>
 <p>Produces the value of it's second argument when it's first argument
 updates.</p>
 <p>e.g.</p>
-<pre><code>sample(load(&quot;[base]/timestamp&quot;), load(&quot;[base]/voltage&quot;))
+<pre><code>sample(
+  load(string_concat(get(&quot;base&quot;), &quot;/timestamp&quot;)), 
+  load(string_concat(get(&quot;base&quot;), &quot;/voltage&quot;))
+)
 </code></pre>
 <p>Produces <code>[base]/voltage</code> whenever <code>[base]/timestamp</code> updates.</p>
 <h2><a class="header" href="#starts_with" id="starts_with">starts_with</a></h2>
@@ -633,13 +616,31 @@ the most recent val will be written immediatly to that new path.</p>
 <pre><code>store(&quot;/tmp/thing&quot;, 42)
 </code></pre>
 <p>write 42 to /tmp/thing</p>
-<h2><a class="header" href="#store_var" id="store_var">store_var</a></h2>
-<pre><code>store_var(name: Expr, val: Expr)
+<h2><a class="header" href="#set" id="set">set</a></h2>
+<pre><code>set(name: Expr, val: Expr)
 </code></pre>
 <p>Store the value of val in the variable specified by name. Return
-nothing, or an error if name is not a valid variable name.</p>
+nothing, or an error if name is not a valid variable name. Set will
+set the variable in the scope closest to it's own lexical
+scope. e.g. if <code>let</code> has been used in the same or a parent scope, then
+set will refer to that binding, if there is currently no binding then
+the variable will be set in the global scope.</p>
 <p>e.g.</p>
-<pre><code>store_var(&quot;volume&quot;, cast(&quot;f32&quot;, event()))
+<pre><code>set(&quot;volume&quot;, cast(&quot;f32&quot;, event()))
+</code></pre>
+<h2><a class="header" href="#let" id="let">let</a></h2>
+<pre><code>let(name: Expr, val: Expr)
+</code></pre>
+<p><code>let</code> defines a variable called <code>name</code> in the current lexical scope,
+and sets it's value to <code>val</code>. It is similar to <code>set</code> except that <code>let</code>
+always defines a variable in the current scope, even if the variable
+is already defined in a parent scope.</p>
+<p>e.g.</p>
+<pre><code>do(
+    let(&quot;v&quot;, 42), 
+    do(let(&quot;v&quot;, 43), get(&quot;v&quot;)), -&gt; 43
+    get(&quot;v&quot;) -&gt; 42
+) -&gt; 42
 </code></pre>
 <h2><a class="header" href="#string_concat" id="string_concat">string_concat</a></h2>
 <pre><code>string_concat(Expr, ..., Expr)
@@ -648,17 +649,15 @@ nothing, or an error if name is not a valid variable name.</p>
 <p>e.g.</p>
 <pre><code>string_concat(load(&quot;/foo&quot;), load(&quot;/bar&quot;), &quot;baz&quot;)
 </code></pre>
-<p>is the same as writing <code>&quot;[load(&quot;/foo&quot;)][load(&quot;/bar&quot;)]baz&quot;</code>. And in
-fact string interpolations are just syntactic sugar for this function.</p>
+<p>concatanates it's arguments into a single string.</p>
 <h2><a class="header" href="#string_join" id="string_join">string_join</a></h2>
 <pre><code>string_join(sep: Expr, ..., Expr)
 </code></pre>
 <p>Concatinate all arguments from 2 ... n using the first argument as a
 separator.</p>
 <p>e.g.</p>
-<pre><code>string_join(&quot;/&quot;, base, &quot;foo&quot;, &quot;bar&quot;)
+<pre><code>string_join(&quot;/&quot;, get(&quot;base&quot;), &quot;foo&quot;, &quot;bar&quot;)
 </code></pre>
-<p>is the same a writing <code>&quot;[base]/foo/bar&quot;</code></p>
 <h2><a class="header" href="#strip_prefix" id="strip_prefix">strip_prefix</a></h2>
 <pre><code>strip_prefix(pfx: Expr, val: Expr)
 </code></pre>
@@ -718,7 +717,7 @@ with leading whitespace removed.</p>
 <p>Produces the value of it's argument only if that value is different
 from the previous one.</p>
 <p>e.g.</p>
-<pre><code>uniq(load(&quot;[stock_base]/ibm/last&quot;))
+<pre><code>uniq(load(string_concat(get(&quot;stock_base&quot;), &quot;/ibm/last&quot;)))
 </code></pre>
 <p>Would produce an event only when the last trade price of IBM changes.</p>
 
