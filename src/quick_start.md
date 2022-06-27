@@ -1,5 +1,14 @@
 # Quick Start for Linux
 
+In this quick start we will set up a Netidx resolver server on your
+local machine that will service only your local machine. This
+configuration is sufficient for doing development of netidx services,
+and for trying out various publishers, subscribers, and tools without
+much setup. This setup can be modified later to hook in to a larger
+netidx install with a central server running Kerberos authentication.
+
+## First Install Rust and Netidx
+
 Install [rust](https://www.rust-lang.org/tools/install) via rustup if
 you haven't already. Ensure `~/.cargo/bin` is in your PATH.
 
@@ -14,27 +23,83 @@ You will need some build dependencies,
 - libclang, necessary for bindgen, on debian/ubuntu `sudo apt install libclang-dev`
 - gssapi, necessary for kerberos support, on debian/ubuntu `sudo apt install libkrb5-dev`
 
+## Resolver Server Configuration
+
 ```
 {
-    "parent": null,
-    "children": [],
-    "pid_file": "",
-    "addrs": ["127.0.0.1:4564"],
-    "max_connections": 512,
-    "hello_timeout": 10,
-    "reader_ttl": 60,
-    "writer_ttl": 120,
-    "auth": "Anonymous"
+  "parent": null,
+  "children": [],
+  "member_servers": [
+    {
+      "pid_file": "",
+      "addr": "127.0.0.1:4564",
+      "max_connections": 768,
+      "hello_timeout": 10,
+      "reader_ttl": 60,
+      "writer_ttl": 120,
+      "auth": {
+        "Local": "/home/eric/var/netidx-auth"
+      }
+    }
+  ],
+  "perms": {
+    "/": {
+      "wheel": "swlpd",
+      "adm": "swlpd",
+      "domain users": "sl"
+    }
+  }
 }
 ```
 
-Install the above config in `~/.config/netidx.json`. This config will
-only allow communication on your local machine. Make sure port 4564 is
-free, or change it to a free port of your choosing.
+Install the above config in `~/.config/netidx-resolver.json`. This is
+the config for the local resolver on your machine. Make sure port 4564
+is free, or change it to a free port of your choosing. Change the
+local auth socket to one of your choosing.
 
-run `netidx resolver-server`. This command will return immediatly, and
-the resolver server will daemonize. Check that it's running using `ps
-auxwww | grep netidx`.
+run `netidx resolver-server -c ~/.config/netidx-resolver.json`. This
+command will return immediatly, and the resolver server will
+daemonize. Check that it's running using `ps auxwww | grep netidx`.
+
+### Systemd
+
+If desired you can start the resolver server automatically with systemd. 
+
+```
+[Unit]
+Description=Netidx Activation
+
+[Service]
+ExecStart=/home/eric/.cargo/bin/netidx activation -u /home/eric/etc/activation -f
+
+[Install]
+WantedBy=default.target
+```
+
+Modify this example systemd unit to match your configuration and then
+install it in `~/.config/systemd/user/netidx.service`. Then you can run
+
+`systemctl --user enable netidx`
+
+and
+
+`systemctl --user start netidx`
+
+## Client Configuration
+
+```
+{
+    "addrs":
+    [
+        ["127.0.0.1:4564", {"Local": "/home/eric/var/netidx-auth"}]
+    ],
+    "base": "/"
+}
+```
+
+Install the above config in `~/.config/netidx.json`. This is the
+config all netidx clients (publishers and subscribers) will use to
+connect to the resolver cluster.
 
 To test the configuration run,
 

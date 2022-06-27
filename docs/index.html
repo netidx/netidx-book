@@ -160,6 +160,13 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#quick-start-for-linux" id="quick-start-for-linux">Quick Start for Linux</a></h1>
+<p>In this quick start we will set up a Netidx resolver server on your
+local machine that will service only your local machine. This
+configuration is sufficient for doing development of netidx services,
+and for trying out various publishers, subscribers, and tools without
+much setup. This setup can be modified later to hook in to a larger
+netidx install with a central server running Kerberos authentication.</p>
+<h2><a class="header" href="#first-install-rust-and-netidx" id="first-install-rust-and-netidx">First Install Rust and Netidx</a></h2>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
 <p><code>cargo install netidx-tools</code></p>
@@ -171,23 +178,67 @@ server, as well as the publisher/subscriber command line tools</p>
 <li>libclang, necessary for bindgen, on debian/ubuntu <code>sudo apt install libclang-dev</code></li>
 <li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
 </ul>
+<h2><a class="header" href="#resolver-server-configuration" id="resolver-server-configuration">Resolver Server Configuration</a></h2>
 <pre><code>{
-    &quot;parent&quot;: null,
-    &quot;children&quot;: [],
-    &quot;pid_file&quot;: &quot;&quot;,
-    &quot;addrs&quot;: [&quot;127.0.0.1:4564&quot;],
-    &quot;max_connections&quot;: 512,
-    &quot;hello_timeout&quot;: 10,
-    &quot;reader_ttl&quot;: 60,
-    &quot;writer_ttl&quot;: 120,
-    &quot;auth&quot;: &quot;Anonymous&quot;
+  &quot;parent&quot;: null,
+  &quot;children&quot;: [],
+  &quot;member_servers&quot;: [
+    {
+      &quot;pid_file&quot;: &quot;&quot;,
+      &quot;addr&quot;: &quot;127.0.0.1:4564&quot;,
+      &quot;max_connections&quot;: 768,
+      &quot;hello_timeout&quot;: 10,
+      &quot;reader_ttl&quot;: 60,
+      &quot;writer_ttl&quot;: 120,
+      &quot;auth&quot;: {
+        &quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;
+      }
+    }
+  ],
+  &quot;perms&quot;: {
+    &quot;/&quot;: {
+      &quot;wheel&quot;: &quot;swlpd&quot;,
+      &quot;adm&quot;: &quot;swlpd&quot;,
+      &quot;domain users&quot;: &quot;sl&quot;
+    }
+  }
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx.json</code>. This config will
-only allow communication on your local machine. Make sure port 4564 is
-free, or change it to a free port of your choosing.</p>
-<p>run <code>netidx resolver-server</code>. This command will return immediatly, and
-the resolver server will daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<p>Install the above config in <code>~/.config/netidx-resolver.json</code>. This is
+the config for the local resolver on your machine. Make sure port 4564
+is free, or change it to a free port of your choosing. Change the
+local auth socket to one of your choosing.</p>
+<p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
+command will return immediatly, and the resolver server will
+daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<h3><a class="header" href="#systemd" id="systemd">Systemd</a></h3>
+<p>If desired you can start the resolver server automatically with systemd. </p>
+<pre><code>[Unit]
+Description=Netidx Activation
+
+[Service]
+ExecStart=/home/eric/.cargo/bin/netidx activation -u /home/eric/etc/activation -f
+
+[Install]
+WantedBy=default.target
+</code></pre>
+<p>Modify this example systemd unit to match your configuration and then
+install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can run</p>
+<p><code>systemctl --user enable netidx</code></p>
+<p>and</p>
+<p><code>systemctl --user start netidx</code></p>
+<h2><a class="header" href="#client-configuration" id="client-configuration">Client Configuration</a></h2>
+<pre><code>{
+    &quot;addrs&quot;:
+    [
+        [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;}]
+    ],
+    &quot;base&quot;: &quot;/&quot;
+}
+</code></pre>
+<p>Install the above config in <code>~/.config/netidx.json</code>. This is the
+config all netidx clients (publishers and subscribers) will use to
+connect to the resolver cluster.</p>
 <p>To test the configuration run,</p>
 <p><code>netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10</code></p>
 <p>This will publish 10,000 items following the pattern <code>/bench/$r/$c</code>

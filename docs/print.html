@@ -162,6 +162,13 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#quick-start-for-linux" id="quick-start-for-linux">Quick Start for Linux</a></h1>
+<p>In this quick start we will set up a Netidx resolver server on your
+local machine that will service only your local machine. This
+configuration is sufficient for doing development of netidx services,
+and for trying out various publishers, subscribers, and tools without
+much setup. This setup can be modified later to hook in to a larger
+netidx install with a central server running Kerberos authentication.</p>
+<h2><a class="header" href="#first-install-rust-and-netidx" id="first-install-rust-and-netidx">First Install Rust and Netidx</a></h2>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
 <p><code>cargo install netidx-tools</code></p>
@@ -173,23 +180,67 @@ server, as well as the publisher/subscriber command line tools</p>
 <li>libclang, necessary for bindgen, on debian/ubuntu <code>sudo apt install libclang-dev</code></li>
 <li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
 </ul>
+<h2><a class="header" href="#resolver-server-configuration" id="resolver-server-configuration">Resolver Server Configuration</a></h2>
 <pre><code>{
-    &quot;parent&quot;: null,
-    &quot;children&quot;: [],
-    &quot;pid_file&quot;: &quot;&quot;,
-    &quot;addrs&quot;: [&quot;127.0.0.1:4564&quot;],
-    &quot;max_connections&quot;: 512,
-    &quot;hello_timeout&quot;: 10,
-    &quot;reader_ttl&quot;: 60,
-    &quot;writer_ttl&quot;: 120,
-    &quot;auth&quot;: &quot;Anonymous&quot;
+  &quot;parent&quot;: null,
+  &quot;children&quot;: [],
+  &quot;member_servers&quot;: [
+    {
+      &quot;pid_file&quot;: &quot;&quot;,
+      &quot;addr&quot;: &quot;127.0.0.1:4564&quot;,
+      &quot;max_connections&quot;: 768,
+      &quot;hello_timeout&quot;: 10,
+      &quot;reader_ttl&quot;: 60,
+      &quot;writer_ttl&quot;: 120,
+      &quot;auth&quot;: {
+        &quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;
+      }
+    }
+  ],
+  &quot;perms&quot;: {
+    &quot;/&quot;: {
+      &quot;wheel&quot;: &quot;swlpd&quot;,
+      &quot;adm&quot;: &quot;swlpd&quot;,
+      &quot;domain users&quot;: &quot;sl&quot;
+    }
+  }
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx.json</code>. This config will
-only allow communication on your local machine. Make sure port 4564 is
-free, or change it to a free port of your choosing.</p>
-<p>run <code>netidx resolver-server</code>. This command will return immediatly, and
-the resolver server will daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<p>Install the above config in <code>~/.config/netidx-resolver.json</code>. This is
+the config for the local resolver on your machine. Make sure port 4564
+is free, or change it to a free port of your choosing. Change the
+local auth socket to one of your choosing.</p>
+<p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
+command will return immediatly, and the resolver server will
+daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<h3><a class="header" href="#systemd" id="systemd">Systemd</a></h3>
+<p>If desired you can start the resolver server automatically with systemd. </p>
+<pre><code>[Unit]
+Description=Netidx Activation
+
+[Service]
+ExecStart=/home/eric/.cargo/bin/netidx activation -u /home/eric/etc/activation -f
+
+[Install]
+WantedBy=default.target
+</code></pre>
+<p>Modify this example systemd unit to match your configuration and then
+install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can run</p>
+<p><code>systemctl --user enable netidx</code></p>
+<p>and</p>
+<p><code>systemctl --user start netidx</code></p>
+<h2><a class="header" href="#client-configuration" id="client-configuration">Client Configuration</a></h2>
+<pre><code>{
+    &quot;addrs&quot;:
+    [
+        [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;}]
+    ],
+    &quot;base&quot;: &quot;/&quot;
+}
+</code></pre>
+<p>Install the above config in <code>~/.config/netidx.json</code>. This is the
+config all netidx clients (publishers and subscribers) will use to
+connect to the resolver cluster.</p>
 <p>To test the configuration run,</p>
 <p><code>netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10</code></p>
 <p>This will publish 10,000 items following the pattern <code>/bench/$r/$c</code>
@@ -212,32 +263,60 @@ gtk development files installed to build it, on debian/ubuntu add those with </p
 <p>and then</p>
 <p><code>cargo install netidx-browser</code></p>
 <h1><a class="header" href="#what-is-netidx" id="what-is-netidx">What is Netidx</a></h1>
+<p>Netidx is a middleware that enables publishing a value, like 42, in
+one program and consuming it in another program, either on the same
+machine or across the network.</p>
+<p>Values are given globally unique names in a hierarchical
+namespace. For example our published 42 might be named
+/the-ultimate-answer (normally we wouldn't put values directly under
+the root, but in this case it's appropriate). Any other program on the
+network can refer to 42 by that name, and will receive updates in the
+(unlikely) event that /the-ultimate-answer changes.</p>
+<h2><a class="header" href="#quick-comparison-with-other-systems" id="quick-comparison-with-other-systems">Quick Comparison With Other Systems</a></h2>
 <ul>
 <li>
-<p>It's a directory service; like LDAP or X.500</p>
+<p>Like LDAP/X.500</p>
 <ul>
-<li>It keeps track of a hierarchical directory of things</li>
-<li>It's browsable and queryable</li>
-<li>It's distributed, lightweight, and scalable</li>
+<li>Netidx keeps track of a hierarchical directory of values</li>
+<li>Netidx is browsable and queryable</li>
+<li>Netidx supports authentication, authorization, and encryption</li>
+<li>Netidx values can be written as well as read.</li>
+<li>Larger Netidx systems can be constructed by adding referrals
+between smaller systems.</li>
 </ul>
 </li>
 <li>
-<p>It's a tuple space; like JavaSpaces, zookeeper, or memcached</p>
+<p>Unlike LDAP/X.500</p>
 <ul>
-<li>Except it's distributed. The directory server keeps track of where
-things are, publishers keep the data.</li>
-<li>Each tuple is identified by a unique path in the directory server,
-and holds a flexible set of primitive data types</li>
+<li>In Netidx the resolver server (like slapd) only keeps the location
+of the publisher that has the data, not the data iself.</li>
+<li>There are no 'entries', 'attributes', 'ldif records', etc. Every
+name in the system is either structural, or a single value. Entry
+like structure is created using hierarchy.</li>
+<li>One can subscribe to a value, and will then be notified immediatly
+if it changes. There is no need to query again and again.</li>
+<li>There are no global filters on data, e.g. you can't query for
+(&amp;(cn=bob)(uid=foo)), because netidx isn't a database. Whether
+and what query mechanisms exist are up to the publishers.</li>
 </ul>
 </li>
 <li>
-<p>It's a publish/subscribe messaging system; like MQTT</p>
+<p>Like MQTT</p>
 <ul>
-<li>Except there is no centralized broker. Communication happens
-directly between publishers and subscribers</li>
-<li>Message archiving and other services provided by MQTT brokers can
-be provided by normal publishers, or omitted if they aren't needed</li>
-<li>Decentralization allows it to scale to huge message rates</li>
+<li>Netidx values are publish/subscribe</li>
+<li>A single Netidx value may have multiple subscribers</li>
+<li>All Netidx subscribers receive an update when a value they are
+subscribed to changes.</li>
+<li>Netidx Message delivery is reliable and ordered.</li>
+</ul>
+</li>
+<li>
+<p>Unlike MQTT</p>
+<ul>
+<li>In Netidx there is no centralized message broker. Messages flow
+directly over TCP from the publishers to the subscribers. The
+resolver server only stores the address of the publisher/s
+publishing a value.</li>
 </ul>
 </li>
 </ul>
@@ -252,16 +331,12 @@ value, and also have children. So keeping the file analogy, it can be
 both a file and a directory. For example we might have,</p>
 <pre><code>/apps/solar/stats/battery_sense_voltage/millivolts
 </code></pre>
-<p>Where the <code>.../battery_sense_voltage</code> points to the number in volts,
-and it's 'millivolts' child gives the same number in millivolts.</p>
+<p>Where the <code>.../battery_sense_voltage</code> is the number in volts, and it's
+'millivolts' child gives the same number in millivolts.</p>
 <p>Sometimes a name like <code>battery_sense_voltage</code> is published deep in the
 hierarchy and it's parents are just structure. Unlike the file system
 the resolver server will create and delete those structural containers
 automatically, there is no need to manually manage them.</p>
-<p>The term 'points to' is literal. In netidx the actual data is
-completely separate from the names. The names are stored in the
-resolver server cluster. Each name points to the ip address and port
-of the publisher that actually has the data.</p>
 <p>When a client wants to subscribe to the value pointed to by a name, it
 queries the resolver server cluster, and is given the addresses of all
 the publishers that publish said data point. It then randomly permutes
@@ -270,12 +345,13 @@ succeeds, then the subscription succeeds, if they all fail then it
 doesn't. All the actual data flows from publishers to subscribers
 directly without ever going through any kind of centralized
 infrastructure.</p>
-<h2><a class="header" href="#whats-a-value" id="whats-a-value">What's a Value</a></h2>
-<p>Values are primitives, e.g. various kinds of number, strings,
-durations, timestamps, and byte arrays. Values don't have any inherent
-structure, but of course you can use byte arrays to publish anything
-that can be serialized, and since byte arrays are zero copy that is
-even quite efficient.</p>
+<h2><a class="header" href="#the-data-format" id="the-data-format">The Data Format</a></h2>
+<p>In Netidx the data that is published is called a value. Values are
+mostly primitive types, consisting of numbers, strings, durations,
+timestamps, packed byte arrays, and arrays of values. Arrays of values
+can be nested.</p>
+<p>Byte arrays and strings are very efficient, so they can be a building
+block for sending encoded data efficiently.</p>
 <p>Published values have some other properties as well,</p>
 <ul>
 <li>Every non structural name points to a value</li>
@@ -284,78 +360,16 @@ even quite efficient.</p>
 <li>Updates arrive reliably and in the order the publisher made them
 (like a TCP stream)</li>
 </ul>
-<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
-<p>Netidx is meant to be a building block, and as such a lot of thought
-has gone into scale. There are multiple different parts of the system
-that need to scale. The resolver servers, being the only centralized
-piece of infrastructure, are perhaps the most important piece, though
-the publisher and subscriber also need to be fast or it won't be worth
-using.</p>
-<h3><a class="header" href="#resolver-server" id="resolver-server">Resolver Server</a></h3>
-<p>The resolver servers implement two strategies to achieve
-scale. Replication is the first, one can deploy multiple replicas to
-multiple machines in order to protect against a single machine outage,
-and also increase throughput. In netidx, the publisher itself is the
-primary, and as such it is responsible for replicating the names it
-publishes out to all the configured resolver servers. This makes the
-system very resilient, as even if the entire resolver server cluster
-goes down, the data isn't lost if the publishers are still alive. They
-will keep trying to republish their data with linear backoff until
-they are killed.</p>
-<p>Hierarchy is the second scaling strategy. When a system grows too big
-to fit in even a large cluster of servers, then busy parts of the
-namespace can be delegated to 'child' server clusters. Readers
-familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is similarly
-hierarchical, since each cluster config file must only know about it's
-immediate superior and immediate children. It's entirely possible for
-a large organization to run a central 'root' resolver server cluster
-without needing to micro manage the delegation going on in various
-organizational units.</p>
-<p>While the primary design goal was a scaleable architecture, the
-resolver server itself is also architected for efficiency, and uses a
-number of strategies to minimize memory use. As a result it's possible
-to put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. As a rule of thumb you get roughly 1 million names
-per 500 MB of ram, assuming your paths are a reasonable length.</p>
-<h3><a class="header" href="#publishersubscriber" id="publishersubscriber">Publisher/Subscriber</a></h3>
-<p>On the wire, the netidx protocol is almost exactly the same as
-protobuf. In protobuf, each record is extensible and rather cleverly
-encoded. Each field in the record has a LEB128 Id, followed by a data
-value.</p>
-<p>In netidx, the subscriber sends the name it wants to one of the
-publishers specified by the resolver server cluster. The publisher
-looks up that value, and responds with the id it will use in
-subsequent messages, along with the current value. From then on
-updates to that value transmit only the id, which is LEB128 encoded,
-and the updated value. So on the wire, in terms of overhead, it looks
-very much like a protobuf record where the fields are exactly what the
-subscriber has requested and nothing more. The overhead of sending an
-f64 can be as small as 2 additional bytes (so 10 in total, 1 id byte,
-1 tag byte).</p>
-<p>Publisher and subscriber performance is fairly good, such that sending
-many millions of messages per second is possible. As of this writing a
-fast machine can send about 15 million kerberos encrypted
-messages/second and more then 20 million in the clear. The per message
-overhead is on the order of about 50ns of wall clock time per message
-with kerberos encryption on. That depends on the exact hardware you're
-running on, and it depends on your workload batching well.</p>
-<p>The subscriber library also implements zero copy decoding for strings
-and byte arrays, so it is possible to receive large binary encoded
-things quite efficiently.</p>
 <h2><a class="header" href="#security" id="security">Security</a></h2>
-<p>No system like netidx can be taken seriously without a plausible
-design for securing data against unauthorized access, interception,
-manipulation, etc.</p>
-<p>The heart of netidx security is Kerberos v5, mainly because most users
-already have it set up in the form of Microsoft Active Directory,
-Samba ADS, Redhat Directory Server, or one of the many other
-compatible solutions.</p>
-<p>That said security is optional in netidx. It's possible to deploy a
-netidx system with no security at all, and it's possible to deploy a
-system where some publishers require security, and some do not. While
-it's possible to mix secured and non secured publishers on the same
-resolver cluster there are some restrictions. </p>
+<p>Netidx currently supports two authentication mechanisms, Kerberos v5,
+and Local. Local applies only on the same machine (and isn't supported
+on Windows), while many organizations already have Kerberos v5
+deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
+Directory Server, or one of the many other compatible solutions.</p>
+<p>Security is optional in netidx, it's possible to deploy a netidx
+system with no security at all, or it's possible to deploy a mixed
+system where only some publishers require security, with some
+restrictions.</p>
 <ul>
 <li>If a subscriber is configured with security, then it won't talk to
 publishers that aren't.</li>
@@ -385,6 +399,17 @@ allowed to publish and subscribe where.</p>
 <h2><a class="header" href="#cross-platform" id="cross-platform">Cross Platform</a></h2>
 <p>While netidx is primarily developed on Linux, it has been tested on
 Windows, and Mac OS.</p>
+<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
+<p>Netidx has been designed to support single namespaces that are pretty
+large. This is done by allowing delegation of subtrees to different
+resolver clusters, which can be done to an existing system without
+disturbing running publishers or subscribers. Resolver clusters
+themselves can also have a number of replicas, with read load split
+between them, further augmenting scaling.</p>
+<p>At the publisher level, multiple publishers may publish the same
+name. When a client subscribes it will randomly pick one of them. This
+property can be used to balance load on an application, so long as the
+publishers syncronize with each other.</p>
 <h1><a class="header" href="#examples" id="examples">Examples</a></h1>
 <p>In this chapter we present three examples ranging in complexity from
 some shell scripts, to a clean slate design of a custom embedded
