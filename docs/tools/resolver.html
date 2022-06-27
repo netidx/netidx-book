@@ -4,25 +4,17 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>resolver - Introduction to Netidx</title>
-        
-        
 
 
         <!-- Custom HTML head -->
         
-
-
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="../favicon.svg">
-        
-        
         <link rel="shortcut icon" href="../favicon.png">
-        
         <link rel="stylesheet" href="../css/variables.css">
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
@@ -30,9 +22,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="../fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
@@ -40,9 +30,7 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -101,8 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -118,11 +105,9 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Introduction to Netidx</h1>
@@ -131,14 +116,13 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -146,7 +130,6 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
@@ -159,7 +142,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#resolver-command-line-tool" id="resolver-command-line-tool">Resolver Command Line Tool</a></h1>
+                        <h1 id="resolver-command-line-tool"><a class="header" href="#resolver-command-line-tool">Resolver Command Line Tool</a></h1>
 <p>The resolver command line tool allows you to query and update the
 resolver server from the command line. There are several kinds of
 querys/manipulations it can perform,</p>
@@ -170,7 +153,7 @@ querys/manipulations it can perform,</p>
 <li><code>add</code>: add a new entry</li>
 <li><code>remove</code>: remove an entry</li>
 </ul>
-<h2><a class="header" href="#list" id="list">List</a></h2>
+<h2 id="list"><a class="header" href="#list">List</a></h2>
 <p><code>netidx resolver list /solar/stats/*</code></p>
 <p>This sub command allows listing items in the resolver server that
 match a specific pattern. It supports the full unix glob pattern set,
@@ -189,7 +172,7 @@ begin with <code>battery</code> with the following query,</p>
 /solar/stats/battery_temperature
 /solar/stats/battery_terminal_voltage
 </code></pre>
-<h3><a class="header" href="#args" id="args">Args</a></h3>
+<h3 id="args"><a class="header" href="#args">Args</a></h3>
 <p>List supports several arguments,</p>
 <ul>
 <li><code>-n, --no-structure</code>: don't list matching items that are structural
@@ -197,7 +180,7 @@ only. Only list items that are actually published.</li>
 <li><code>-w, --watch</code>: don't quit, instead wait for new items matching the
 pattern and print them out as they appear.</li>
 </ul>
-<h2><a class="header" href="#table" id="table">Table</a></h2>
+<h2 id="table"><a class="header" href="#table">Table</a></h2>
 <p>This prints out the table desciptor for a path, which can tell you how
 a given path will look in the browser by default. An example 10 row 5
 column table generated by the stress publisher looks like this,</p>
@@ -223,7 +206,7 @@ rows:
 <p>in the columns section, the number after the column name is the number
 of rows in the table that have that column. Since this table is fully
 populated every column is associated with 10 rows.</p>
-<h2><a class="header" href="#resolve" id="resolve">Resolve</a></h2>
+<h2 id="resolve"><a class="header" href="#resolve">Resolve</a></h2>
 <p>Given a path this prints out all the information the resolver server
 has about that path. This is what the subscriber uses to connect to a
 publisher, and as such this tool is useful for debugging subscription
@@ -244,7 +227,7 @@ address of the resolver that answered will be printed. e.g.</p>
 <pre><code>$ netidx resolver resolve /bench
 resolver: 192.168.0.1:4564
 </code></pre>
-<h2><a class="header" href="#add" id="add">Add</a></h2>
+<h2 id="add"><a class="header" href="#add">Add</a></h2>
 <p>This is a low level debugging tool, and it's really not recommended
 unless you know exactly what you're doing. Using it could screw up
 subscriptions to whatever path you add for some time. That said, it's
@@ -257,7 +240,7 @@ to send heartbeats for it.</p>
 the resolver server checks that the publisher is actually listening on
 the address it claims to be listening on, and that obviously can't
 work in this case.</p>
-<h2><a class="header" href="#remove" id="remove">Remove</a></h2>
+<h2 id="remove"><a class="header" href="#remove">Remove</a></h2>
 <p>This is actually worse than add in terms of danger, because you can
 remove published things without the publisher knowing you did it, and
 as a result you can make subscriptions fail until the publisher is
@@ -269,17 +252,13 @@ restarted. It also doesn't work if you are using kerberos, so that's something.<
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="../tools/subscriber.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
                             <a rel="next" href="../tools/recorder.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -287,49 +266,35 @@ restarted. It also doesn't work if you are using kerberos, so that's something.<
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="../tools/subscriber.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
                     <a rel="next" href="../tools/recorder.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
 
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
     </body>
 </html>

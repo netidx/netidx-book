@@ -1,11 +1,9 @@
 # Quick Start for Linux
 
-In this quick start we will set up a Netidx resolver server on your
-local machine that will service only your local machine. This
-configuration is sufficient for doing development of netidx services,
-and for trying out various publishers, subscribers, and tools without
-much setup. This setup can be modified later to hook in to a larger
-netidx install with a central server running Kerberos authentication.
+In this quick start we will set up a Netidx resolver server and
+related tools on your local machine. This configuration is sufficient
+for doing development of netidx services and for trying out various
+publishers, subscribers, and tools without much setup.
 
 ## First Install Rust and Netidx
 

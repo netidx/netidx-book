@@ -4,27 +4,18 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Introduction to Netidx</title>
-        
         <meta name="robots" content="noindex" />
-        
-        
 
 
         <!-- Custom HTML head -->
         
-
-
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="favicon.svg">
-        
-        
         <link rel="shortcut icon" href="favicon.png">
-        
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
@@ -32,9 +23,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
@@ -42,9 +31,7 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -103,8 +90,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -120,11 +106,9 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Introduction to Netidx</h1>
@@ -133,14 +117,13 @@
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -148,7 +131,6 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
@@ -161,14 +143,12 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#quick-start-for-linux" id="quick-start-for-linux">Quick Start for Linux</a></h1>
-<p>In this quick start we will set up a Netidx resolver server on your
-local machine that will service only your local machine. This
-configuration is sufficient for doing development of netidx services,
-and for trying out various publishers, subscribers, and tools without
-much setup. This setup can be modified later to hook in to a larger
-netidx install with a central server running Kerberos authentication.</p>
-<h2><a class="header" href="#first-install-rust-and-netidx" id="first-install-rust-and-netidx">First Install Rust and Netidx</a></h2>
+                        <h1 id="quick-start-for-linux"><a class="header" href="#quick-start-for-linux">Quick Start for Linux</a></h1>
+<p>In this quick start we will set up a Netidx resolver server and
+related tools on your local machine. This configuration is sufficient
+for doing development of netidx services and for trying out various
+publishers, subscribers, and tools without much setup.</p>
+<h2 id="first-install-rust-and-netidx"><a class="header" href="#first-install-rust-and-netidx">First Install Rust and Netidx</a></h2>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
 <p><code>cargo install netidx-tools</code></p>
@@ -180,7 +160,7 @@ server, as well as the publisher/subscriber command line tools</p>
 <li>libclang, necessary for bindgen, on debian/ubuntu <code>sudo apt install libclang-dev</code></li>
 <li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
 </ul>
-<h2><a class="header" href="#resolver-server-configuration" id="resolver-server-configuration">Resolver Server Configuration</a></h2>
+<h2 id="resolver-server-configuration"><a class="header" href="#resolver-server-configuration">Resolver Server Configuration</a></h2>
 <pre><code>{
   &quot;parent&quot;: null,
   &quot;children&quot;: [],
@@ -213,7 +193,7 @@ local auth socket to one of your choosing.</p>
 <p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
 command will return immediatly, and the resolver server will
 daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
-<h3><a class="header" href="#systemd" id="systemd">Systemd</a></h3>
+<h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd. </p>
 <pre><code>[Unit]
 Description=Netidx Activation
@@ -229,7 +209,7 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
 <p><code>systemctl --user enable netidx</code></p>
 <p>and</p>
 <p><code>systemctl --user start netidx</code></p>
-<h2><a class="header" href="#client-configuration" id="client-configuration">Client Configuration</a></h2>
+<h2 id="client-configuration"><a class="header" href="#client-configuration">Client Configuration</a></h2>
 <pre><code>{
     &quot;addrs&quot;:
     [
@@ -256,13 +236,13 @@ at one cell in the table.</p>
 set up on your local machine. If it didn't work, try setting the
 environment variable <code>RUST_LOG=debug</code> and running the stress publisher
 and the subscriber again.</p>
-<h2><a class="header" href="#optional-netidx-browser" id="optional-netidx-browser">Optional Netidx Browser</a></h2>
+<h2 id="optional-netidx-browser"><a class="header" href="#optional-netidx-browser">Optional Netidx Browser</a></h2>
 <p>The browser is an optional gui browser for the netidx tree, you need
 gtk development files installed to build it, on debian/ubuntu add those with </p>
 <p><code>sudo apt install libgtk-3-dev</code></p>
 <p>and then</p>
 <p><code>cargo install netidx-browser</code></p>
-<h1><a class="header" href="#what-is-netidx" id="what-is-netidx">What is Netidx</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-netidx"><a class="header" href="#what-is-netidx">What is Netidx</a></h1>
 <p>Netidx is a middleware that enables publishing a value, like 42, in
 one program and consuming it in another program, either on the same
 machine or across the network.</p>
@@ -272,7 +252,7 @@ namespace. For example our published 42 might be named
 the root, but in this case it's appropriate). Any other program on the
 network can refer to 42 by that name, and will receive updates in the
 (unlikely) event that /the-ultimate-answer changes.</p>
-<h2><a class="header" href="#quick-comparison-with-other-systems" id="quick-comparison-with-other-systems">Quick Comparison With Other Systems</a></h2>
+<h2 id="quick-comparison-with-other-systems"><a class="header" href="#quick-comparison-with-other-systems">Quick Comparison With Other Systems</a></h2>
 <ul>
 <li>
 <p>Like LDAP/X.500</p>
@@ -320,7 +300,7 @@ publishing a value.</li>
 </ul>
 </li>
 </ul>
-<h2><a class="header" href="#the-namespace" id="the-namespace">The Namespace</a></h2>
+<h2 id="the-namespace"><a class="header" href="#the-namespace">The Namespace</a></h2>
 <p>Netidx values are published to a hierarchical <a href="https://en.wikipedia.org/wiki/Tuple_space">tuple
 space</a>. The structure of
 the names look just like a filename, e.g.</p>
@@ -345,7 +325,7 @@ succeeds, then the subscription succeeds, if they all fail then it
 doesn't. All the actual data flows from publishers to subscribers
 directly without ever going through any kind of centralized
 infrastructure.</p>
-<h2><a class="header" href="#the-data-format" id="the-data-format">The Data Format</a></h2>
+<h2 id="the-data-format"><a class="header" href="#the-data-format">The Data Format</a></h2>
 <p>In Netidx the data that is published is called a value. Values are
 mostly primitive types, consisting of numbers, strings, durations,
 timestamps, packed byte arrays, and arrays of values. Arrays of values
@@ -360,7 +340,7 @@ block for sending encoded data efficiently.</p>
 <li>Updates arrive reliably and in the order the publisher made them
 (like a TCP stream)</li>
 </ul>
-<h2><a class="header" href="#security" id="security">Security</a></h2>
+<h2 id="security"><a class="header" href="#security">Security</a></h2>
 <p>Netidx currently supports two authentication mechanisms, Kerberos v5,
 and Local. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
@@ -396,10 +376,10 @@ tree. Thus the system administrator can centrally control who is
 allowed to publish and subscribe where.</p>
 </li>
 </ul>
-<h2><a class="header" href="#cross-platform" id="cross-platform">Cross Platform</a></h2>
+<h2 id="cross-platform"><a class="header" href="#cross-platform">Cross Platform</a></h2>
 <p>While netidx is primarily developed on Linux, it has been tested on
 Windows, and Mac OS.</p>
-<h2><a class="header" href="#scale" id="scale">Scale</a></h2>
+<h2 id="scale"><a class="header" href="#scale">Scale</a></h2>
 <p>Netidx has been designed to support single namespaces that are pretty
 large. This is done by allowing delegation of subtrees to different
 resolver clusters, which can be done to an existing system without
@@ -410,11 +390,11 @@ between them, further augmenting scaling.</p>
 name. When a client subscribes it will randomly pick one of them. This
 property can be used to balance load on an application, so long as the
 publishers syncronize with each other.</p>
-<h1><a class="header" href="#examples" id="examples">Examples</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
 <p>In this chapter we present three examples ranging in complexity from
 some shell scripts, to a clean slate design of a custom embedded
 application.</p>
-<h1><a class="header" href="#publishing-vmstat" id="publishing-vmstat">Publishing vmstat</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="publishing-vmstat"><a class="header" href="#publishing-vmstat">Publishing vmstat</a></h1>
 <p>In this example we build a shell script to publish the output of the
 venerable vmstat tool to netidx.</p>
 <pre><code class="language-bash">#! /bin/bash
@@ -606,7 +586,7 @@ use an associative array with a key of <code>$host/$field</code>, thats
 are ready to compute our total, we can look up the field for every
 host, that's <code>HOSTS</code>. Finally we pass the output of this while loop to
 the publisher, and now we have a published total row.</p>
-<h1><a class="header" href="#integration-into-an-existing-system" id="integration-into-an-existing-system">Integration Into an Existing System</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="integration-into-an-existing-system"><a class="header" href="#integration-into-an-existing-system">Integration Into an Existing System</a></h1>
 <p>Suppose we have a small daemon that we run on many computers on our
 network, and it knows many things about them, and does many things. I
 won't specify exactly what it does or everything it knows because
@@ -683,7 +663,7 @@ HwPub::update whenever we learn about a new cpu temperature value. Of
 course we also need to deploy a resolver server, and distribute a
 cluster config to each machine that needs one, that will be covered in
 the administration section.</p>
-<h2><a class="header" href="#using-the-data-we-just-published" id="using-the-data-we-just-published">Using the Data We Just Published</a></h2>
+<h2 id="using-the-data-we-just-published"><a class="header" href="#using-the-data-we-just-published">Using the Data We Just Published</a></h2>
 <p>So now that we have our data in netidx, what are our options for
 consuming it? The first option, and often a very good one for a lot of
 applications is the shell. The netidx command line tools are designed
@@ -792,7 +772,7 @@ the browser.</li>
 shell, which can't do floating point math (in this case we don't
 care)</li>
 </ul>
-<h2><a class="header" href="#or-maybe-shell-is-not-your-jam" id="or-maybe-shell-is-not-your-jam">Or Maybe Shell is Not Your Jam</a></h2>
+<h2 id="or-maybe-shell-is-not-your-jam"><a class="header" href="#or-maybe-shell-is-not-your-jam">Or Maybe Shell is Not Your Jam</a></h2>
 <p>It's entirely possible that thinking about the above solution makes
 you shiver and reinforces for you that nothing should ever be written
 in shell. In that case it's perfectly possible to do the same thing in
@@ -941,7 +921,7 @@ semantic difference being that it sends an actual DateTime value for
 the timestamp instead of a string, which would certainly make life
 easier for anyone using this data, not to mention it's more
 efficient.</p>
-<h2><a class="header" href="#but-i-just-want-to-look-at-my-data" id="but-i-just-want-to-look-at-my-data">But I Just Want to Look at My Data</a></h2>
+<h2 id="but-i-just-want-to-look-at-my-data"><a class="header" href="#but-i-just-want-to-look-at-my-data">But I Just Want to Look at My Data</a></h2>
 <p>Up to now we've covered using the data in various kinds of programs,
 but what if you just want to look at it. For that you have two
 choices, you can write a custom tool that presents your data exactly
@@ -971,7 +951,7 @@ same name. In the example we have</p>
 each $host, and a column for each child of $host. In our case, the
 data is perfectly regular, and so we end up with a fully populated
 table with 3 columns, and a row for each host.</p>
-<h1><a class="header" href="#a-clean-slate-design-using-netidx" id="a-clean-slate-design-using-netidx">A Clean Slate Design Using Netidx</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="a-clean-slate-design-using-netidx"><a class="header" href="#a-clean-slate-design-using-netidx">A Clean Slate Design Using Netidx</a></h1>
 <p>In the last chapter we added netidx publishing of one data point from
 an existing system, and then explored what we could do with the
 data. In this chapter we're going to look at a system designed from
@@ -1038,7 +1018,7 @@ timer tick. e.g.</p>
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
 update netidx, flush netidx, loop.</p>
-<h2><a class="header" href="#what-about-control" id="what-about-control">What About Control</a></h2>
+<h2 id="what-about-control"><a class="header" href="#what-about-control">What About Control</a></h2>
 <p>The above handles distributing the stats perfectly well, but for
 control we need some way to send commands from the subscriber back to
 the publisher, and that's where writes come in. If you've read the api
@@ -1149,7 +1129,7 @@ which means we at least need a unix like OS under us.</p>
 there is a service principal called svc_solar in samba ADS, and solar
 has a keytab installed for it, as well as a cron job that renews it's
 TGT every couple of hours.</p>
-<h2><a class="header" href="#building-a-custom-gui-with-views" id="building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
+<h2 id="building-a-custom-gui-with-views"><a class="header" href="#building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
 <p>What we have is fine as far as it goes, we can view our stats in the
 browser, and we can write to the controls using the command line
 subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
@@ -1158,7 +1138,7 @@ subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
 be saved to a file or written directly to a netidx path.</p>
 <p><img src="examples/browser-design-mode.png" alt="Browser Design Mode" /></p>
 <p>See the chapter on custom views for more information.</p>
-<h2><a class="header" href="#wrapping-up" id="wrapping-up">Wrapping Up</a></h2>
+<h2 id="wrapping-up"><a class="header" href="#wrapping-up">Wrapping Up</a></h2>
 <p>In this chapter we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We
 didn't cover the opportunities for scripting our solar installation
@@ -1171,8 +1151,8 @@ complex as the one we built AND making it scriptable over the network
 in a discoverable, secure, and performant way is not an easy task.
 Usually it just isn't worth doing, however by using netidx it was
 easy, and that's really the point of the whole thing.</p>
-<h1><a class="header" href="#administration" id="administration">Administration</a></h1>
-<h2><a class="header" href="#first-things-first" id="first-things-first">First Things First</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="administration"><a class="header" href="#administration">Administration</a></h1>
+<h2 id="first-things-first"><a class="header" href="#first-things-first">First Things First</a></h2>
 <p>If you plan to use Kerberos make sure you have it set up properly,
 including your KDC, DNS, DHCP, etc. If you need help with kerberos I
 suggest the <a href="https://www.oreilly.com/library/view/kerberos-the-definitive/0596004036/">O'REILLY
@@ -1184,7 +1164,7 @@ isn't too bad, though it is somewhat specific to their product.</p>
 <code>KRB5_TRACE=/dev/stderr</code>, and/or <code>RUST_LOG=debug</code>. GSSAPI errors can
 sometimes be less than helpful, but usually the KRB5_TRACE is more
 informative.</p>
-<h2><a class="header" href="#resources-and-gotchas" id="resources-and-gotchas">Resources and Gotchas</a></h2>
+<h2 id="resources-and-gotchas"><a class="header" href="#resources-and-gotchas">Resources and Gotchas</a></h2>
 <ul>
 <li>
 <p>Expect to use about 500 MiB of ram in the resolver server for every
@@ -1226,7 +1206,7 @@ manifest if you are running with KRB5_TRACE). Keep this in mind if
 you're seeing file descriptor exhaustion.</p>
 </li>
 </ul>
-<h2><a class="header" href="#configuration" id="configuration">Configuration</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
 <p>The netidx configuration file is the same for all the different
 components of the system, resolver, publisher, and subscriber. By
 default it is stored,</p>
@@ -1284,7 +1264,7 @@ instance.</li>
 </ul>
 <p>If you're using Kerberos then you also need a permissions file, which
 is covered in the next section.</p>
-<h1><a class="header" href="#authorization" id="authorization">Authorization</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="authorization"><a class="header" href="#authorization">Authorization</a></h1>
 <p>When using Kerberos we also need a permissions file in order to run a
 resolver server, it's a separate file because it's not meant to be
 shared with everyone using the cluster. e.g.</p>
@@ -1369,7 +1349,7 @@ example this cluster had a child cluster, the administrators of that
 cluster would be responsible for deciding what permissions file it
 should use. It certainly could use the same file, but it doesn't have
 to.</p>
-<h3><a class="header" href="#anonymous" id="anonymous">Anonymous</a></h3>
+<h3 id="anonymous"><a class="header" href="#anonymous">Anonymous</a></h3>
 <p>It's possible to give anonymous users permissions even on a Kerberos
 enabled system, and this could allow them to use whatever functions
 you deem non sensitive, subject to some limitations. There is no
@@ -1387,7 +1367,7 @@ because any anonymous publishers would not be usable by kerberos
 enabled users. However it might be useful if you have embedded systems
 that can't use kerberos, and you don't want to build a separate
 resolver server infrastructure for them.</p>
-<h3><a class="header" href="#groups" id="groups">Groups</a></h3>
+<h3 id="groups"><a class="header" href="#groups">Groups</a></h3>
 <p>You'll might have noticed I'm using AD style group names above, that's
 because my example setup uses Samba in ADS mode so I can test windows
 and unix clients on the same domain. The most important thing about
@@ -1410,7 +1390,7 @@ Kerberos tickets. You don't even need to set them up to use Kerberos
 for authentication (but I highly recommend it, unless you really hate
 your users), you can just force people to type <code>kinit foo@BAR.COM</code>
 every 8 hours if you like.</p>
-<h1><a class="header" href="#running-the-resolver-server" id="running-the-resolver-server">Running the Resolver Server</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="running-the-resolver-server"><a class="header" href="#running-the-resolver-server">Running the Resolver Server</a></h1>
 <p>As of this writing the resolver server only runs on Unix, and has only
 been extensively tested on Linux. There's no reason it couldn't run on
 Windows, it's just a matter of some work around group name resolution
@@ -1445,7 +1425,7 @@ exists etc. You may need to, for example, run the publisher and/or
 resolver server with</p>
 <p><code>KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab</code></p>
 <p><code>KRB5_TRACE=/dev/stderr</code> can be useful in debugging kerberos issues.</p>
-<h1><a class="header" href="#listener-check" id="listener-check">Listener Check</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="listener-check"><a class="header" href="#listener-check">Listener Check</a></h1>
 <p>The listener check is an extra security measure that is intended to
 prevent an authenticated user from denying service to another
 publisher by overwriting it's gssapi session. When a client connects
@@ -1464,7 +1444,7 @@ publishing. And the write address must be routable from the resolver
 server's position on the network.</li>
 <li>Have permission to publish where you want to publish.</li>
 </ul>
-<h2><a class="header" href="#why-is-the-listener-check-important" id="why-is-the-listener-check-important">Why is the listener check important?</a></h2>
+<h2 id="why-is-the-listener-check-important"><a class="header" href="#why-is-the-listener-check-important">Why is the listener check important?</a></h2>
 <p>Since connecting to the resolver as a publisher can be done by any
 kerberos user who can get a service ticket for the resolver,
 essentially anyone on your network, and since the address and port a
@@ -1488,10 +1468,10 @@ addresses can't use the same resolver server.</li>
 it must be able to actually connect. For example your firewall must
 allow connections both ways.</li>
 </ul>
-<h2><a class="header" href="#subscription-flow" id="subscription-flow">Subscription Flow</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="subscription-flow"><a class="header" href="#subscription-flow">Subscription Flow</a></h2>
 <p>Sometimes debugging problems requires a more detailed understanding of
 exactly what steps are involved in a subscription.</p>
-<h3><a class="header" href="#components" id="components">Components</a></h3>
+<h3 id="components"><a class="header" href="#components">Components</a></h3>
 <p><img src="administration/subscription-flow-components.png" alt="The Components" /></p>
 <p>In the full kerberos enabled version of netidx the following
 components are involved.</p>
@@ -1503,7 +1483,7 @@ address of the publisher publishing it.</li>
 <li>Publisher, holds the actual data, and has previously told the
 resolver server about the path of all the data it has.</li>
 </ul>
-<h3><a class="header" href="#step-1" id="step-1">Step 1</a></h3>
+<h3 id="step-1"><a class="header" href="#step-1">Step 1</a></h3>
 <p><img src="administration/subscription-flow-step1.png" alt="First Step" /></p>
 <ol>
 <li>The Subscriber asks the KDC for a service ticket to talk to the
@@ -1516,7 +1496,7 @@ generates a service ticket for the resolver server cluster. NOTE,
 Kerberos does not make authorization decisions, it merely allows
 entities to prove to each other that they are who they claim to be.</li>
 </ol>
-<h3><a class="header" href="#step-2" id="step-2">Step 2</a></h3>
+<h3 id="step-2"><a class="header" href="#step-2">Step 2</a></h3>
 <p><img src="administration/subscription-flow-step2.png" alt="Second Step" /></p>
 <ol start="3">
 <li>The Subscriber uses the service ticket to establish an encrypted
@@ -1541,7 +1521,7 @@ returns a number of things to the subscriber for each path.
 </ul>
 </li>
 </ol>
-<h3><a class="header" href="#step-3" id="step-3">Step 3</a></h3>
+<h3 id="step-3"><a class="header" href="#step-3">Step 3</a></h3>
 <p><img src="administration/subscription-flow-step3.png" alt="Third Step" /></p>
 <ol start="6">
 <li>The subscriber picks a random publisher from the set of publishers
@@ -1551,7 +1531,7 @@ that publisher's SPN from the KDC.</li>
 for the requested SPN, which will be cached going forward (usually
 for several hours).</li>
 </ol>
-<h3><a class="header" href="#step-4" id="step-4">Step 4</a></h3>
+<h3 id="step-4"><a class="header" href="#step-4">Step 4</a></h3>
 <p><img src="administration/subscription-flow-step4.png" alt="Fourth Step" /></p>
 <ol start="8">
 <li>
@@ -1597,7 +1577,7 @@ involved, and none of the authentication or authorization tokens are
 established/sent, it's just a simple matter of look up the address
 from the resolver, and then subscribe to the publisher. In that case
 all data goes in the clear.</p>
-<h1><a class="header" href="#fault-tolerance" id="fault-tolerance">Fault Tolerance</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="fault-tolerance"><a class="header" href="#fault-tolerance">Fault Tolerance</a></h1>
 <p>As a system netidx depends on fault tolerant strategies in the
 subscriber, publisher, and resolver server in order to minimize
 downtime caused by a failure. Before I talk about the specific
@@ -1632,7 +1612,7 @@ causes it not to work. e.g.
 </ul>
 </li>
 </ul>
-<h3><a class="header" href="#subscriber--publisher" id="subscriber--publisher">Subscriber &amp; Publisher</a></h3>
+<h3 id="subscriber--publisher"><a class="header" href="#subscriber--publisher">Subscriber &amp; Publisher</a></h3>
 <ul>
 <li>
 <p>Hang: Most hang situations are solved by heartbeats. Publisher sends
@@ -1663,7 +1643,7 @@ publishing a value, and it will pick up any new publishers that
 appear in the resolver server.</p>
 </li>
 </ul>
-<h3><a class="header" href="#resolver" id="resolver">Resolver</a></h3>
+<h3 id="resolver"><a class="header" href="#resolver">Resolver</a></h3>
 <ul>
 <li>Hang: Resolver clients deal with a resolver server hang with a
 dynamically computed timeout based on the number of requests in the
@@ -1718,10 +1698,10 @@ clients,
 event all the resolver servers crash, when they come back up
 publishers will republishing everything after a maximum of 1/2
 <code>writer_ttl</code> has elapsed.</p>
-<h1><a class="header" href="#command-line-tools" id="command-line-tools">Command Line Tools</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-tools"><a class="header" href="#command-line-tools">Command Line Tools</a></h1>
 <p>You don't need to program to use netidx, it comes with a set of useful
 command line tools!</p>
-<h1><a class="header" href="#command-line-publisher" id="command-line-publisher">Command Line Publisher</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-publisher"><a class="header" href="#command-line-publisher">Command Line Publisher</a></h1>
 <p>The command line publisher allows you to publish values to netidx from
 stdin. The format of a published value is pipe separated, and newline
 delimited. e.g.</p>
@@ -1757,7 +1737,7 @@ you must escape the <code>|</code> with <code>\</code>, e.g. <code>\|</code>. If
 path that has a <code>\</code> in it, then you must also escape it,
 e.g. <code>\\</code>. e.g.</p>
 <p><code>/this/path/has\|pipes\|and\\in-it|string|waow grape, pipe and backslash everywhere</code></p>
-<h2><a class="header" href="#arguments" id="arguments">Arguments</a></h2>
+<h2 id="arguments"><a class="header" href="#arguments">Arguments</a></h2>
 <p>There are several command line options to the <code>netidx publisher</code> command,</p>
 <ul>
 <li><code>--bind</code>: required, specify the network address to bind to. This can
@@ -1796,7 +1776,7 @@ or be disconnected. By default the publisher will wait forever for a
 subscriber to consume an update, and as a result could consume an
 unbounded amount of memory.</li>
 </ul>
-<h2><a class="header" href="#behavior" id="behavior">Behavior</a></h2>
+<h2 id="behavior"><a class="header" href="#behavior">Behavior</a></h2>
 <p>When started the publisher runs until killed, it reads lines from
 stdin as long as stdin remains open, and attempts to parse them as
 <code>PATH|TYPE|VALUE</code> triples. If parsing fails, it prints an error to
@@ -1807,14 +1787,14 @@ value. It is not an error to change the type of an existing published
 value. If stdin is closed publisher does not stop, however it is no
 longer possible to update existing published values, or publish new
 values without restarting it.</p>
-<h2><a class="header" href="#limitations" id="limitations">Limitations</a></h2>
+<h2 id="limitations"><a class="header" href="#limitations">Limitations</a></h2>
 <p>The command line publisher cannot be a default publisher.</p>
-<h2><a class="header" href="#environment-variables" id="environment-variables">Environment Variables</a></h2>
+<h2 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h2>
 <p>In addition to all the krb5 environment variables, the command line
 publisher uses envlogger, and so will respond to <code>RUST_LOG</code>,
 e.g. <code>RUST_LOG=debug</code> will cause the publisher to print debug and
 higher priority messages to stderr.</p>
-<h2><a class="header" href="#types" id="types">Types</a></h2>
+<h2 id="types"><a class="header" href="#types">Types</a></h2>
 <p>The following types are supported,</p>
 <ul>
 <li><code>u32</code>: unsigned 32 bit integer, 4 bytes on the wire</li>
@@ -1839,7 +1819,7 @@ number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire
 <li><code>array</code>: an array of netidx values, consuming 1+zlen(array)+sum(len(elts))</li>
 <li><code>result</code>: OK, or Error + string, consuming 1-1+string length bytes</li>
 </ul>
-<h1><a class="header" href="#command-line-subscriber" id="command-line-subscriber">Command Line Subscriber</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-subscriber"><a class="header" href="#command-line-subscriber">Command Line Subscriber</a></h1>
 <p>The command line subscriber allows you to subscribe to values in
 netidx. You can either specify a list of paths you want to subscribe
 to on the command line, or via commands sent to stdin. Once subscribed
@@ -1849,7 +1829,7 @@ network I can get the battery voltage of my solar array by typing,</p>
 <pre><code>netidx subscriber /solar/stats/battery_sense_voltage
 /solar/stats/battery_sense_voltage|f32|26.796875
 </code></pre>
-<h2><a class="header" href="#directives-via-stdin" id="directives-via-stdin">Directives via stdin</a></h2>
+<h2 id="directives-via-stdin"><a class="header" href="#directives-via-stdin">Directives via stdin</a></h2>
 <p>The command line subscriber reads commands from stdin which can direct it to,</p>
 <ul>
 <li>subscribe to a new path
@@ -1881,7 +1861,7 @@ must escape it e.g. <code>\\</code>.</li>
 <p>If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber
 will not quit, but it will no longer be possible to issue commands.</p>
-<h2><a class="header" href="#arguments-1" id="arguments-1">Arguments</a></h2>
+<h2 id="arguments-1"><a class="header" href="#arguments-1">Arguments</a></h2>
 <ul>
 <li>
 <p><code>-o, --oneshot</code>: Causes subscriber to subscribe to each requested
@@ -1905,11 +1885,11 @@ that remove them, and possibly exit if <code>-o, --oneshot</code> was also
 specified.</p>
 </li>
 </ul>
-<h2><a class="header" href="#notes" id="notes">Notes</a></h2>
+<h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
 <p>The format subscriber writes to stdout is compatible with the format
 the publisher reads. This is by design, to make applications that
 subscribe, manipulate, and republish data easy to write.</p>
-<h1><a class="header" href="#resolver-command-line-tool" id="resolver-command-line-tool">Resolver Command Line Tool</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="resolver-command-line-tool"><a class="header" href="#resolver-command-line-tool">Resolver Command Line Tool</a></h1>
 <p>The resolver command line tool allows you to query and update the
 resolver server from the command line. There are several kinds of
 querys/manipulations it can perform,</p>
@@ -1920,7 +1900,7 @@ querys/manipulations it can perform,</p>
 <li><code>add</code>: add a new entry</li>
 <li><code>remove</code>: remove an entry</li>
 </ul>
-<h2><a class="header" href="#list" id="list">List</a></h2>
+<h2 id="list"><a class="header" href="#list">List</a></h2>
 <p><code>netidx resolver list /solar/stats/*</code></p>
 <p>This sub command allows listing items in the resolver server that
 match a specific pattern. It supports the full unix glob pattern set,
@@ -1939,7 +1919,7 @@ begin with <code>battery</code> with the following query,</p>
 /solar/stats/battery_temperature
 /solar/stats/battery_terminal_voltage
 </code></pre>
-<h3><a class="header" href="#args" id="args">Args</a></h3>
+<h3 id="args"><a class="header" href="#args">Args</a></h3>
 <p>List supports several arguments,</p>
 <ul>
 <li><code>-n, --no-structure</code>: don't list matching items that are structural
@@ -1947,7 +1927,7 @@ only. Only list items that are actually published.</li>
 <li><code>-w, --watch</code>: don't quit, instead wait for new items matching the
 pattern and print them out as they appear.</li>
 </ul>
-<h2><a class="header" href="#table" id="table">Table</a></h2>
+<h2 id="table"><a class="header" href="#table">Table</a></h2>
 <p>This prints out the table desciptor for a path, which can tell you how
 a given path will look in the browser by default. An example 10 row 5
 column table generated by the stress publisher looks like this,</p>
@@ -1973,7 +1953,7 @@ rows:
 <p>in the columns section, the number after the column name is the number
 of rows in the table that have that column. Since this table is fully
 populated every column is associated with 10 rows.</p>
-<h2><a class="header" href="#resolve" id="resolve">Resolve</a></h2>
+<h2 id="resolve"><a class="header" href="#resolve">Resolve</a></h2>
 <p>Given a path this prints out all the information the resolver server
 has about that path. This is what the subscriber uses to connect to a
 publisher, and as such this tool is useful for debugging subscription
@@ -1994,7 +1974,7 @@ address of the resolver that answered will be printed. e.g.</p>
 <pre><code>$ netidx resolver resolve /bench
 resolver: 192.168.0.1:4564
 </code></pre>
-<h2><a class="header" href="#add" id="add">Add</a></h2>
+<h2 id="add"><a class="header" href="#add">Add</a></h2>
 <p>This is a low level debugging tool, and it's really not recommended
 unless you know exactly what you're doing. Using it could screw up
 subscriptions to whatever path you add for some time. That said, it's
@@ -2007,14 +1987,14 @@ to send heartbeats for it.</p>
 the resolver server checks that the publisher is actually listening on
 the address it claims to be listening on, and that obviously can't
 work in this case.</p>
-<h2><a class="header" href="#remove" id="remove">Remove</a></h2>
+<h2 id="remove"><a class="header" href="#remove">Remove</a></h2>
 <p>This is actually worse than add in terms of danger, because you can
 remove published things without the publisher knowing you did it, and
 as a result you can make subscriptions fail until the publisher is
 restarted. It also doesn't work if you are using kerberos, so that's something.</p>
 <pre><code>netidx resolver remove /path/to/thing 192.168.0.5:5003`
 </code></pre>
-<h1><a class="header" href="#recorder" id="recorder">Recorder</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="recorder"><a class="header" href="#recorder">Recorder</a></h1>
 <p>The recorder allows you to subscribe to a set of paths defined by one
 or more globs and write down their values in a file with a compact
 binary format. Moreover, at the same time it can make the contents of
@@ -2027,7 +2007,7 @@ possible to set up one recorder to record, and another to play back
 the same file, however recording and playback are careful not to
 interfere with each other, so the only limitation should be the
 underlying IO device and the number of processor cores available.</p>
-<h2><a class="header" href="#args-1" id="args-1">Args</a></h2>
+<h2 id="args-1"><a class="header" href="#args-1">Args</a></h2>
 <ul>
 <li>Args that apply to both recording and playback
 <ul>
@@ -2090,7 +2070,7 @@ sessions a single client is allowed to have. default 64.</li>
 </ul>
 </li>
 </ul>
-<h2><a class="header" href="#using-playback-sessions" id="using-playback-sessions">Using Playback Sessions</a></h2>
+<h2 id="using-playback-sessions"><a class="header" href="#using-playback-sessions">Using Playback Sessions</a></h2>
 <p>When initially started for playback or mixed operation the recorder
 publishes only some cluster information, and a netidx rpc called
 <code>session</code> under the <code>publish-base</code>. Calling the session rpc will
@@ -2099,7 +2079,7 @@ the actual playback session under <code>publish-base/session-id</code>. A
 playback session consists of two sub directories, <code>control</code> contains
 readable/writable values that control the session, and <code>data</code> contains
 the actual data.</p>
-<h3><a class="header" href="#creating-a-new-session" id="creating-a-new-session">Creating a New Session</a></h3>
+<h3 id="creating-a-new-session"><a class="header" href="#creating-a-new-session">Creating a New Session</a></h3>
 <p>It's simple to call a netidx rpc with command line tools, the browser,
 or programatically. To create a new playback session with default
 values just write <code>null</code> to <code>publish-base/session</code>. e.g.</p>
@@ -2127,7 +2107,7 @@ EOF
 </code></pre>
 <p>Now our new session would be setup to start 3 days ago, and playback
 at 2x speed.</p>
-<h3><a class="header" href="#playback-controls" id="playback-controls">Playback Controls</a></h3>
+<h3 id="playback-controls"><a class="header" href="#playback-controls">Playback Controls</a></h3>
 <p>Once we've created a new session the recorder publishes some controls
 under the control directory. The five controls both tell you the state
 of the playback session, and allow you to control it. They are,</p>
@@ -2161,7 +2141,7 @@ of any state and will change to the requested state if possible.</li>
 <p>Since the controls also include a small amount of documentation meant
 to render as a table, the actual value that you read from/write to is
 <code>publish-base/session-id/control/name-of-control/current</code>.</p>
-<h3><a class="header" href="#data" id="data">Data</a></h3>
+<h3 id="data"><a class="header" href="#data">Data</a></h3>
 <p>Once the session is set up the data, whatever it may be, appears under
 <code>publish-base/data</code>. Every path that ever appears in the archive is
 published from the beginning, however, if at the current <code>pos</code> that
@@ -2171,10 +2151,10 @@ difference between a path that wasn't available, and one that was
 intentionally set to null. When you start the playback values will be
 updated as they were recorded, including replicating the observed
 batching.</p>
-<h3><a class="header" href="#deleting-a-playback-session" id="deleting-a-playback-session">Deleting a Playback Session</a></h3>
+<h3 id="deleting-a-playback-session"><a class="header" href="#deleting-a-playback-session">Deleting a Playback Session</a></h3>
 <p>Simply stop subscribing to any value or control in the session and the
 recorder will garbage collect it.</p>
-<h2><a class="header" href="#example" id="example">Example</a></h2>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
 <p>To record and publish the archive of the data generated by my solar
 installation I use the following command.</p>
 <pre><code>netidx record \
@@ -2184,7 +2164,7 @@ installation I use the following command.</p>
     --spn publish/blackbird.ryu-oh.org@RYU-OH.ORG \
     --publish-base /solar/archive
 </code></pre>
-<h1><a class="header" href="#container" id="container">Container</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="container"><a class="header" href="#container">Container</a></h1>
 <p>The container is a persistent store for netidx values, a bit like a
 pasteboard, or a nosql database. At startup it reads and publishes all
 the data in it's database, and then waits for user interaction. When
@@ -2225,8 +2205,8 @@ most important difference of all is that unlike a spreadsheet the
 things you compute in a container sheet are not locked into some gui,
 they are available to be consumed by any authorized subscriber on the
 network, just like anything else in netidx.</p>
-<h2><a class="header" href="#administration-1" id="administration-1">Administration</a></h2>
-<h3><a class="header" href="#args-2" id="args-2">Args</a></h3>
+<h2 id="administration-1"><a class="header" href="#administration-1">Administration</a></h2>
+<h3 id="args-2"><a class="header" href="#args-2">Args</a></h3>
 <ul>
 <li><code>--compress</code>: enable zstd compression</li>
 <li><code>--compress-level &lt;0-9&gt;</code>: set the zstd compression level</li>
@@ -2238,7 +2218,7 @@ network, just like anything else in netidx.</p>
 <li><code>--timeout &lt;seconds&gt;</code>: the time after which a slow subscriber will be disconnected 0 for no timeout</li>
 <li><code>--sparse</code>: don't even advertise paths in the db</li>
 </ul>
-<h3><a class="header" href="#a-note-about-memory-use" id="a-note-about-memory-use">A Note About Memory Use</a></h3>
+<h3 id="a-note-about-memory-use"><a class="header" href="#a-note-about-memory-use">A Note About Memory Use</a></h3>
 <p>There were some lies in the introduction. If you're a seasoned
 sysadmin or DBA you might have cringed when you read &quot;reads and
 publishes all the data in it's database&quot;. From the point of view of
@@ -2258,13 +2238,13 @@ data set. Though, in that case the user is going to have to know the
 name of the data they want, there will be no way to browse it, or
 search it, only data that someone is subscribed to will even show up
 in the resolver server.</p>
-<h2><a class="header" href="#rpcs" id="rpcs">RPCs</a></h2>
+<h2 id="rpcs"><a class="header" href="#rpcs">RPCs</a></h2>
 <p>The container has an extensive rpc api, and that is the only way to do
 many things e.g. make a cell a formula, or add a root. Under it's
 api-path it also publishes information about it's status, such as
 whether the background database is currently busy, and how many write
 transactions are queued.</p>
-<h3><a class="header" href="#add-root" id="add-root">add-root</a></h3>
+<h3 id="add-root"><a class="header" href="#add-root">add-root</a></h3>
 <pre><code>add-root(path)
 </code></pre>
 <p>Adds <code>path</code> as a root. This will cause the container to become a
@@ -2279,14 +2259,14 @@ after adding the parent.</p>
 add-root(&quot;/tmp&quot;);
 </code></pre>
 <p>would make the container responsible for /tmp, and /solar/gui</p>
-<h3><a class="header" href="#remove-root" id="remove-root">remove-root</a></h3>
+<h3 id="remove-root"><a class="header" href="#remove-root">remove-root</a></h3>
 <pre><code>remove-root(path)
 </code></pre>
 <p>Removes <code>path</code> as a root. This will cause the container to stop being
 a default publisher for the subtree rooted at <code>path</code>. If the root you
 are removing has no parent root, then all the data under it will also
 be removed.</p>
-<h3><a class="header" href="#lock-subtree" id="lock-subtree">lock-subtree</a></h3>
+<h3 id="lock-subtree"><a class="header" href="#lock-subtree">lock-subtree</a></h3>
 <pre><code>lock-subtree(path)
 </code></pre>
 <p>By default the container creates a free for all environment, any
@@ -2313,12 +2293,12 @@ making two rpc calls.</p>
 <pre><code>lock-subtree(/tmp)
 unlock-subtree(/tmp/ffa)
 </code></pre>
-<h3><a class="header" href="#unlock-subtree" id="unlock-subtree">unlock-subtree</a></h3>
+<h3 id="unlock-subtree"><a class="header" href="#unlock-subtree">unlock-subtree</a></h3>
 <pre><code>unlock-subtree(path)
 </code></pre>
 <p>See lock-subtree. unlock-subtree either removes a subtree completely
 from being locked, or marks a subtree as locally unlocked.</p>
-<h3><a class="header" href="#set-data" id="set-data">set-data</a></h3>
+<h3 id="set-data"><a class="header" href="#set-data">set-data</a></h3>
 <pre><code>set-data(path, value)
 </code></pre>
 <p>Make the specified cell(s) plain data, and optionally set their
@@ -2337,7 +2317,7 @@ subtree.</p>
     value=bool:true
 )
 </code></pre>
-<h3><a class="header" href="#set-formula" id="set-formula">set-formula</a></h3>
+<h3 id="set-formula"><a class="header" href="#set-formula">set-formula</a></h3>
 <pre><code>set-formula(path, formula, on-write)
 </code></pre>
 <p>Make the specified cell(s) formula cells. If they are currently data
@@ -2364,20 +2344,20 @@ by writing to those paths as well as by calling this rpc.</p>
 <p>set the first 4 rows of the second column of /tmp/sheet to be the
 formula <code>sum(ref(rel(-1)), 1)</code>, which will add 1 to the corresponding
 cell in the first column.</p>
-<h3><a class="header" href="#delete" id="delete">delete</a></h3>
+<h3 id="delete"><a class="header" href="#delete">delete</a></h3>
 <pre><code>delete(path)
 </code></pre>
 <p>remove the specified path(s) from the database, whether data or
 formula, and stop publishing them. Any current subscribers will be
 unsubscribed. If the subtree isn't locked, durable subscribers may
 readd the path(s) by immediately resubscribing (but the data is gone).</p>
-<h3><a class="header" href="#delete-subtree" id="delete-subtree">delete-subtree</a></h3>
+<h3 id="delete-subtree"><a class="header" href="#delete-subtree">delete-subtree</a></h3>
 <pre><code>delete-subtree(path)
 </code></pre>
 <p>remove all the data and formulas under the specified paths(s). There
 is no way to undo this, so you may want to restrict access to
 administrators.</p>
-<h3><a class="header" href="#create-sheet" id="create-sheet">create-sheet</a></h3>
+<h3 id="create-sheet"><a class="header" href="#create-sheet">create-sheet</a></h3>
 <pre><code>create-sheet(path, rows, columns, max-rows, max-columns, lock)
 </code></pre>
 <p>This is a helper function to create a &quot;spreadsheet like sheet&quot; at the
@@ -2407,24 +2387,24 @@ columns, but we might need up to 1 million rows then we could do,</p>
 )
 </code></pre>
 <p>and then we can <code>add-sheet-rows</code> in batches of 1k or more up to 1m.</p>
-<h3><a class="header" href="#add-sheet-rows" id="add-sheet-rows">add-sheet-rows</a></h3>
+<h3 id="add-sheet-rows"><a class="header" href="#add-sheet-rows">add-sheet-rows</a></h3>
 <pre><code>add-sheet-rows(path, rows)
 </code></pre>
 <p>add rows to a previously created sheet</p>
-<h3><a class="header" href="#add-sheet-columns" id="add-sheet-columns">add-sheet-columns</a></h3>
+<h3 id="add-sheet-columns"><a class="header" href="#add-sheet-columns">add-sheet-columns</a></h3>
 <pre><code>add-sheet-columns(path, columns)
 </code></pre>
 <p>add columns to a previously created sheet</p>
-<h3><a class="header" href="#delete-sheet-rows" id="delete-sheet-rows">delete-sheet-rows</a></h3>
+<h3 id="delete-sheet-rows"><a class="header" href="#delete-sheet-rows">delete-sheet-rows</a></h3>
 <pre><code>delete-sheet-rows(path, rows)
 </code></pre>
 <p>remove the specified number of rows from the end of sheet. If you want
 to delete a specific row you can just just <code>delete-subtree</code>.</p>
-<h3><a class="header" href="#delete-sheet-columns" id="delete-sheet-columns">delete-sheet-columns</a></h3>
+<h3 id="delete-sheet-columns"><a class="header" href="#delete-sheet-columns">delete-sheet-columns</a></h3>
 <pre><code>delete-sheet-columns(path, columns)
 </code></pre>
 <p>remove the specified number of columns from the end of sheet</p>
-<h3><a class="header" href="#create-table" id="create-table">create-table</a></h3>
+<h3 id="create-table"><a class="header" href="#create-table">create-table</a></h3>
 <pre><code>create-table(path, row, column, lock)
 </code></pre>
 <p>Helper function to create a tree structure that will render in the
@@ -2442,29 +2422,29 @@ column(s). row and column must be specified one or more times.</p>
 </code></pre>
 <p>will create a table with two columns &quot;widget&quot; and &quot;implemented&quot; and
 three rows &quot;01&quot;, &quot;02&quot;, and &quot;03&quot;.</p>
-<h3><a class="header" href="#add-table-rows" id="add-table-rows">add-table-rows</a></h3>
+<h3 id="add-table-rows"><a class="header" href="#add-table-rows">add-table-rows</a></h3>
 <pre><code>add-table-rows(path, row)
 </code></pre>
 <p>add the row(s) to the specified table.</p>
-<h3><a class="header" href="#add-table-columns" id="add-table-columns">add-table-columns</a></h3>
+<h3 id="add-table-columns"><a class="header" href="#add-table-columns">add-table-columns</a></h3>
 <pre><code>add-table-columns(path, column)
 </code></pre>
 <p>add the column(s) to the specified table.</p>
-<h3><a class="header" href="#delete-table-rows" id="delete-table-rows">delete-table-rows</a></h3>
+<h3 id="delete-table-rows"><a class="header" href="#delete-table-rows">delete-table-rows</a></h3>
 <pre><code>delete-table-rows(path, row)
 </code></pre>
 <p>delete the specified row(s) from the table</p>
-<h3><a class="header" href="#delete-table-columns" id="delete-table-columns">delete-table-columns</a></h3>
+<h3 id="delete-table-columns"><a class="header" href="#delete-table-columns">delete-table-columns</a></h3>
 <pre><code>delete-table-columns(path, column)
 </code></pre>
 <p>delete the specified column(s) from the table</p>
-<h1><a class="header" href="#stress-test-tool" id="stress-test-tool">Stress Test Tool</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="stress-test-tool"><a class="header" href="#stress-test-tool">Stress Test Tool</a></h1>
 <p>The stress test tool is mostly for debug and development of netidx
 itself. The stress publisher publishes a configurably sized table, and
 updates each value after a configurable timeout. The stress subscriber
 subscribes to every value in the table published by the stress
 publisher, and prints throughput statistics to stdout.</p>
-<h1><a class="header" href="#browser" id="browser">Browser</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="browser"><a class="header" href="#browser">Browser</a></h1>
 <p>The browser is a graphical tool that visualizes the contents of
 netidx, it allows users to navigate to places of interest, view data
 in tabular or vector form, and construct applications with custom
@@ -2509,7 +2489,7 @@ parents, e.g.</p>
 <p>This will automatically visualize as a table with N rows named <code>row0 .. rowN</code> and 2 columns named <code>col0</code> and <code>col1</code>. If the regular
 structure necessary to infer a table doesn't exist, then the subtree
 will be visualized as a vector.</p>
-<h1><a class="header" href="#constructing-custom-views" id="constructing-custom-views">Constructing Custom Views</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="constructing-custom-views"><a class="header" href="#constructing-custom-views">Constructing Custom Views</a></h1>
 <p>Custom browser views are meant to fill the gap between full blown gui
 apps that use netidx, and just tables. The goal is that it should be
 possible to create moderately complex applications using custom
@@ -2556,7 +2536,7 @@ control column order, default sort, and which columns even appear.</li>
 <li>The layout properties expander is present on nearly every widget,
 and allows setting properties that all Gtk+ widets share.</li>
 </ul>
-<h2><a class="header" href="#our-first-custom-view" id="our-first-custom-view">Our First Custom View</a></h2>
+<h2 id="our-first-custom-view"><a class="header" href="#our-first-custom-view">Our First Custom View</a></h2>
 <p>Now, lets make a custom view that displays 2 tables looking at
 different subtrees at the same time. To do this, we need a container
 widget to hold both tables, in Gtk+ we use a Box widget for this kind
@@ -2574,7 +2554,7 @@ definition in a file, or you can write it to a location in netidx.</p>
 <code>.view</code>, e.g. <code>/solar/.view</code>, then when the browser is asked to
 navigate to that subtree it will draw your view instead of the default
 table.</p>
-<h2><a class="header" href="#toggle-buttons" id="toggle-buttons">Toggle Buttons</a></h2>
+<h2 id="toggle-buttons"><a class="header" href="#toggle-buttons">Toggle Buttons</a></h2>
 <p>Lets refine this little solar gui a bit, the top table takes up too
 much space, and could be easier to interact with. There is a nice Gtk+
 widget called a toggle that is great for both visualizing and
@@ -2604,7 +2584,7 @@ can also use the expression inspector, by clicking the tool button
 right next to the expression, to construct and debug more complex
 expressions. Using that tool will be covered more in the next section
 on BScript.</p>
-<h1><a class="header" href="#language-overview" id="language-overview">Language Overview</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="language-overview"><a class="header" href="#language-overview">Language Overview</a></h1>
 <p>The browser scripting language exists to glue the widgets in your gui
 to the inputs and outputs in netidx. If you're familiar with the model
 view controller gui paradigm, browser script is the controller
@@ -2643,7 +2623,7 @@ for event to emit a value, or if event has already emitted a value
 in the past then store will store that value to the new path
 (assuming it's valid) it just received.</li>
 </ul>
-<h1><a class="header" href="#compile-time-vs-run-time" id="compile-time-vs-run-time">Compile Time vs Run Time</a></h1>
+<h1 id="compile-time-vs-run-time"><a class="header" href="#compile-time-vs-run-time">Compile Time vs Run Time</a></h1>
 <p>When a view is first loaded all BScript expressions in it are compiled
 into event graphs like the one visualized above. From then on, as the
 view runs, events are generated and flow through the graphs, but no
@@ -2673,7 +2653,7 @@ action. e.g.</p>
   load(&quot;/where&quot;)
 )
 </code></pre>
-<h1><a class="header" href="#types-and-constants" id="types-and-constants">Types and Constants</a></h1>
+<h1 id="types-and-constants"><a class="header" href="#types-and-constants">Types and Constants</a></h1>
 <p>Types in browser script correspond to the netidx value type, and are
 named,</p>
 <ul>
@@ -2706,7 +2686,7 @@ named,</p>
 <p>e.g. <code>3.1415</code> is the same as <code>f64:3.1415</code>, and both forms will be
 accepted.</p>
 <p>Array literals may be specified with the syntax <code>[ v0, v1, ... ]</code></p>
-<h1><a class="header" href="#expression-interpolation" id="expression-interpolation">Expression Interpolation</a></h1>
+<h1 id="expression-interpolation"><a class="header" href="#expression-interpolation">Expression Interpolation</a></h1>
 <p>In a string literal you may substitute any number of expressions by
 surrounding them with <code>[]</code>. To produce a literal <code>[</code> or <code>]</code> you must
 escape them with <code>\</code>, e.g. <code>\[</code> and <code>\]</code>. To produce a literal <code>\</code> you
@@ -2729,7 +2709,7 @@ string_concat(
     &quot;/thing&quot;
 )
 </code></pre>
-<h1><a class="header" href="#the-expression-inspector" id="the-expression-inspector">The Expression Inspector</a></h1>
+<h1 id="the-expression-inspector"><a class="header" href="#the-expression-inspector">The Expression Inspector</a></h1>
 <p>The expression inspector shows a tree representation of a BScript
 expression in it's first column, and the current value of the
 corresponding expression in it's second.</p>
@@ -2739,8 +2719,8 @@ corresponding expression in it's second.</p>
 </code></pre>
 <p>You can access the expression inspector by pressing the toggle button
 to the right of the expression box.</p>
-<h1><a class="header" href="#reference" id="reference">Reference</a></h1>
-<h2><a class="header" href="#all" id="all">all</a></h2>
+<h1 id="reference"><a class="header" href="#reference">Reference</a></h1>
+<h2 id="all"><a class="header" href="#all">all</a></h2>
 <pre><code>all(Expr, ..., Expr)
 </code></pre>
 <p>All produces the value of it's first argument if the values of all
@@ -2748,7 +2728,7 @@ it's arguments are equal.</p>
 <pre><code>all(11, load(&quot;/volume&quot;))
 </code></pre>
 <p>Will produce 11 only when <code>/volume</code> is 11.</p>
-<h2><a class="header" href="#and" id="and">and</a></h2>
+<h2 id="and"><a class="header" href="#and">and</a></h2>
 <pre><code>and(Expr, ..., Expr)
 </code></pre>
 <p>Produces true if all of it's arguments are true, otherwise false.</p>
@@ -2756,7 +2736,7 @@ it's arguments are equal.</p>
 <pre><code>and(load(&quot;/cake&quot;), load(&quot;/diet&quot;))
 </code></pre>
 <p>Would produce false.</p>
-<h2><a class="header" href="#any" id="any">any</a></h2>
+<h2 id="any"><a class="header" href="#any">any</a></h2>
 <pre><code>any(Expr, ..., Expr)
 </code></pre>
 <p>Any produces an event every time any of it's arguments produce an event.</p>
@@ -2769,7 +2749,7 @@ in whatever order they arrive.</p>
 </code></pre>
 <p>Will produce the average of the values of <code>/bench/0/0</code> and
 <code>/bench/0/1</code>.</p>
-<h2><a class="header" href="#call" id="call">call</a></h2>
+<h2 id="call"><a class="header" href="#call">call</a></h2>
 <pre><code>call(rpc: Expr, Expr, ..., Expr)
 </code></pre>
 <p>Call the netidx rpc specified by the first argument, passing the
@@ -2790,7 +2770,7 @@ value.</p>
 <p>call <code>/solar/archive/session</code> with arguments to replay the last 10
 days, starting 2 seconds after the call finishes, at unlimited speed,
 and store the resulting session id in the variable sessionid.</p>
-<h2><a class="header" href="#cast" id="cast">cast</a></h2>
+<h2 id="cast"><a class="header" href="#cast">cast</a></h2>
 <pre><code>cast(Expr, Expr)
 </code></pre>
 <p>Attempt to cast the second argument to the type specified by the
@@ -2800,7 +2780,7 @@ is not possible.</p>
 <pre><code>cast(&quot;f32&quot;, load(&quot;/volume&quot;))
 </code></pre>
 <p>Changes volume into a single precision float if possible.</p>
-<h2><a class="header" href="#cmp" id="cmp">cmp</a></h2>
+<h2 id="cmp"><a class="header" href="#cmp">cmp</a></h2>
 <pre><code>cmp(Expr, Expr, Expr)
 </code></pre>
 <p>Produces the result of performing the comparison specified by it's
@@ -2817,7 +2797,7 @@ encoded as strings, and are called,</p>
 <pre><code>cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11)
 </code></pre>
 <p>is true if the volume is less than 11, false otherwise.</p>
-<h2><a class="header" href="#confirm" id="confirm">confirm</a></h2>
+<h2 id="confirm"><a class="header" href="#confirm">confirm</a></h2>
 <pre><code>confirm(msg: Expr, val: Expr)
 </code></pre>
 <p>Asks the user msg with val appended, and if they say yes produces it's
@@ -2833,7 +2813,7 @@ second argument, otherwise does not produce anything.</p>
 </code></pre>
 <p>Asks the user to confirm before writing the value of the variable
 <code>volume</code> to <code>[base]/volume</code>.</p>
-<h2><a class="header" href="#contains" id="contains">contains</a></h2>
+<h2 id="contains"><a class="header" href="#contains">contains</a></h2>
 <pre><code>contains(sub: Expr, string: Expr)
 </code></pre>
 <p>contains is true if it's arguments are both strings, and it's first
@@ -2842,7 +2822,7 @@ argument is a substring of it's second argument.</p>
 <pre><code>contains(&quot;bar&quot;, &quot;foobarbaz&quot;)
 </code></pre>
 <p>is true</p>
-<h2><a class="header" href="#count" id="count">count</a></h2>
+<h2 id="count"><a class="header" href="#count">count</a></h2>
 <pre><code>count(Expr)
 </code></pre>
 <p>Produces the count of events produced by expr since we started
@@ -2851,7 +2831,7 @@ execution of the pipeline.</p>
 <pre><code>count(load(&quot;/volume&quot;))
 </code></pre>
 <p>will increment every time volume changes.</p>
-<h2><a class="header" href="#divide" id="divide">divide</a></h2>
+<h2 id="divide"><a class="header" href="#divide">divide</a></h2>
 <pre><code>divide(Expr, Expr, ..., Expr)
 </code></pre>
 <p>Divides it's first argument by it's subsuquent arguments.</p>
@@ -2859,7 +2839,7 @@ execution of the pipeline.</p>
 </code></pre>
 <p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
 &quot;/additional_divisor&quot;.</p>
-<h2><a class="header" href="#do" id="do">do</a></h2>
+<h2 id="do"><a class="header" href="#do">do</a></h2>
 <pre><code>do(Expr, ..., Expr)
 { Expr; ...; Expr }
 </code></pre>
@@ -2876,7 +2856,7 @@ scope are not visible outside it.</p>
 </code></pre>
 <p>evaluates to &quot;Hello world!&quot;, but also sets the variable &quot;foo&quot;, and
 stores it's value to &quot;/tmp/foo&quot;.</p>
-<h2><a class="header" href="#ends_with" id="ends_with">ends_with</a></h2>
+<h2 id="ends_with"><a class="header" href="#ends_with">ends_with</a></h2>
 <pre><code>ends_with(Expr, Expr)
 </code></pre>
 <p>ends_with is true if both it's arguments are strings, and the second
@@ -2886,7 +2866,7 @@ argument ends with the first argument.</p>
 ends_with(&quot;hello&quot;, &quot;hello world&quot;)
 </code></pre>
 <p>The first ends_with is true, and the second one is false</p>
-<h2><a class="header" href="#eval" id="eval">eval</a></h2>
+<h2 id="eval"><a class="header" href="#eval">eval</a></h2>
 <pre><code>eval(Expr)
 </code></pre>
 <p>Compiles and executes the browser script program specified by it's
@@ -2895,7 +2875,7 @@ argument, or produces an error if the program is invalid.</p>
 <pre><code>eval(load(&quot;[base]/program&quot;))
 </code></pre>
 <p>Load and execute browser script from <code>[base]/program</code>.</p>
-<h2><a class="header" href="#event" id="event">event</a></h2>
+<h2 id="event"><a class="header" href="#event">event</a></h2>
 <pre><code>event()
 </code></pre>
 <p>Produces a widget specific event depending on which widget and which
@@ -2911,7 +2891,7 @@ is clicked.</p>
 </code></pre>
 <p>When attached to the <code>on_change</code> event of an entry would write the
 text to <code>/text</code> every time the user changes it.</p>
-<h2><a class="header" href="#filter" id="filter">filter</a></h2>
+<h2 id="filter"><a class="header" href="#filter">filter</a></h2>
 <pre><code>filter(predicate: Expr, Expr)
 </code></pre>
 <p>filter evaluates to it's second argument if it's first argument
@@ -2923,7 +2903,7 @@ saw.</p>
 <pre><code>filter(load(&quot;[enabled]&quot;), load(&quot;[thing]&quot;))
 </code></pre>
 <p>Passes on updates to &quot;[thing]&quot; only if &quot;[enabled]&quot; is true</p>
-<h2><a class="header" href="#if" id="if">if</a></h2>
+<h2 id="if"><a class="header" href="#if">if</a></h2>
 <pre><code>if(Expr, Expr, [Expr])
 </code></pre>
 <p>Produces the value of it's 2nd argument if it's first argument is
@@ -2942,7 +2922,7 @@ otherwise the value is <code>&quot;/this_one_goes_to_11&quot;</code>.</p>
 <pre><code>if(cmp(&quot;eq&quot;, 11, load(&quot;/volume&quot;)), &quot;huzzah!&quot;)
 </code></pre>
 <p>Produces <code>&quot;huzzah!&quot;</code> if <code>/volume</code> is <code>11</code>, otherwise nothing.</p>
-<h2><a class="header" href="#isa" id="isa">isa</a></h2>
+<h2 id="isa"><a class="header" href="#isa">isa</a></h2>
 <pre><code>isa(Expr, Expr)
 </code></pre>
 <p>Produce true if the 2nd argument is the type named by the first
@@ -2951,7 +2931,7 @@ argument, false otherwise.</p>
 <pre><code>isa(&quot;f32&quot;, 10)
 </code></pre>
 <p>would produce false.</p>
-<h2><a class="header" href="#is_error" id="is_error">is_error</a></h2>
+<h2 id="is_error"><a class="header" href="#is_error">is_error</a></h2>
 <pre><code>is_error(Expr)
 </code></pre>
 <p>is_error evaluates to true if it's argument evaluates to an error.</p>
@@ -2963,7 +2943,7 @@ argument, false otherwise.</p>
 </code></pre>
 <p>if load(&quot;/tmp/thing&quot;) fails then evaluate to &quot;#REF&quot; otherwise to the
 value of load(&quot;/tmp/thing&quot;).</p>
-<h2><a class="header" href="#load" id="load">load</a></h2>
+<h2 id="load"><a class="header" href="#load">load</a></h2>
 <pre><code>load(Expr)
 </code></pre>
 <p>Subscribes to the netidx path specified by it's argument, which must
@@ -2972,14 +2952,14 @@ evaluate to a string.</p>
 <pre><code>load(&quot;/some/path/in/netidx&quot;)
 load(&quot;[base]/thing&quot;)
 </code></pre>
-<h2><a class="header" href="#get" id="get">get</a></h2>
+<h2 id="get"><a class="header" href="#get">get</a></h2>
 <pre><code>get(var: Expr)
 var
 </code></pre>
 <p>Produce the value of the variable specified by var, or an error if var
 is not a valid variable name. The second form is syntactic sugar that
 translates into <code>get(&quot;var&quot;)</code>.</p>
-<h2><a class="header" href="#max" id="max">max</a></h2>
+<h2 id="max"><a class="header" href="#max">max</a></h2>
 <pre><code>max(Expr, ..., Expr)
 </code></pre>
 <p>Produces the largest value of any of it's arguments.</p>
@@ -2988,7 +2968,7 @@ translates into <code>get(&quot;var&quot;)</code>.</p>
 </code></pre>
 <p>produces the value of &quot;/volume&quot; if it is greater than 5, otherwise it
 produces 5.</p>
-<h2><a class="header" href="#mean" id="mean">mean</a></h2>
+<h2 id="mean"><a class="header" href="#mean">mean</a></h2>
 <pre><code>mean(Expr)
 </code></pre>
 <p>Computes the average of it's argument over time.</p>
@@ -2996,7 +2976,7 @@ produces 5.</p>
 <pre><code>mean(load(&quot;/volume&quot;))
 </code></pre>
 <p>Produce the average volume over the observed time period.</p>
-<h2><a class="header" href="#min" id="min">min</a></h2>
+<h2 id="min"><a class="header" href="#min">min</a></h2>
 <pre><code>min(Expr, ..., Expr)
 </code></pre>
 <p>Produces the smallest value of any of it's arguments.</p>
@@ -3005,7 +2985,7 @@ produces 5.</p>
 </code></pre>
 <p>produces the value of <code>&quot;/volume&quot;</code> if it is less than 42, otherwise it
 produces 42.</p>
-<h2><a class="header" href="#navigate" id="navigate">navigate</a></h2>
+<h2 id="navigate"><a class="header" href="#navigate">navigate</a></h2>
 <pre><code>navigate(Expr)
 </code></pre>
 <p>Navigate the browser to the location specified by it's first
@@ -3018,7 +2998,7 @@ argument. The syntax of a location is one of, </p>
 <p>e.g.</p>
 <pre><code>navigate(confirm(&quot;go to &quot;, &quot;file:[next_view]&quot;))
 </code></pre>
-<h2><a class="header" href="#not" id="not">not</a></h2>
+<h2 id="not"><a class="header" href="#not">not</a></h2>
 <pre><code>not(Expr)
 </code></pre>
 <p>Produces the opposite of it's argument, e.g. true if it's argument is
@@ -3027,7 +3007,7 @@ false, false otherwise.</p>
 <pre><code>not(load(&quot;/solar/control/charging&quot;))
 </code></pre>
 <p>true if the battery is not charging.</p>
-<h2><a class="header" href="#or" id="or">or</a></h2>
+<h2 id="or"><a class="header" href="#or">or</a></h2>
 <pre><code>or(Expr, ..., Expr)
 </code></pre>
 <p>Produces true if any of it's arguments is true, otherwise false.</p>
@@ -3035,14 +3015,14 @@ false, false otherwise.</p>
 <pre><code>or(load(&quot;/cake&quot;), load(&quot;/death&quot;))
 </code></pre>
 <p>Would produce true.</p>
-<h2><a class="header" href="#product" id="product">product</a></h2>
+<h2 id="product"><a class="header" href="#product">product</a></h2>
 <pre><code>product(Expr, ..., Expr)
 </code></pre>
 <p>Produces the product of it's arguments.</p>
 <p>e.g. </p>
 <pre><code>product(2, 2)
 </code></pre>
-<h2><a class="header" href="#replace" id="replace">replace</a></h2>
+<h2 id="replace"><a class="header" href="#replace">replace</a></h2>
 <pre><code>replace(pat: Expr, replacement: Expr, val: Expr)
 </code></pre>
 <p>assuming all it's arguments are strings then replace evaluates to val
@@ -3051,7 +3031,7 @@ with all instances of pat replaced with replacement.</p>
 <pre><code>replace(&quot;foo&quot;, &quot;bar&quot;, &quot;foobarbaz&quot;)
 </code></pre>
 <p>evaluates to &quot;barbarbaz&quot;</p>
-<h2><a class="header" href="#sample" id="sample">sample</a></h2>
+<h2 id="sample"><a class="header" href="#sample">sample</a></h2>
 <pre><code>sample(Expr, Expr)
 </code></pre>
 <p>Produces the value of it's second argument when it's first argument
@@ -3060,7 +3040,7 @@ updates.</p>
 <pre><code>sample(load(&quot;[base]/timestamp&quot;), load(&quot;[base]/voltage&quot;))
 </code></pre>
 <p>Produces <code>[base]/voltage</code> whenever <code>[base]/timestamp</code> updates.</p>
-<h2><a class="header" href="#starts_with" id="starts_with">starts_with</a></h2>
+<h2 id="starts_with"><a class="header" href="#starts_with">starts_with</a></h2>
 <pre><code>starts_with(pat: Expr, val: Expr)
 </code></pre>
 <p>evaluates to true if both it's arguments are strings, and the second
@@ -3069,7 +3049,7 @@ argument starts with the first.</p>
 <pre><code>starts_with(&quot;Hello&quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to true</p>
-<h2><a class="header" href="#store" id="store">store</a></h2>
+<h2 id="store"><a class="header" href="#store">store</a></h2>
 <pre><code>store(path: Expr, val: Expr)
 </code></pre>
 <p>store writes val to the specified path assuming it is valid. Store
@@ -3082,7 +3062,7 @@ the most recent val will be written immediatly to that new path.</p>
 <pre><code>store(&quot;/tmp/thing&quot;, 42)
 </code></pre>
 <p>write 42 to /tmp/thing</p>
-<h2><a class="header" href="#set" id="set">set</a></h2>
+<h2 id="set"><a class="header" href="#set">set</a></h2>
 <pre><code>set(name: Expr, val: Expr)
 name &lt;- val
 </code></pre>
@@ -3096,7 +3076,7 @@ expression.</p>
 <p>e.g.</p>
 <pre><code>set(&quot;volume&quot;, cast(&quot;f32&quot;, event()))
 </code></pre>
-<h2><a class="header" href="#let" id="let">let</a></h2>
+<h2 id="let"><a class="header" href="#let">let</a></h2>
 <pre><code>let(name: Expr, val: Expr)
 let name &lt;- val
 </code></pre>
@@ -3115,7 +3095,7 @@ current scope and it's children.</p>
     v
 } # evals to 42
 </code></pre>
-<h2><a class="header" href="#string_concat" id="string_concat">string_concat</a></h2>
+<h2 id="string_concat"><a class="header" href="#string_concat">string_concat</a></h2>
 <pre><code>string_concat(Expr, ..., Expr)
 </code></pre>
 <p>Concatinate all arguments.</p>
@@ -3124,7 +3104,7 @@ current scope and it's children.</p>
 </code></pre>
 <p>is the same as writing <code>&quot;[load(&quot;/foo&quot;)][load(&quot;/bar&quot;)]baz&quot;</code>. And in
 fact string interpolations are just syntactic sugar for this function.</p>
-<h2><a class="header" href="#string_join" id="string_join">string_join</a></h2>
+<h2 id="string_join"><a class="header" href="#string_join">string_join</a></h2>
 <pre><code>string_join(sep: Expr, ..., Expr)
 </code></pre>
 <p>Concatinate all arguments from 2 ... n using the first argument as a
@@ -3133,7 +3113,7 @@ separator.</p>
 <pre><code>string_join(&quot;/&quot;, base, &quot;foo&quot;, &quot;bar&quot;)
 </code></pre>
 <p>is the same a writing <code>&quot;[base]/foo/bar&quot;</code></p>
-<h2><a class="header" href="#strip_prefix" id="strip_prefix">strip_prefix</a></h2>
+<h2 id="strip_prefix"><a class="header" href="#strip_prefix">strip_prefix</a></h2>
 <pre><code>strip_prefix(pfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_prefix evaluates
@@ -3142,7 +3122,7 @@ to val with pfx removed from the beginning.</p>
 <pre><code>strip_prefix(&quot;Hello &quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to &quot;World!&quot;</p>
-<h2><a class="header" href="#strip_suffix" id="strip_suffix">strip_suffix</a></h2>
+<h2 id="strip_suffix"><a class="header" href="#strip_suffix">strip_suffix</a></h2>
 <pre><code>strip_suffix(sfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_suffix evaluates
@@ -3151,7 +3131,7 @@ to val with sfx removed from the end.</p>
 <pre><code>strip_suffix(&quot; World!&quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to &quot;Hello&quot;</p>
-<h2><a class="header" href="#sum" id="sum">sum</a></h2>
+<h2 id="sum"><a class="header" href="#sum">sum</a></h2>
 <pre><code>sum(Expr, ..., Expr)
 </code></pre>
 <p>Produces the sum of it's arguments.</p>
@@ -3159,7 +3139,7 @@ to val with sfx removed from the end.</p>
 <pre><code>sum(load(&quot;/offset&quot;), load(&quot;/random&quot;))
 </code></pre>
 <p>sums <code>/offset</code> and <code>/random</code></p>
-<h2><a class="header" href="#trim_end" id="trim_end">trim_end</a></h2>
+<h2 id="trim_end"><a class="header" href="#trim_end">trim_end</a></h2>
 <pre><code>trim_end(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim_end evaluates to it's argument
@@ -3168,7 +3148,7 @@ with trailing whitespace removed.</p>
 <pre><code>trim_end(&quot;123456   &quot;)
 </code></pre>
 <p>evaluates to &quot;123456&quot;</p>
-<h2><a class="header" href="#trim" id="trim">trim</a></h2>
+<h2 id="trim"><a class="header" href="#trim">trim</a></h2>
 <pre><code>trim(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim evalutes to it's argument with
@@ -3177,7 +3157,7 @@ both leading and trailing whitespace removed.</p>
 <pre><code>trim(&quot; aaaaaaaaahhhg  &quot;)
 </code></pre>
 <p>evaluates to &quot;aaaaaaaaahhhg&quot;</p>
-<h2><a class="header" href="#trim_start" id="trim_start">trim_start</a></h2>
+<h2 id="trim_start"><a class="header" href="#trim_start">trim_start</a></h2>
 <pre><code>trim_start(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim_start evaluates to it's argument
@@ -3186,7 +3166,7 @@ with leading whitespace removed.</p>
 <pre><code>trim_start(&quot;   123456&quot;)
 </code></pre>
 <p>evaluates to &quot;123456&quot;</p>
-<h2><a class="header" href="#uniq" id="uniq">uniq</a></h2>
+<h2 id="uniq"><a class="header" href="#uniq">uniq</a></h2>
 <pre><code>uniq(Expr)
 </code></pre>
 <p>Produces the value of it's argument only if that value is different
@@ -3195,10 +3175,10 @@ from the previous one.</p>
 <pre><code>uniq(load(&quot;[stock_base]/ibm/last&quot;))
 </code></pre>
 <p>Would produce an event only when the last trade price of IBM changes.</p>
-<h1><a class="header" href="#higher-level-protocols-built-on-netidx" id="higher-level-protocols-built-on-netidx">Higher Level Protocols Built on Netidx</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="higher-level-protocols-built-on-netidx"><a class="header" href="#higher-level-protocols-built-on-netidx">Higher Level Protocols Built on Netidx</a></h1>
 <p>Netidx is meant to be a building block out of which more complex
 things can be constructed.</p>
-<h1><a class="header" href="#remote-procedure-call" id="remote-procedure-call">Remote Procedure Call</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
 <p>At the library level RPCs in netidix are just like any other untyped
 RPC. The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
@@ -3231,7 +3211,7 @@ collected if the rpc server is busy.</p>
 netidx rpc directly from the browser using <code>ctrl+w</code>, from the command
 line subscriber, or even manually in a program (though the library is
 more convenient).</p>
-<h2><a class="header" href="#concurrent-rpc-publishers" id="concurrent-rpc-publishers">Concurrent RPC Publishers</a></h2>
+<h2 id="concurrent-rpc-publishers"><a class="header" href="#concurrent-rpc-publishers">Concurrent RPC Publishers</a></h2>
 <p>Because of the way netidx works it's entirely possible and supported
 for multiple programs on multiple machines to publish the same RPC. As
 long as each one publishes the same arguments clients will just pick
@@ -3255,7 +3235,7 @@ subscriber will pick a new random rpc publisher).</p>
 coordination between publishers, and the cluster protocol can help you
 there, but in many cases load balancing is as simple as starting more
 publishers to handle additional traffic.</p>
-<h2><a class="header" href="#overhead" id="overhead">Overhead</a></h2>
+<h2 id="overhead"><a class="header" href="#overhead">Overhead</a></h2>
 <p>Once subscribed, the network overhead of calling a netidx rpc is quite
 low. For example, consider a procedure with 3 double precision
 floating point arguments that also returns a double precision
@@ -3312,7 +3292,7 @@ may be evaluated in parallel on the publisher side.  In fact the
 default behavior is for concurrent calls to the same procedure to run
 in parallel, in order to degrade this one would need to e.g. depend on
 a shared locked data structure.</p>
-<h1><a class="header" href="#clustering" id="clustering">Clustering</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="clustering"><a class="header" href="#clustering">Clustering</a></h1>
 <p>The cluster protocol uses the resolver server to ease building
 distributed services. A cluster is rooted at a particular path. Each
 member of the cluster will publish it's uuid under that path, and will
@@ -3342,9 +3322,7 @@ are equal.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
 
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -3352,49 +3330,34 @@ are equal.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
 
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        
 
         <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
-        
         <script type="text/javascript">
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
-        
-        
 
     </body>
 </html>

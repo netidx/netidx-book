@@ -4,25 +4,17 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>BScript - Introduction to Netidx</title>
-        
-        
 
 
         <!-- Custom HTML head -->
         
-
-
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="../favicon.svg">
-        
-        
         <link rel="shortcut icon" href="../favicon.png">
-        
         <link rel="stylesheet" href="../css/variables.css">
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
@@ -30,9 +22,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="../fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
@@ -40,9 +30,7 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -101,8 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -118,11 +105,9 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Introduction to Netidx</h1>
@@ -131,14 +116,13 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -146,7 +130,6 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
@@ -159,7 +142,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#language-overview" id="language-overview">Language Overview</a></h1>
+                        <h1 id="language-overview"><a class="header" href="#language-overview">Language Overview</a></h1>
 <p>The browser scripting language exists to glue the widgets in your gui
 to the inputs and outputs in netidx. If you're familiar with the model
 view controller gui paradigm, browser script is the controller
@@ -198,7 +181,7 @@ for event to emit a value, or if event has already emitted a value
 in the past then store will store that value to the new path
 (assuming it's valid) it just received.</li>
 </ul>
-<h1><a class="header" href="#compile-time-vs-run-time" id="compile-time-vs-run-time">Compile Time vs Run Time</a></h1>
+<h1 id="compile-time-vs-run-time"><a class="header" href="#compile-time-vs-run-time">Compile Time vs Run Time</a></h1>
 <p>When a view is first loaded all BScript expressions in it are compiled
 into event graphs like the one visualized above. From then on, as the
 view runs, events are generated and flow through the graphs, but no
@@ -228,7 +211,7 @@ action. e.g.</p>
   load(&quot;/where&quot;)
 )
 </code></pre>
-<h1><a class="header" href="#types-and-constants" id="types-and-constants">Types and Constants</a></h1>
+<h1 id="types-and-constants"><a class="header" href="#types-and-constants">Types and Constants</a></h1>
 <p>Types in browser script correspond to the netidx value type, and are
 named,</p>
 <ul>
@@ -261,7 +244,7 @@ named,</p>
 <p>e.g. <code>3.1415</code> is the same as <code>f64:3.1415</code>, and both forms will be
 accepted.</p>
 <p>Array literals may be specified with the syntax <code>[ v0, v1, ... ]</code></p>
-<h1><a class="header" href="#expression-interpolation" id="expression-interpolation">Expression Interpolation</a></h1>
+<h1 id="expression-interpolation"><a class="header" href="#expression-interpolation">Expression Interpolation</a></h1>
 <p>In a string literal you may substitute any number of expressions by
 surrounding them with <code>[]</code>. To produce a literal <code>[</code> or <code>]</code> you must
 escape them with <code>\</code>, e.g. <code>\[</code> and <code>\]</code>. To produce a literal <code>\</code> you
@@ -284,7 +267,7 @@ string_concat(
     &quot;/thing&quot;
 )
 </code></pre>
-<h1><a class="header" href="#the-expression-inspector" id="the-expression-inspector">The Expression Inspector</a></h1>
+<h1 id="the-expression-inspector"><a class="header" href="#the-expression-inspector">The Expression Inspector</a></h1>
 <p>The expression inspector shows a tree representation of a BScript
 expression in it's first column, and the current value of the
 corresponding expression in it's second.</p>
@@ -294,8 +277,8 @@ corresponding expression in it's second.</p>
 </code></pre>
 <p>You can access the expression inspector by pressing the toggle button
 to the right of the expression box.</p>
-<h1><a class="header" href="#reference" id="reference">Reference</a></h1>
-<h2><a class="header" href="#all" id="all">all</a></h2>
+<h1 id="reference"><a class="header" href="#reference">Reference</a></h1>
+<h2 id="all"><a class="header" href="#all">all</a></h2>
 <pre><code>all(Expr, ..., Expr)
 </code></pre>
 <p>All produces the value of it's first argument if the values of all
@@ -303,7 +286,7 @@ it's arguments are equal.</p>
 <pre><code>all(11, load(&quot;/volume&quot;))
 </code></pre>
 <p>Will produce 11 only when <code>/volume</code> is 11.</p>
-<h2><a class="header" href="#and" id="and">and</a></h2>
+<h2 id="and"><a class="header" href="#and">and</a></h2>
 <pre><code>and(Expr, ..., Expr)
 </code></pre>
 <p>Produces true if all of it's arguments are true, otherwise false.</p>
@@ -311,7 +294,7 @@ it's arguments are equal.</p>
 <pre><code>and(load(&quot;/cake&quot;), load(&quot;/diet&quot;))
 </code></pre>
 <p>Would produce false.</p>
-<h2><a class="header" href="#any" id="any">any</a></h2>
+<h2 id="any"><a class="header" href="#any">any</a></h2>
 <pre><code>any(Expr, ..., Expr)
 </code></pre>
 <p>Any produces an event every time any of it's arguments produce an event.</p>
@@ -324,7 +307,7 @@ in whatever order they arrive.</p>
 </code></pre>
 <p>Will produce the average of the values of <code>/bench/0/0</code> and
 <code>/bench/0/1</code>.</p>
-<h2><a class="header" href="#call" id="call">call</a></h2>
+<h2 id="call"><a class="header" href="#call">call</a></h2>
 <pre><code>call(rpc: Expr, Expr, ..., Expr)
 </code></pre>
 <p>Call the netidx rpc specified by the first argument, passing the
@@ -345,7 +328,7 @@ value.</p>
 <p>call <code>/solar/archive/session</code> with arguments to replay the last 10
 days, starting 2 seconds after the call finishes, at unlimited speed,
 and store the resulting session id in the variable sessionid.</p>
-<h2><a class="header" href="#cast" id="cast">cast</a></h2>
+<h2 id="cast"><a class="header" href="#cast">cast</a></h2>
 <pre><code>cast(Expr, Expr)
 </code></pre>
 <p>Attempt to cast the second argument to the type specified by the
@@ -355,7 +338,7 @@ is not possible.</p>
 <pre><code>cast(&quot;f32&quot;, load(&quot;/volume&quot;))
 </code></pre>
 <p>Changes volume into a single precision float if possible.</p>
-<h2><a class="header" href="#cmp" id="cmp">cmp</a></h2>
+<h2 id="cmp"><a class="header" href="#cmp">cmp</a></h2>
 <pre><code>cmp(Expr, Expr, Expr)
 </code></pre>
 <p>Produces the result of performing the comparison specified by it's
@@ -372,7 +355,7 @@ encoded as strings, and are called,</p>
 <pre><code>cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11)
 </code></pre>
 <p>is true if the volume is less than 11, false otherwise.</p>
-<h2><a class="header" href="#confirm" id="confirm">confirm</a></h2>
+<h2 id="confirm"><a class="header" href="#confirm">confirm</a></h2>
 <pre><code>confirm(msg: Expr, val: Expr)
 </code></pre>
 <p>Asks the user msg with val appended, and if they say yes produces it's
@@ -388,7 +371,7 @@ second argument, otherwise does not produce anything.</p>
 </code></pre>
 <p>Asks the user to confirm before writing the value of the variable
 <code>volume</code> to <code>[base]/volume</code>.</p>
-<h2><a class="header" href="#contains" id="contains">contains</a></h2>
+<h2 id="contains"><a class="header" href="#contains">contains</a></h2>
 <pre><code>contains(sub: Expr, string: Expr)
 </code></pre>
 <p>contains is true if it's arguments are both strings, and it's first
@@ -397,7 +380,7 @@ argument is a substring of it's second argument.</p>
 <pre><code>contains(&quot;bar&quot;, &quot;foobarbaz&quot;)
 </code></pre>
 <p>is true</p>
-<h2><a class="header" href="#count" id="count">count</a></h2>
+<h2 id="count"><a class="header" href="#count">count</a></h2>
 <pre><code>count(Expr)
 </code></pre>
 <p>Produces the count of events produced by expr since we started
@@ -406,7 +389,7 @@ execution of the pipeline.</p>
 <pre><code>count(load(&quot;/volume&quot;))
 </code></pre>
 <p>will increment every time volume changes.</p>
-<h2><a class="header" href="#divide" id="divide">divide</a></h2>
+<h2 id="divide"><a class="header" href="#divide">divide</a></h2>
 <pre><code>divide(Expr, Expr, ..., Expr)
 </code></pre>
 <p>Divides it's first argument by it's subsuquent arguments.</p>
@@ -414,7 +397,7 @@ execution of the pipeline.</p>
 </code></pre>
 <p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
 &quot;/additional_divisor&quot;.</p>
-<h2><a class="header" href="#do" id="do">do</a></h2>
+<h2 id="do"><a class="header" href="#do">do</a></h2>
 <pre><code>do(Expr, ..., Expr)
 { Expr; ...; Expr }
 </code></pre>
@@ -431,7 +414,7 @@ scope are not visible outside it.</p>
 </code></pre>
 <p>evaluates to &quot;Hello world!&quot;, but also sets the variable &quot;foo&quot;, and
 stores it's value to &quot;/tmp/foo&quot;.</p>
-<h2><a class="header" href="#ends_with" id="ends_with">ends_with</a></h2>
+<h2 id="ends_with"><a class="header" href="#ends_with">ends_with</a></h2>
 <pre><code>ends_with(Expr, Expr)
 </code></pre>
 <p>ends_with is true if both it's arguments are strings, and the second
@@ -441,7 +424,7 @@ argument ends with the first argument.</p>
 ends_with(&quot;hello&quot;, &quot;hello world&quot;)
 </code></pre>
 <p>The first ends_with is true, and the second one is false</p>
-<h2><a class="header" href="#eval" id="eval">eval</a></h2>
+<h2 id="eval"><a class="header" href="#eval">eval</a></h2>
 <pre><code>eval(Expr)
 </code></pre>
 <p>Compiles and executes the browser script program specified by it's
@@ -450,7 +433,7 @@ argument, or produces an error if the program is invalid.</p>
 <pre><code>eval(load(&quot;[base]/program&quot;))
 </code></pre>
 <p>Load and execute browser script from <code>[base]/program</code>.</p>
-<h2><a class="header" href="#event" id="event">event</a></h2>
+<h2 id="event"><a class="header" href="#event">event</a></h2>
 <pre><code>event()
 </code></pre>
 <p>Produces a widget specific event depending on which widget and which
@@ -466,7 +449,7 @@ is clicked.</p>
 </code></pre>
 <p>When attached to the <code>on_change</code> event of an entry would write the
 text to <code>/text</code> every time the user changes it.</p>
-<h2><a class="header" href="#filter" id="filter">filter</a></h2>
+<h2 id="filter"><a class="header" href="#filter">filter</a></h2>
 <pre><code>filter(predicate: Expr, Expr)
 </code></pre>
 <p>filter evaluates to it's second argument if it's first argument
@@ -478,7 +461,7 @@ saw.</p>
 <pre><code>filter(load(&quot;[enabled]&quot;), load(&quot;[thing]&quot;))
 </code></pre>
 <p>Passes on updates to &quot;[thing]&quot; only if &quot;[enabled]&quot; is true</p>
-<h2><a class="header" href="#if" id="if">if</a></h2>
+<h2 id="if"><a class="header" href="#if">if</a></h2>
 <pre><code>if(Expr, Expr, [Expr])
 </code></pre>
 <p>Produces the value of it's 2nd argument if it's first argument is
@@ -497,7 +480,7 @@ otherwise the value is <code>&quot;/this_one_goes_to_11&quot;</code>.</p>
 <pre><code>if(cmp(&quot;eq&quot;, 11, load(&quot;/volume&quot;)), &quot;huzzah!&quot;)
 </code></pre>
 <p>Produces <code>&quot;huzzah!&quot;</code> if <code>/volume</code> is <code>11</code>, otherwise nothing.</p>
-<h2><a class="header" href="#isa" id="isa">isa</a></h2>
+<h2 id="isa"><a class="header" href="#isa">isa</a></h2>
 <pre><code>isa(Expr, Expr)
 </code></pre>
 <p>Produce true if the 2nd argument is the type named by the first
@@ -506,7 +489,7 @@ argument, false otherwise.</p>
 <pre><code>isa(&quot;f32&quot;, 10)
 </code></pre>
 <p>would produce false.</p>
-<h2><a class="header" href="#is_error" id="is_error">is_error</a></h2>
+<h2 id="is_error"><a class="header" href="#is_error">is_error</a></h2>
 <pre><code>is_error(Expr)
 </code></pre>
 <p>is_error evaluates to true if it's argument evaluates to an error.</p>
@@ -518,7 +501,7 @@ argument, false otherwise.</p>
 </code></pre>
 <p>if load(&quot;/tmp/thing&quot;) fails then evaluate to &quot;#REF&quot; otherwise to the
 value of load(&quot;/tmp/thing&quot;).</p>
-<h2><a class="header" href="#load" id="load">load</a></h2>
+<h2 id="load"><a class="header" href="#load">load</a></h2>
 <pre><code>load(Expr)
 </code></pre>
 <p>Subscribes to the netidx path specified by it's argument, which must
@@ -527,14 +510,14 @@ evaluate to a string.</p>
 <pre><code>load(&quot;/some/path/in/netidx&quot;)
 load(&quot;[base]/thing&quot;)
 </code></pre>
-<h2><a class="header" href="#get" id="get">get</a></h2>
+<h2 id="get"><a class="header" href="#get">get</a></h2>
 <pre><code>get(var: Expr)
 var
 </code></pre>
 <p>Produce the value of the variable specified by var, or an error if var
 is not a valid variable name. The second form is syntactic sugar that
 translates into <code>get(&quot;var&quot;)</code>.</p>
-<h2><a class="header" href="#max" id="max">max</a></h2>
+<h2 id="max"><a class="header" href="#max">max</a></h2>
 <pre><code>max(Expr, ..., Expr)
 </code></pre>
 <p>Produces the largest value of any of it's arguments.</p>
@@ -543,7 +526,7 @@ translates into <code>get(&quot;var&quot;)</code>.</p>
 </code></pre>
 <p>produces the value of &quot;/volume&quot; if it is greater than 5, otherwise it
 produces 5.</p>
-<h2><a class="header" href="#mean" id="mean">mean</a></h2>
+<h2 id="mean"><a class="header" href="#mean">mean</a></h2>
 <pre><code>mean(Expr)
 </code></pre>
 <p>Computes the average of it's argument over time.</p>
@@ -551,7 +534,7 @@ produces 5.</p>
 <pre><code>mean(load(&quot;/volume&quot;))
 </code></pre>
 <p>Produce the average volume over the observed time period.</p>
-<h2><a class="header" href="#min" id="min">min</a></h2>
+<h2 id="min"><a class="header" href="#min">min</a></h2>
 <pre><code>min(Expr, ..., Expr)
 </code></pre>
 <p>Produces the smallest value of any of it's arguments.</p>
@@ -560,7 +543,7 @@ produces 5.</p>
 </code></pre>
 <p>produces the value of <code>&quot;/volume&quot;</code> if it is less than 42, otherwise it
 produces 42.</p>
-<h2><a class="header" href="#navigate" id="navigate">navigate</a></h2>
+<h2 id="navigate"><a class="header" href="#navigate">navigate</a></h2>
 <pre><code>navigate(Expr)
 </code></pre>
 <p>Navigate the browser to the location specified by it's first
@@ -573,7 +556,7 @@ argument. The syntax of a location is one of, </p>
 <p>e.g.</p>
 <pre><code>navigate(confirm(&quot;go to &quot;, &quot;file:[next_view]&quot;))
 </code></pre>
-<h2><a class="header" href="#not" id="not">not</a></h2>
+<h2 id="not"><a class="header" href="#not">not</a></h2>
 <pre><code>not(Expr)
 </code></pre>
 <p>Produces the opposite of it's argument, e.g. true if it's argument is
@@ -582,7 +565,7 @@ false, false otherwise.</p>
 <pre><code>not(load(&quot;/solar/control/charging&quot;))
 </code></pre>
 <p>true if the battery is not charging.</p>
-<h2><a class="header" href="#or" id="or">or</a></h2>
+<h2 id="or"><a class="header" href="#or">or</a></h2>
 <pre><code>or(Expr, ..., Expr)
 </code></pre>
 <p>Produces true if any of it's arguments is true, otherwise false.</p>
@@ -590,14 +573,14 @@ false, false otherwise.</p>
 <pre><code>or(load(&quot;/cake&quot;), load(&quot;/death&quot;))
 </code></pre>
 <p>Would produce true.</p>
-<h2><a class="header" href="#product" id="product">product</a></h2>
+<h2 id="product"><a class="header" href="#product">product</a></h2>
 <pre><code>product(Expr, ..., Expr)
 </code></pre>
 <p>Produces the product of it's arguments.</p>
 <p>e.g. </p>
 <pre><code>product(2, 2)
 </code></pre>
-<h2><a class="header" href="#replace" id="replace">replace</a></h2>
+<h2 id="replace"><a class="header" href="#replace">replace</a></h2>
 <pre><code>replace(pat: Expr, replacement: Expr, val: Expr)
 </code></pre>
 <p>assuming all it's arguments are strings then replace evaluates to val
@@ -606,7 +589,7 @@ with all instances of pat replaced with replacement.</p>
 <pre><code>replace(&quot;foo&quot;, &quot;bar&quot;, &quot;foobarbaz&quot;)
 </code></pre>
 <p>evaluates to &quot;barbarbaz&quot;</p>
-<h2><a class="header" href="#sample" id="sample">sample</a></h2>
+<h2 id="sample"><a class="header" href="#sample">sample</a></h2>
 <pre><code>sample(Expr, Expr)
 </code></pre>
 <p>Produces the value of it's second argument when it's first argument
@@ -615,7 +598,7 @@ updates.</p>
 <pre><code>sample(load(&quot;[base]/timestamp&quot;), load(&quot;[base]/voltage&quot;))
 </code></pre>
 <p>Produces <code>[base]/voltage</code> whenever <code>[base]/timestamp</code> updates.</p>
-<h2><a class="header" href="#starts_with" id="starts_with">starts_with</a></h2>
+<h2 id="starts_with"><a class="header" href="#starts_with">starts_with</a></h2>
 <pre><code>starts_with(pat: Expr, val: Expr)
 </code></pre>
 <p>evaluates to true if both it's arguments are strings, and the second
@@ -624,7 +607,7 @@ argument starts with the first.</p>
 <pre><code>starts_with(&quot;Hello&quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to true</p>
-<h2><a class="header" href="#store" id="store">store</a></h2>
+<h2 id="store"><a class="header" href="#store">store</a></h2>
 <pre><code>store(path: Expr, val: Expr)
 </code></pre>
 <p>store writes val to the specified path assuming it is valid. Store
@@ -637,7 +620,7 @@ the most recent val will be written immediatly to that new path.</p>
 <pre><code>store(&quot;/tmp/thing&quot;, 42)
 </code></pre>
 <p>write 42 to /tmp/thing</p>
-<h2><a class="header" href="#set" id="set">set</a></h2>
+<h2 id="set"><a class="header" href="#set">set</a></h2>
 <pre><code>set(name: Expr, val: Expr)
 name &lt;- val
 </code></pre>
@@ -651,7 +634,7 @@ expression.</p>
 <p>e.g.</p>
 <pre><code>set(&quot;volume&quot;, cast(&quot;f32&quot;, event()))
 </code></pre>
-<h2><a class="header" href="#let" id="let">let</a></h2>
+<h2 id="let"><a class="header" href="#let">let</a></h2>
 <pre><code>let(name: Expr, val: Expr)
 let name &lt;- val
 </code></pre>
@@ -670,7 +653,7 @@ current scope and it's children.</p>
     v
 } # evals to 42
 </code></pre>
-<h2><a class="header" href="#string_concat" id="string_concat">string_concat</a></h2>
+<h2 id="string_concat"><a class="header" href="#string_concat">string_concat</a></h2>
 <pre><code>string_concat(Expr, ..., Expr)
 </code></pre>
 <p>Concatinate all arguments.</p>
@@ -679,7 +662,7 @@ current scope and it's children.</p>
 </code></pre>
 <p>is the same as writing <code>&quot;[load(&quot;/foo&quot;)][load(&quot;/bar&quot;)]baz&quot;</code>. And in
 fact string interpolations are just syntactic sugar for this function.</p>
-<h2><a class="header" href="#string_join" id="string_join">string_join</a></h2>
+<h2 id="string_join"><a class="header" href="#string_join">string_join</a></h2>
 <pre><code>string_join(sep: Expr, ..., Expr)
 </code></pre>
 <p>Concatinate all arguments from 2 ... n using the first argument as a
@@ -688,7 +671,7 @@ separator.</p>
 <pre><code>string_join(&quot;/&quot;, base, &quot;foo&quot;, &quot;bar&quot;)
 </code></pre>
 <p>is the same a writing <code>&quot;[base]/foo/bar&quot;</code></p>
-<h2><a class="header" href="#strip_prefix" id="strip_prefix">strip_prefix</a></h2>
+<h2 id="strip_prefix"><a class="header" href="#strip_prefix">strip_prefix</a></h2>
 <pre><code>strip_prefix(pfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_prefix evaluates
@@ -697,7 +680,7 @@ to val with pfx removed from the beginning.</p>
 <pre><code>strip_prefix(&quot;Hello &quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to &quot;World!&quot;</p>
-<h2><a class="header" href="#strip_suffix" id="strip_suffix">strip_suffix</a></h2>
+<h2 id="strip_suffix"><a class="header" href="#strip_suffix">strip_suffix</a></h2>
 <pre><code>strip_suffix(sfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_suffix evaluates
@@ -706,7 +689,7 @@ to val with sfx removed from the end.</p>
 <pre><code>strip_suffix(&quot; World!&quot;, &quot;Hello World!&quot;)
 </code></pre>
 <p>evaluates to &quot;Hello&quot;</p>
-<h2><a class="header" href="#sum" id="sum">sum</a></h2>
+<h2 id="sum"><a class="header" href="#sum">sum</a></h2>
 <pre><code>sum(Expr, ..., Expr)
 </code></pre>
 <p>Produces the sum of it's arguments.</p>
@@ -714,7 +697,7 @@ to val with sfx removed from the end.</p>
 <pre><code>sum(load(&quot;/offset&quot;), load(&quot;/random&quot;))
 </code></pre>
 <p>sums <code>/offset</code> and <code>/random</code></p>
-<h2><a class="header" href="#trim_end" id="trim_end">trim_end</a></h2>
+<h2 id="trim_end"><a class="header" href="#trim_end">trim_end</a></h2>
 <pre><code>trim_end(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim_end evaluates to it's argument
@@ -723,7 +706,7 @@ with trailing whitespace removed.</p>
 <pre><code>trim_end(&quot;123456   &quot;)
 </code></pre>
 <p>evaluates to &quot;123456&quot;</p>
-<h2><a class="header" href="#trim" id="trim">trim</a></h2>
+<h2 id="trim"><a class="header" href="#trim">trim</a></h2>
 <pre><code>trim(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim evalutes to it's argument with
@@ -732,7 +715,7 @@ both leading and trailing whitespace removed.</p>
 <pre><code>trim(&quot; aaaaaaaaahhhg  &quot;)
 </code></pre>
 <p>evaluates to &quot;aaaaaaaaahhhg&quot;</p>
-<h2><a class="header" href="#trim_start" id="trim_start">trim_start</a></h2>
+<h2 id="trim_start"><a class="header" href="#trim_start">trim_start</a></h2>
 <pre><code>trim_start(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim_start evaluates to it's argument
@@ -741,7 +724,7 @@ with leading whitespace removed.</p>
 <pre><code>trim_start(&quot;   123456&quot;)
 </code></pre>
 <p>evaluates to &quot;123456&quot;</p>
-<h2><a class="header" href="#uniq" id="uniq">uniq</a></h2>
+<h2 id="uniq"><a class="header" href="#uniq">uniq</a></h2>
 <pre><code>uniq(Expr)
 </code></pre>
 <p>Produces the value of it's argument only if that value is different
@@ -755,17 +738,13 @@ from the previous one.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="../browser/views.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
                             <a rel="next" href="../protocols/overview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -773,49 +752,35 @@ from the previous one.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="../browser/views.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
                     <a rel="next" href="../protocols/overview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
 
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
     </body>
 </html>
