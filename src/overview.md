@@ -1,7 +1,7 @@
 # What is Netidx
 
-Netidx is a middleware that enables publishing a value, like 42, in
-one program and consuming it in another program, either on the same
+Netidx is middleware that enables publishing a value, like 42, in one
+program and consuming it in another program, either on the same
 machine or across the network.
 
 Values are given globally unique names in a hierarchical
@@ -11,27 +11,31 @@ the root, but in this case it's appropriate). Any other program on the
 network can refer to 42 by that name, and will receive updates in the
 (unlikely) event that /the-ultimate-answer changes.
 
-## Quick Comparison With Other Systems
+## Comparison With Other Systems
 
-- Like LDAP/X.500
+- Like LDAP
   - Netidx keeps track of a hierarchical directory of values
-  - Netidx is browsable and queryable
+  - Netidx is browsable and queryable to some extent
   - Netidx supports authentication, authorization, and encryption
   - Netidx values can be written as well as read.
   - Larger Netidx systems can be constructed by adding referrals
-    between smaller systems.
+    between smaller systems. Resolver server clusters may have parents
+    and children.
 
-- Unlike LDAP/X.500
+- Unlike LDAP
   - In Netidx the resolver server (like slapd) only keeps the location
     of the publisher that has the data, not the data iself.
   - There are no 'entries', 'attributes', 'ldif records', etc. Every
     name in the system is either structural, or a single value. Entry
-    like structure is created using hierarchy.
+    like structure is created using hierarchy. As a result there is
+    also no schema checking.
   - One can subscribe to a value, and will then be notified immediatly
-    if it changes. There is no need to query again and again.
+    if it changes.
   - There are no global filters on data, e.g. you can't query for
-    (&(cn=bob)(uid=foo)), because netidx isn't a database. Whether
-    and what query mechanisms exist are up to the publishers.
+    (&(cn=bob)(uid=foo)), because netidx isn't a database. Whether and
+    what query mechanisms exist are up to the publishers. You can,
+    however, query the structure, e.g. /foo/**/bar would return any
+    path under foo that ends in bar.
 
 - Like MQTT
   - Netidx values are publish/subscribe

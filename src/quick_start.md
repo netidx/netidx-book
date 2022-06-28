@@ -8,7 +8,7 @@ publishers, subscribers, and tools without much setup.
 ## First Install Rust and Netidx
 
 Install [rust](https://www.rust-lang.org/tools/install) via rustup if
-you haven't already. Ensure `~/.cargo/bin` is in your PATH.
+you haven't already. Ensure cargo is in your and then run,
 
 `cargo install netidx-tools`
 
@@ -36,7 +36,7 @@ You will need some build dependencies,
       "reader_ttl": 60,
       "writer_ttl": 120,
       "auth": {
-        "Local": "/home/eric/var/netidx-auth"
+        "Local": "/tmp/netidx-auth"
       }
     }
   ],
@@ -52,8 +52,8 @@ You will need some build dependencies,
 
 Install the above config in `~/.config/netidx-resolver.json`. This is
 the config for the local resolver on your machine. Make sure port 4564
-is free, or change it to a free port of your choosing. Change the
-local auth socket to one of your choosing.
+is free, or change it to a free port of your choosing. If necessary
+you can change the local auth socket to one of your choosing.
 
 run `netidx resolver-server -c ~/.config/netidx-resolver.json`. This
 command will return immediatly, and the resolver server will
@@ -68,7 +68,7 @@ If desired you can start the resolver server automatically with systemd.
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx activation -u /home/eric/etc/activation -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
 
 [Install]
 WantedBy=default.target
@@ -89,7 +89,7 @@ and
 {
     "addrs":
     [
-        ["127.0.0.1:4564", {"Local": "/home/eric/var/netidx-auth"}]
+        ["127.0.0.1:4564", {"Local": "/tmp/netidx-auth"}]
     ],
     "base": "/"
 }

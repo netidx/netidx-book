@@ -143,8 +143,8 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="what-is-netidx"><a class="header" href="#what-is-netidx">What is Netidx</a></h1>
-<p>Netidx is a middleware that enables publishing a value, like 42, in
-one program and consuming it in another program, either on the same
+<p>Netidx is middleware that enables publishing a value, like 42, in one
+program and consuming it in another program, either on the same
 machine or across the network.</p>
 <p>Values are given globally unique names in a hierarchical
 namespace. For example our published 42 might be named
@@ -152,32 +152,36 @@ namespace. For example our published 42 might be named
 the root, but in this case it's appropriate). Any other program on the
 network can refer to 42 by that name, and will receive updates in the
 (unlikely) event that /the-ultimate-answer changes.</p>
-<h2 id="quick-comparison-with-other-systems"><a class="header" href="#quick-comparison-with-other-systems">Quick Comparison With Other Systems</a></h2>
+<h2 id="comparison-with-other-systems"><a class="header" href="#comparison-with-other-systems">Comparison With Other Systems</a></h2>
 <ul>
 <li>
-<p>Like LDAP/X.500</p>
+<p>Like LDAP</p>
 <ul>
 <li>Netidx keeps track of a hierarchical directory of values</li>
-<li>Netidx is browsable and queryable</li>
+<li>Netidx is browsable and queryable to some extent</li>
 <li>Netidx supports authentication, authorization, and encryption</li>
 <li>Netidx values can be written as well as read.</li>
 <li>Larger Netidx systems can be constructed by adding referrals
-between smaller systems.</li>
+between smaller systems. Resolver server clusters may have parents
+and children.</li>
 </ul>
 </li>
 <li>
-<p>Unlike LDAP/X.500</p>
+<p>Unlike LDAP</p>
 <ul>
 <li>In Netidx the resolver server (like slapd) only keeps the location
 of the publisher that has the data, not the data iself.</li>
 <li>There are no 'entries', 'attributes', 'ldif records', etc. Every
 name in the system is either structural, or a single value. Entry
-like structure is created using hierarchy.</li>
+like structure is created using hierarchy. As a result there is
+also no schema checking.</li>
 <li>One can subscribe to a value, and will then be notified immediatly
-if it changes. There is no need to query again and again.</li>
+if it changes.</li>
 <li>There are no global filters on data, e.g. you can't query for
-(&amp;(cn=bob)(uid=foo)), because netidx isn't a database. Whether
-and what query mechanisms exist are up to the publishers.</li>
+(&amp;(cn=bob)(uid=foo)), because netidx isn't a database. Whether and
+what query mechanisms exist are up to the publishers. You can,
+however, query the structure, e.g. /foo/**/bar would return any
+path under foo that ends in bar.</li>
 </ul>
 </li>
 <li>

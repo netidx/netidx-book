@@ -149,7 +149,7 @@ for doing development of netidx services and for trying out various
 publishers, subscribers, and tools without much setup.</p>
 <h2 id="first-install-rust-and-netidx"><a class="header" href="#first-install-rust-and-netidx">First Install Rust and Netidx</a></h2>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
-you haven't already. Ensure <code>~/.cargo/bin</code> is in your PATH.</p>
+you haven't already. Ensure cargo is in your and then run,</p>
 <p><code>cargo install netidx-tools</code></p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
@@ -172,7 +172,7 @@ server, as well as the publisher/subscriber command line tools</p>
       &quot;reader_ttl&quot;: 60,
       &quot;writer_ttl&quot;: 120,
       &quot;auth&quot;: {
-        &quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;
+        &quot;Local&quot;: &quot;/tmp/netidx-auth&quot;
       }
     }
   ],
@@ -187,8 +187,8 @@ server, as well as the publisher/subscriber command line tools</p>
 </code></pre>
 <p>Install the above config in <code>~/.config/netidx-resolver.json</code>. This is
 the config for the local resolver on your machine. Make sure port 4564
-is free, or change it to a free port of your choosing. Change the
-local auth socket to one of your choosing.</p>
+is free, or change it to a free port of your choosing. If necessary
+you can change the local auth socket to one of your choosing.</p>
 <p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
 command will return immediatly, and the resolver server will
 daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
@@ -198,7 +198,7 @@ daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx activation -u /home/eric/etc/activation -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
 
 [Install]
 WantedBy=default.target
@@ -212,7 +212,7 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
 <pre><code>{
     &quot;addrs&quot;:
     [
-        [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/home/eric/var/netidx-auth&quot;}]
+        [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/tmp/netidx-auth&quot;}]
     ],
     &quot;base&quot;: &quot;/&quot;
 }
