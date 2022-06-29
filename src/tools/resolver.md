@@ -76,32 +76,39 @@ populated every column is associated with 10 rows.
 
 ## Resolve
 
-Given a path this prints out all the information the resolver server
-has about that path. This is what the subscriber uses to connect to a
-publisher, and as such this tool is useful for debugging subscription
-failures. Using the same stress publisher we saw above we can query
-one cell in the table.
+Given a path(s) this prints out all the information the resolver
+server has about that path. This is what the subscriber uses to
+connect to a publisher, and as such this tool is useful for debugging
+subscription failures. Using the same stress publisher we saw above we
+can query one cell in the table.
 
 ```
-$ netidx resolver resolve /bench/0/0
-resolver: 192.168.0.1:4564
-192.168.0.5:5004: publish/blackbird.ryu-oh.org@RYU-OH.ORG
-192.168.0.5:5004
+[eric@blackbird ~]$ netidx resolver resolve /local/bench/0/0
+publisher: Publisher { resolver: 127.0.0.1:4564, id: PublisherId(3), addr: 127.0.0.1:5011, hash_method: Sha3_512, target_auth: Local }
+PublisherId(3)
 ```
 
-First the address of the resolver that answered the query is printed,
-then a list of service principal names corresponding to each address,
-and then all the addresses for all the publishers publishing the
-requested path. In this case there is one publisher with one service
-principal name.
-
-In the case that nothing is published for a given path, then just the
-address of the resolver that answered will be printed. e.g.
+First all the publisher records are printed. This is the full
+information about all the publishers that publish the requested
+paths. Then, a list of publisher ids is printed, this is the publisher
+id that corresponds to each path in the order the path was
+specified. If we asked for two paths under the /local/bench namespace
+then we will see how this works.
 
 ```
-$ netidx resolver resolve /bench
-resolver: 192.168.0.1:4564
+[eric@blackbird ~]$ netidx resolver resolve /local/bench/0/0 /local/bench/0/1
+publisher: Publisher { resolver: 127.0.0.1:4564, id: PublisherId(3), addr: 127.0.0.1:5011, hash_method: Sha3_512, target_auth: Local }
+PublisherId(3)
+PublisherId(3)
 ```
+
+Here we can clearly see that the same publisher (publisher id 3) is
+the one to contact about both requested paths. This output closely
+mirrors how the actual information is sent on the wire (except on the
+wire it's binary, and the ids are varints).
+
+In the case that no publisher is publishing the path you're resolving
+the resolver will print nothing.
 
 ## Add
 
