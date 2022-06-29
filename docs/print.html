@@ -2124,9 +2124,11 @@ PublisherId(3)
 <p>Here we can clearly see that the same publisher (publisher id 3) is
 the one to contact about both requested paths. This output closely
 mirrors how the actual information is sent on the wire (except on the
-wire it's binary, and the ids are varints).</p>
-<p>In the case that no publisher is publishing the path you're resolving
-the resolver will print nothing.</p>
+wire it's binary, and the ids are varints). If multiple publishers
+published any of the requested paths, their ids would appear on the
+same line separated by commas.</p>
+<p>In the case that nothing is publishing the requested path then the
+tool will print nothing and exit.</p>
 <h2 id="add"><a class="header" href="#add">Add</a></h2>
 <p>This is a low level debugging tool, and it's really not recommended
 unless you know exactly what you're doing. Using it could screw up
@@ -2210,9 +2212,10 @@ never poll, default 5.</li>
 <ul>
 <li><code>--publish-base &lt;path&gt;</code>: required for playback, enables playback
 if specified, the path where playback sessions will be published.</li>
-<li><code>--bind &lt;spec&gt;</code>: required for playback, a specification describing
+<li><code>-b, --bind &lt;spec&gt;</code>: required for playback, a specification describing
 the network interface to bind to. See
 <a href="tools/./publisher_tool.html">publisher</a> for details.</li>
+<li><code>-a, --auth</code>: the authentication mechanism, anonymous, local, or krb5.</li>
 <li><code>--spn &lt;service-principal&gt;</code>: optional, required for kerberos, the
 service princial to publish as.</li>
 <li><code>--max-sessions &lt;n&gt;</code>: optional, How many total client sessions to allow at
@@ -2252,11 +2255,9 @@ published some new things there,</p>
 <p>If we want to pass some arguments to the rpc so our session will be
 setup how we like by default we can do that as well, e.g.</p>
 <pre><code>netidx subscriber &lt;&lt;EOF
-WRITE|/solar/archive/session/start/val|string|-3d
-WRITE|/solar/archive/session/speed/val|f32|2
-WRITE|/solar/archive/session|string|null
+CALL|/solar/archive/session|start=&quot;-3d&quot;,speed=2
 EOF
-/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
+CALLED|/archive/session|&quot;ef93a9dce21f40c49f5888e64964f93f&quot;
 </code></pre>
 <p>Now our new session would be setup to start 3 days ago, and playback
 at 2x speed.</p>
@@ -2335,7 +2336,7 @@ stored, and the published value will be whatever the formula evaluates
 to. An additional bscript expression can be added to a formula cell to
 define what happens when it is written to, so a formula cell can form
 a proper lens. The entire bscript api is supported, except for the
-browser specific functions confirm, and navigate. There are two
+browser specific functions event, confirm, and navigate. There are two
 additional functions specific to the container. ref and rel. ref
 refers to a path that must be hosted by the same container, in
 exchange for this restriction it's quite a bit faster than load. rel
@@ -2365,7 +2366,8 @@ network, just like anything else in netidx.</p>
 <li><code>--compress-level &lt;0-9&gt;</code>: set the zstd compression level</li>
 <li><code>--db</code>: the path to the db</li>
 <li><code>--api-path &lt;path&gt;</code>: where to publish the rpc interface and db stats</li>
-<li><code>--bind &lt;spec&gt;</code>: the ip specification to bind to</li>
+<li><code>-b, --bind &lt;spec&gt;</code>: the ip specification to bind to</li>
+<li><code>-a, --auth</code>: the auth mechanism, anonymous, local, or krb5</li>
 <li><code>--spn &lt;spn&gt;</code>: the kerberos service principal name to publish as</li>
 <li><code>--cache-size &lt;bytes&gt;</code>: the database cache size in bytes, default 1 gigabyte</li>
 <li><code>--timeout &lt;seconds&gt;</code>: the time after which a slow subscriber will be disconnected 0 for no timeout</li>

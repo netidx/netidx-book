@@ -18,7 +18,7 @@ stored, and the published value will be whatever the formula evaluates
 to. An additional bscript expression can be added to a formula cell to
 define what happens when it is written to, so a formula cell can form
 a proper lens. The entire bscript api is supported, except for the
-browser specific functions confirm, and navigate. There are two
+browser specific functions event, confirm, and navigate. There are two
 additional functions specific to the container. ref and rel. ref
 refers to a path that must be hosted by the same container, in
 exchange for this restriction it's quite a bit faster than load. rel
@@ -52,7 +52,8 @@ network, just like anything else in netidx.
 - `--compress-level <0-9>`: set the zstd compression level
 - `--db`: the path to the db
 - `--api-path <path>`: where to publish the rpc interface and db stats
-- `--bind <spec>`: the ip specification to bind to
+- `-b, --bind <spec>`: the ip specification to bind to
+- `-a, --auth`: the auth mechanism, anonymous, local, or krb5
 - `--spn <spn>`: the kerberos service principal name to publish as
 - `--cache-size <bytes>`: the database cache size in bytes, default 1 gigabyte
 - `--timeout <seconds>`: the time after which a slow subscriber will be disconnected 0 for no timeout

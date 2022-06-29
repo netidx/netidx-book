@@ -105,10 +105,12 @@ PublisherId(3)
 Here we can clearly see that the same publisher (publisher id 3) is
 the one to contact about both requested paths. This output closely
 mirrors how the actual information is sent on the wire (except on the
-wire it's binary, and the ids are varints).
+wire it's binary, and the ids are varints). If multiple publishers
+published any of the requested paths, their ids would appear on the
+same line separated by commas.
 
-In the case that no publisher is publishing the path you're resolving
-the resolver will print nothing.
+In the case that nothing is publishing the requested path then the
+tool will print nothing and exit.
 
 ## Add
 

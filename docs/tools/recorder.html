@@ -205,9 +205,10 @@ never poll, default 5.</li>
 <ul>
 <li><code>--publish-base &lt;path&gt;</code>: required for playback, enables playback
 if specified, the path where playback sessions will be published.</li>
-<li><code>--bind &lt;spec&gt;</code>: required for playback, a specification describing
+<li><code>-b, --bind &lt;spec&gt;</code>: required for playback, a specification describing
 the network interface to bind to. See
 <a href="./publisher_tool.html">publisher</a> for details.</li>
+<li><code>-a, --auth</code>: the authentication mechanism, anonymous, local, or krb5.</li>
 <li><code>--spn &lt;service-principal&gt;</code>: optional, required for kerberos, the
 service princial to publish as.</li>
 <li><code>--max-sessions &lt;n&gt;</code>: optional, How many total client sessions to allow at
@@ -247,11 +248,9 @@ published some new things there,</p>
 <p>If we want to pass some arguments to the rpc so our session will be
 setup how we like by default we can do that as well, e.g.</p>
 <pre><code>netidx subscriber &lt;&lt;EOF
-WRITE|/solar/archive/session/start/val|string|-3d
-WRITE|/solar/archive/session/speed/val|f32|2
-WRITE|/solar/archive/session|string|null
+CALL|/solar/archive/session|start=&quot;-3d&quot;,speed=2
 EOF
-/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
+CALLED|/archive/session|&quot;ef93a9dce21f40c49f5888e64964f93f&quot;
 </code></pre>
 <p>Now our new session would be setup to start 3 days ago, and playback
 at 2x speed.</p>
