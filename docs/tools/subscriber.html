@@ -202,6 +202,11 @@ paths passed on the command line. In this mode it is not possible to
 unsubscribe, write, or add new subscriptions after the program starts.</p>
 </li>
 <li>
+<p><code>-r, --raw</code>: Do not print the path and type, just the value. <code>-nor</code>
+is useful for printing the value of one or more paths to stdout and
+then exiting.</p>
+</li>
+<li>
 <p><code>-t, --subscribe-timeout</code>: Instead of retrying failed subscriptions
 forever, only retry them for the specified number of seconds, after
 that remove them, and possibly exit if <code>-o, --oneshot</code> was also
@@ -210,8 +215,9 @@ specified.</p>
 </ul>
 <h2 id="notes"><a class="header" href="#notes">Notes</a></h2>
 <p>The format subscriber writes to stdout is compatible with the format
-the publisher reads. This is by design, to make applications that
-subscribe, manipulate, and republish data easy to write.</p>
+the publisher reads (unless -r is specified). This is by design, to
+make applications that subscribe, manipulate, and republish data easy
+to write.</p>
 
                     </main>
 

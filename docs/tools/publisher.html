@@ -177,18 +177,18 @@ same format as is written by subscriber.</p>
 you must escape the <code>|</code> with <code>\</code>, e.g. <code>\|</code>. If you want to publish a
 path that has a <code>\</code> in it, then you must also escape it,
 e.g. <code>\\</code>. e.g.</p>
-<p><code>/this/path/has\|pipes\|and\\in-it|string|waow grape, pipe and backslash everywhere</code></p>
+<p><code>/this/path/has\|pipes\|and\\in-it|string|pipe and backslash everywhere</code></p>
 <h2 id="arguments"><a class="header" href="#arguments">Arguments</a></h2>
 <p>There are several command line options to the <code>netidx publisher</code> command,</p>
 <ul>
-<li><code>--bind</code>: required, specify the network address to bind to. This can
+<li><code>-b, --bind</code>: optional, specify the network address to bind to. This can
 be specified in two forms.
 <ul>
 <li>an expression consisting of an ip/netmask that must match a unique
 network interface on the machine running the publisher. This is
 prefered, e.g.
 <ul>
-<li>127.0.0.0/24 selects the <code>lo</code> interface</li>
+<li>local, the default, selects 127.0.0.1/24</li>
 <li>10.0.0.0/8 selects the interface bound to a 10.x.x.x address</li>
 <li>192.168.0.0/16 selects the interface bound to a 192.168.x.x address</li>
 <li>The publisher will choose a free port automatically starting at 5000</li>
@@ -204,13 +204,19 @@ port, so be careful.</li>
 </li>
 </ul>
 </li>
-<li><code>--spn</code>: optional, required if using krb5, the service principal
-name the publisher should run as. This principal must have
-permission to publish where you plan to publish, must exist in your
-krb5 infrastructure, and you must have access to a keytab with it's
+<li><code>-a, --auth</code>: optional, specifies the authentication mechanism,
+anonymous, local, or krb5.</li>
+<li><code>--spn</code>: optional, required if -a krb5, the service principal name
+the publisher should run as. This principal must have permission to
+publish where you plan to publish, must exist in your krb5
+infrastructure, and you must have access to a keytab with it's
 credentials. If that keytab is in a non standard location then you
 must set the environment variable
 <code>KRB5_KTNAME=FILE:/the/path/to/the/keytab</code></li>
+<li><code>--upn</code>: optional, if you want to authenticate the publisher to the
+resolver server as a prinicpal other than the logged in user then
+you can specify that principal here. You must have a TGT for the
+specified principal.</li>
 <li><code>--timeout &lt;seconds&gt;</code>: optional, if specified requires subscribers
 to consume published values within the specified number of seconds
 or be disconnected. By default the publisher will wait forever for a

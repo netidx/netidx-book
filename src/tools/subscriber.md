@@ -48,6 +48,9 @@ will not quit, but it will no longer be possible to issue commands.
 - `-n, --no-stdin`: Do not read commands from stdin, only subscribe to
   paths passed on the command line. In this mode it is not possible to
   unsubscribe, write, or add new subscriptions after the program starts.
+- `-r, --raw`: Do not print the path and type, just the value. `-nor`
+  is useful for printing the value of one or more paths to stdout and
+  then exiting.
 - `-t, --subscribe-timeout`: Instead of retrying failed subscriptions
   forever, only retry them for the specified number of seconds, after
   that remove them, and possibly exit if `-o, --oneshot` was also
@@ -56,5 +59,6 @@ will not quit, but it will no longer be possible to issue commands.
 ## Notes
 
 The format subscriber writes to stdout is compatible with the format
-the publisher reads. This is by design, to make applications that
-subscribe, manipulate, and republish data easy to write.
+the publisher reads (unless -r is specified). This is by design, to
+make applications that subscribe, manipulate, and republish data easy
+to write.
