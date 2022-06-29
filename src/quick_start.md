@@ -23,7 +23,7 @@ You will need some build dependencies,
 
 ## Resolver Server Configuration
 
-```
+``` json
 {
   "parent": null,
   "children": [],
@@ -85,7 +85,7 @@ and
 
 ## Client Configuration
 
-```
+``` json
 {
     "addrs":
     [

@@ -1,62 +1,191 @@
-## Configuration
+## Resolver Server Configuration
 
-The netidx configuration file is the same for all the different
-components of the system, resolver, publisher, and subscriber. By
-default it is stored,
+Each resolver server cluster shares a configuration file. At startup
+time each member server is told it's zero based index in the list of
+member servers. Since the default is 0 the argument can be omitted if
+there is only one server in the cluster.
 
-- on Linux: ~/.config/netidx.json
-- on Windows: ~\AppData\Roaming\netidx.json
-- on MacOS: ~/Library/Application Support/netidx.json
+By default the resolver server will look for it's configration file at
+/etc/netidx/resolver.json or ~/.config/netidx/resolver.json. If both
+are present the second (user specific) one will override the first.
 
-Since the dirs crate is used to discover these paths, they are locally
-configurable by OS specific means. Everyone who will use netidx needs
-access to this file.
+Here is an example config file for a resolver cluster that lives in
+the middle of a three level hierarchy. Above it is the root server, it
+is responsible for the /app subtree, and it delegates /app/huge0 and
+/app/huge1 to child servers.
 
 ``` json
 {
-    "parent": null,
-    "children": [],
-    "pid_file": "",
-    "addrs": ["192.168.0.1:4564"],
-    "max_connections": 768,
-    "hello_timeout": 10,
-    "reader_ttl": 60,
-    "writer_ttl": 120,
-    "auth": {
-        "Krb5": {"192.168.0.1:4564": "netidx/washu-chan.ryu-oh.org@RYU-OH.ORG"}
+  "parent": {
+    "path": "/app",
+    "ttl": 3600,
+    "addrs": [
+      [
+        "192.168.0.1:4654",
+        {
+          "Krb5": "root/server@YOUR-DOMAIN"
+        }
+      ]
+    ]
+  },
+  "children": [
+    {
+      "path": "/app/huge0",
+      "ttl": 3600,
+      "addrs": [
+        [
+          "192.168.0.2:4654",
+          {
+            "Krb5": "huge0/server@YOUR-DOMAIN"
+          }
+        ]
+      ]
+    },
+    {
+      "path": "/app/huge1",
+      "ttl": 3600,
+      "addrs": [
+        [
+          "192.168.0.3:4654",
+          {
+            "Krb5": "huge1/server@YOUR-DOMAIN"
+          }
+        ]
+      ]
     }
+  ],
+  "member_servers": [
+    {
+      "pid_file": "/var/run/netidx",
+      "addr": "192.168.0.4:4564",
+      "max_connections": 768,
+      "hello_timeout": 10,
+      "reader_ttl": 60,
+      "writer_ttl": 120,
+      "auth": {
+        "Krb5": "app/server@YOUR-DOMAIN"
+      }
+    }
+  ],
+  "perms": {
+    "/app": {
+      "wheel": "swlpd",
+      "adm": "swlpd",
+      "domain users": "sl"
+    }
+  }
 }
 ```
 
-Here's about the simplest possible Kerberos enabled
-configuration. I'll go through each field,
+### parent
 
-- parent: null unless this server has a parent
-- children: empty unless this server has children
-- pid_file: prefix to add to the pid file which will otherwise be
-  e.g. 0.pid for the first server in the cluster, or 1.pid for the
-  second, etc.
-- addrs: The list of all resolver servers in this level of the
-  cluster, e.g. not children or parents, just this level. When
-  starting the server you must pass in an index into this array on the
-  command line as --id to identify which server you want to start.
-- max_connections: The maximum number of simultaneous connections to
-  allow (both read and write) before starting to reject new
-  connections.
-- hello_timeout: The amount of time to wait for a client to say a
-  proper hello before dropping the connection.
-- reader_ttl: The amount of time, in seconds, to keep an idle read
-  connection open.
-- writer_ttl: The amount of time, in seconds, to wait for a publisher
-  to heartbeat before deleting everything it has published. The
-  publisher will send heartbeats at 1/2 this interval. e.g. 120 means
-  publishers will heartbeat every minute.
-- auth: either "Anonymous", or "Krb5". If "Krb5", then a service
-  principal name should be included for every resolver server in the
-  cluster. Each resolver server instance must have access to the
-  corresponding SPN's key via a keytab or other means, and of course
-  you must create the corresponding service principal for each
-  instance.
+This section is either null if the cluster has no parent, or a record
+specfying
 
-If you're using Kerberos then you also need a permissions file, which
-is covered in the next section.
+- path: The path where this cluster attaches to the parent. For
+  example a query for something in /tmp would result in a referral to
+  the parent in the above example, because /tmp is not a child of
+  /app, so this cluster isn't authoratative for /tmp. It's entirely
+  posible that the parent isn't authoratative for /tmp either, in
+  which case the client would get another referral upon querying the
+  parent. This chain of referrals can continue until a maximum number
+  is reached (to prevent infinite cycles).
+
+- ttl: How long, in seconds, clients should cache this parent. If for
+  example you reconfigured it to point to another IP, clients might
+  still try to go to the old ip for as long as the ttl.
+
+- addrs: The addresses of the servers in the parent cluster. This is a
+  list of pairs of ip:port and auth mechanism. The authentication
+  mechanism of the parent may not be Local, it must be either
+  Anonymous or Krb5. In the case of Krb5 you must include the server's
+  spn.
+
+### children
+
+This section contains a list of child clusters. The format of each
+child is exactly the same as the parent section. The path field is the
+location the child attaches in the tree, any query at or below that
+path will be referred to the child.
+
+### member_servers
+
+This section is a list of all the servers in this cluster. The fields
+on each server are,
+
+- pid_file: the path to the pid file you want the server to write. The
+  server id folowed by .pid will be appended to whatever is in this
+  field. So server 0 in the above example will write it's pid to
+  /var/run/netidx0.pid
+
+- addr: The socket address and port that this member server should
+  bind to.
+  
+- max_connections: The maximum number of simultaneous client
+  connections that this server will allow. Client connections in
+  excess of this number will be accepted and immediatly closed (so
+  they can hopefully try another server).
+
+- hello_timeout: The maximum time, in seconds, that the server will
+  wait for a client to complete the initial handshake
+  process. Connections that take longer than this to handshake will be
+  closed.
+  
+- reader_ttl: The maximum time, in seconds, that the server will retain
+  an idle read connection. Idle read connections older than this will
+  be closed.
+  
+- writer_ttl: The maximum time, in seconds, that the server will
+  retain an idle write connection. Idle connections older than this
+  will be closed, and all associated published data will be
+  cleared. Publishers autoatically set their heartbeat interval to
+  half this value. This is the maximum amount of time data from a dead
+  publisher will remain in the resolver.
+
+- auth: The authentication mechanism used by this server. One of
+  Anonymous, Local, or Krb5. Local must include the path to the local
+  auth socket file that will be used to verify the identity of
+  clients. Krb5 must include the server's spn.
+
+### perms
+
+The server perissions map. This will be covered in detail in the
+authorization chapter. If a member server's auth mechanism is
+anonymous, then this is ignored.
+
+## Client Configuration
+
+Netidx clients such as publishers and subscribers look for their
+configuration in the following platform specific places. The user
+specific files always take prescidence over the machine global files.
+
+- on Linux: /etc/netidx/client.json or
+  ${XDG_CONFIG_HOME}/netidx/client.json or
+  ~/.config/netidx/client.json
+- on Windows: C:\netidx\client.json or ~\AppData\Roaming\netidx\client.json
+- on MacOS: /etc/netidx/client.json or ~/Library/Application Support/netidx/client.json
+
+Since the dirs crate is used to discover these paths, they are locally
+configurable by OS specific means.
+
+``` json
+{
+    "addrs":
+    [
+        ["192.168.0.1", {"Krb5": "root/server@YOUR-DOMAIN"}]
+    ],
+    "base": "/"
+}
+```
+
+### addrs
+
+A list of pairs or ip:port and auth mechanism for each server in the
+cluster. Local should include the path to the local authentication
+socket file. Krb5 should include the server's spn.
+
+### base
+
+The base path of this server cluster in the tree. This should
+correspond to the server cluster's parent, or "/" if it's parent is
+null.

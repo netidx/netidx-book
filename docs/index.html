@@ -160,7 +160,7 @@ server, as well as the publisher/subscriber command line tools</p>
 <li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
 </ul>
 <h2 id="resolver-server-configuration"><a class="header" href="#resolver-server-configuration">Resolver Server Configuration</a></h2>
-<pre><code>{
+<pre><code class="language-json">{
   &quot;parent&quot;: null,
   &quot;children&quot;: [],
   &quot;member_servers&quot;: [
@@ -209,7 +209,7 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
 <p>and</p>
 <p><code>systemctl --user start netidx</code></p>
 <h2 id="client-configuration"><a class="header" href="#client-configuration">Client Configuration</a></h2>
-<pre><code>{
+<pre><code class="language-json">{
     &quot;addrs&quot;:
     [
         [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/tmp/netidx-auth&quot;}]

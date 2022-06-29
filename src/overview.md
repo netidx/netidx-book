@@ -72,14 +72,13 @@ hierarchy and it's parents are just structure. Unlike the file system
 the resolver server will create and delete those structural containers
 automatically, there is no need to manually manage them.
 
-When a client wants to subscribe to the value pointed to by a name, it
-queries the resolver server cluster, and is given the addresses of all
-the publishers that publish said data point. It then randomly permutes
-that list, and tries to subscribe to each address. If one of them
-succeeds, then the subscription succeeds, if they all fail then it
-doesn't. All the actual data flows from publishers to subscribers
-directly without ever going through any kind of centralized
-infrastructure.
+When a client wants to subscribe to a published value, it queries the
+resolver server cluster, and is given the addresses of all the
+publishers that publish the value. Multiple publishers can publish the
+same value, and the client will try all of them in a random order
+until it finds one that works. All the actual data flows from
+publishers to subscribers directly without ever going through any kind
+of centralized infrastructure.
 
 ## The Data Format
 
@@ -88,8 +87,8 @@ mostly primitive types, consisting of numbers, strings, durations,
 timestamps, packed byte arrays, and arrays of values. Arrays of values
 can be nested.
 
-Byte arrays and strings are very efficient, so they can be a building
-block for sending encoded data efficiently.
+Byte arrays and strings are zero copy decoded, so they can be a
+building block for sending other encoded data efficiently.
 
 Published values have some other properties as well,
 
