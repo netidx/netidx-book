@@ -149,7 +149,7 @@ Windows, it's just a matter of some work around group name resolution
 and service integration. Starting a resolver server is done from the
 <code>netidx</code> command line tool (<code>cargo install netidx-tools</code>). e.g.</p>
 <pre><code class="language-bash">$ KRB5_KTNAME=FILE:/path/to/keytab \
-netidx resolver-server --permissions ./netidx-perms.json
+netidx resolver-server -c resolver.json
 </code></pre>
 <p>By default the server will daemonize, include <code>-f</code> to prevent that. If
 your cluster has multiple replica servers then you must pass <code>--id &lt;index&gt;</code> to specify which one you are starting, however since the

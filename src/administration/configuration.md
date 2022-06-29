@@ -5,10 +5,6 @@ time each member server is told it's zero based index in the list of
 member servers. Since the default is 0 the argument can be omitted if
 there is only one server in the cluster.
 
-By default the resolver server will look for it's configration file at
-/etc/netidx/resolver.json or ~/.config/netidx/resolver.json. If both
-are present the second (user specific) one will override the first.
-
 Here is an example config file for a resolver cluster that lives in
 the middle of a three level hierarchy. Above it is the root server, it
 is responsible for the /app subtree, and it delegates /app/huge0 and
@@ -155,36 +151,41 @@ anonymous, then this is ignored.
 
 ## Client Configuration
 
-Netidx clients such as publishers and subscribers look for their
-configuration in the following platform specific places. The user
-specific files always take prescidence over the machine global files.
+Netidx clients such as publishers and subscribers try to load their
+configuration files from the following places in order.
 
-- on Linux: /etc/netidx/client.json or
-  ${XDG_CONFIG_HOME}/netidx/client.json or
-  ~/.config/netidx/client.json
-- on Windows: C:\netidx\client.json or ~\AppData\Roaming\netidx\client.json
-- on MacOS: /etc/netidx/client.json or ~/Library/Application Support/netidx/client.json
+- $NETIDX_CFG
+- config_dir:
+  - on Linux: ~/.config/netidx/client.json
+  - on Windows: ~\AppData\Roaming\netidx\client.json
+  - on MacOS: ~/Library/Application Support/netidx/client.json
+- global_dir
+  - on Linux: /etc/netidx/client.json
+  - on Windows: C:\netidx\client.json
+  - on MacOS: /etc/netix/client.json
 
 Since the dirs crate is used to discover these paths, they are locally
 configurable by OS specific means.
+
+### Example
 
 ``` json
 {
     "addrs":
     [
-        ["192.168.0.1", {"Krb5": "root/server@YOUR-DOMAIN"}]
+        ["192.168.0.1:4654", {"Krb5": "root/server@YOUR-DOMAIN"}]
     ],
     "base": "/"
 }
 ```
 
-### addrs
+#### addrs
 
 A list of pairs or ip:port and auth mechanism for each server in the
 cluster. Local should include the path to the local authentication
 socket file. Krb5 should include the server's spn.
 
-### base
+#### base
 
 The base path of this server cluster in the tree. This should
 correspond to the server cluster's parent, or "/" if it's parent is

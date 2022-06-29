@@ -1214,9 +1214,6 @@ you're seeing file descriptor exhaustion.</p>
 time each member server is told it's zero based index in the list of
 member servers. Since the default is 0 the argument can be omitted if
 there is only one server in the cluster.</p>
-<p>By default the resolver server will look for it's configration file at
-/etc/netidx/resolver.json or ~/.config/netidx/resolver.json. If both
-are present the second (user specific) one will override the first.</p>
 <p>Here is an example config file for a resolver cluster that lives in
 the middle of a three level hierarchy. Above it is the root server, it
 is responsible for the /app subtree, and it delegates /app/huge0 and
@@ -1365,39 +1362,49 @@ clients. Krb5 must include the server's spn.</p>
 authorization chapter. If a member server's auth mechanism is
 anonymous, then this is ignored.</p>
 <h2 id="client-configuration-1"><a class="header" href="#client-configuration-1">Client Configuration</a></h2>
-<p>Netidx clients such as publishers and subscribers look for their
-configuration in the following platform specific places. The user
-specific files always take prescidence over the machine global files.</p>
+<p>Netidx clients such as publishers and subscribers try to load their
+configuration files from the following places in order.</p>
 <ul>
-<li>on Linux: /etc/netidx/client.json or
-${XDG_CONFIG_HOME}/netidx/client.json or
-~/.config/netidx/client.json</li>
-<li>on Windows: C:\netidx\client.json or ~\AppData\Roaming\netidx\client.json</li>
-<li>on MacOS: /etc/netidx/client.json or ~/Library/Application Support/netidx/client.json</li>
+<li>$NETIDX_CFG</li>
+<li>config_dir:
+<ul>
+<li>on Linux: ~/.config/netidx/client.json</li>
+<li>on Windows: ~\AppData\Roaming\netidx\client.json</li>
+<li>on MacOS: ~/Library/Application Support/netidx/client.json</li>
+</ul>
+</li>
+<li>global_dir
+<ul>
+<li>on Linux: /etc/netidx/client.json</li>
+<li>on Windows: C:\netidx\client.json</li>
+<li>on MacOS: /etc/netix/client.json</li>
+</ul>
+</li>
 </ul>
 <p>Since the dirs crate is used to discover these paths, they are locally
 configurable by OS specific means.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
 <pre><code class="language-json">{
     &quot;addrs&quot;:
     [
-        [&quot;192.168.0.1&quot;, {&quot;Krb5&quot;: &quot;root/server@YOUR-DOMAIN&quot;}]
+        [&quot;192.168.0.1:4654&quot;, {&quot;Krb5&quot;: &quot;root/server@YOUR-DOMAIN&quot;}]
     ],
     &quot;base&quot;: &quot;/&quot;
 }
 </code></pre>
-<h3 id="addrs"><a class="header" href="#addrs">addrs</a></h3>
+<h4 id="addrs"><a class="header" href="#addrs">addrs</a></h4>
 <p>A list of pairs or ip:port and auth mechanism for each server in the
 cluster. Local should include the path to the local authentication
 socket file. Krb5 should include the server's spn.</p>
-<h3 id="base"><a class="header" href="#base">base</a></h3>
+<h4 id="base"><a class="header" href="#base">base</a></h4>
 <p>The base path of this server cluster in the tree. This should
 correspond to the server cluster's parent, or &quot;/&quot; if it's parent is
 null.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="authorization"><a class="header" href="#authorization">Authorization</a></h1>
-<p>When using Kerberos we also need a permissions file in order to run a
-resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. e.g.</p>
-<pre><code class="language-json">{
+<p>When using the Kerberos or Local auth mechanisms we also need to
+specify permissions in the cluster config file, e.g.</p>
+<pre><code class="language-json">...
+&quot;perms&quot;: {
     &quot;/&quot;: {
         &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
     },
@@ -1475,16 +1482,15 @@ nothing. If I am a member of more than one group, and one denies
 permissions that the other grants the deny always takes precidence.</p>
 <p>Each server cluster is completely independent for permissions. If for
 example this cluster had a child cluster, the administrators of that
-cluster would be responsible for deciding what permissions file it
-should use. It certainly could use the same file, but it doesn't have
-to.</p>
+cluster would be responsible for deciding it's permissions map.</p>
 <h3 id="anonymous"><a class="header" href="#anonymous">Anonymous</a></h3>
 <p>It's possible to give anonymous users permissions even on a Kerberos
-enabled system, and this could allow them to use whatever functions
-you deem non sensitive, subject to some limitations. There is no
-encryption. There is no tamper protection. There is no publisher -&gt;
-subscriber authentication. Anonymous users can't subscribe to non
-anonymous publishers. Non anonymous users can't subscribe to anonymous
+or Local auth mechanism system, and this could allow them to use
+whatever functions you deem non sensitive, subject to some
+limitations. There is no encryption. There is no tamper
+protection. There is no publisher -&gt; subscriber
+authentication. Anonymous users can't subscribe to non anonymous
+publishers. Non anonymous users can't subscribe to anonymous
 publishers. You name anonymous &quot;&quot; in the permissions file, e.g.</p>
 <pre><code class="language-json">&quot;/tmp&quot;: {
     &quot;&quot;: &quot;swlpd&quot;
@@ -1526,7 +1532,7 @@ Windows, it's just a matter of some work around group name resolution
 and service integration. Starting a resolver server is done from the
 <code>netidx</code> command line tool (<code>cargo install netidx-tools</code>). e.g.</p>
 <pre><code class="language-bash">$ KRB5_KTNAME=FILE:/path/to/keytab \
-netidx resolver-server --permissions ./netidx-perms.json
+netidx resolver-server -c resolver.json
 </code></pre>
 <p>By default the server will daemonize, include <code>-f</code> to prevent that. If
 your cluster has multiple replica servers then you must pass <code>--id &lt;index&gt;</code> to specify which one you are starting, however since the
@@ -2283,7 +2289,7 @@ batching.</p>
 <h3 id="deleting-a-playback-session"><a class="header" href="#deleting-a-playback-session">Deleting a Playback Session</a></h3>
 <p>Simply stop subscribing to any value or control in the session and the
 recorder will garbage collect it.</p>
-<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
 <p>To record and publish the archive of the data generated by my solar
 installation I use the following command.</p>
 <pre><code>netidx record \
