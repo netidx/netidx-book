@@ -97,10 +97,12 @@ their function.
     }
     ```
 
+## Signals
+
 Sending `SIGHUP` to the running activation server will cause it to
 reread it's unit directory. This may trigger processes (for example a
 newly added OnStart process) to start up immediatly. If unit files are
-removed, their corresponding processes will be killed upon unit
+removed, their corresponding processes will be stopped upon unit
 directory reread. If process config properties are changed for an
 existing unit, any running process will NOT be restarted, however new
 configuration directives will take effect if the process dies and is
@@ -108,14 +110,22 @@ triggered. For example if args is changed for a unit that is running,
 and it later dies and is triggered again it will be started with the
 new args.
 
+On receiving `SIGQUIT`, `SIGINT`, or `SIGTERM`, the activation server
+will stop all the processes it is managing before shutting down
+itself. Managed processes are first sent `SIGTERM`, but if they don't
+shut down within 30 seconds they are killed with `SIGKILL`.
+
 ## Args
 
 - `-f, --foreground`: don't daemonize
-- `-a, --auth`: auth mechanism. either anonymous, local, or krb5. default krb5.
+- `-a, --auth`: auth mechanism. either anonymous, local, or
+  krb5. default krb5.
 - `-b, --bind`: bind address.
 - `-c, --config`: path to the netidx client config
-- `--pid-file`: path to the pid file you want the activation server to write. default no pid file.
-- `--spn`: the spn of the activation server. only relevant if auth = krb5
+- `--pid-file`: path to the pid file you want the activation server to
+  write. default no pid file.
+- `--spn`: the spn of the activation server. only relevant if auth =
+  krb5
 - `-u, --units`: the path to the directory containing unit
   files. default `/etc/netidx/activation` or
   `~/.config/netidx/activation`

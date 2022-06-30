@@ -2693,16 +2693,38 @@ environment mappings. e.g.
 </ul>
 </li>
 </ul>
+<h2 id="signals"><a class="header" href="#signals">Signals</a></h2>
 <p>Sending <code>SIGHUP</code> to the running activation server will cause it to
 reread it's unit directory. This may trigger processes (for example a
 newly added OnStart process) to start up immediatly. If unit files are
-removed, their corresponding processes will be killed upon unit
+removed, their corresponding processes will be stopped upon unit
 directory reread. If process config properties are changed for an
 existing unit, any running process will NOT be restarted, however new
 configuration directives will take effect if the process dies and is
 triggered. For example if args is changed for a unit that is running,
 and it later dies and is triggered again it will be started with the
 new args.</p>
+<p>On receiving <code>SIGQUIT</code>, <code>SIGINT</code>, or <code>SIGTERM</code>, the activation server
+will stop all the processes it is managing before shutting down
+itself. Managed processes are first sent <code>SIGTERM</code>, but if they don't
+shut down within 30 seconds they are killed with <code>SIGKILL</code>.</p>
+<h2 id="args-3"><a class="header" href="#args-3">Args</a></h2>
+<ul>
+<li><code>-f, --foreground</code>: don't daemonize</li>
+<li><code>-a, --auth</code>: auth mechanism. either anonymous, local, or
+krb5. default krb5.</li>
+<li><code>-b, --bind</code>: bind address.</li>
+<li><code>-c, --config</code>: path to the netidx client config</li>
+<li><code>--pid-file</code>: path to the pid file you want the activation server to
+write. default no pid file.</li>
+<li><code>--spn</code>: the spn of the activation server. only relevant if auth =
+krb5</li>
+<li><code>-u, --units</code>: the path to the directory containing unit
+files. default <code>/etc/netidx/activation</code> or
+<code>~/.config/netidx/activation</code></li>
+<li><code>--upn</code>: the upn to use when connecting to the resolver, only valid
+if auth = krb5. default the current user.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="stress-test-tool"><a class="header" href="#stress-test-tool">Stress Test Tool</a></h1>
 <p>The stress test tool is mostly for debug and development of netidx
 itself. The stress publisher publishes a configurably sized table, and
