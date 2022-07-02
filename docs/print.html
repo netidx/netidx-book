@@ -4022,6 +4022,18 @@ second argument, otherwise does not produce anything.</p>
 </code></pre>
 <p>Asks the user to confirm before writing the value of the variable
 <code>volume</code> to <code>[base]/volume</code>.</p>
+<h1 id="current_path"><a class="header" href="#current_path">current_path</a></h1>
+<pre><code>current_path()
+</code></pre>
+<p>Return the current path of the view in netidx (e.g. the .view netidx
+value), or nothing if the view is being loaded from a file. This is
+useful if you have an application that the view needs to interact
+with, and you want to make the view independent of where the
+application is published in netidx.</p>
+<pre><code>store(&quot;[current_path()]/play&quot;, event())
+</code></pre>
+<p>When the user clicks the play button, store <code>null</code> in <code>play</code> relative
+to wherever the application lives in netidx.</p>
 <h1 id="event-1"><a class="header" href="#event-1">event</a></h1>
 <pre><code>event()
 </code></pre>
@@ -4051,7 +4063,41 @@ argument. The syntax of a location is one of, </p>
 <p>e.g.</p>
 <pre><code>navigate(confirm(&quot;go to &quot;, &quot;file:[next_view]&quot;))
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="bscript-reference-container"><a class="header" href="#bscript-reference-container">BScript Reference Container</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><p>Container server specific bscript functions. These are only definied in the container.</p>
+<h1 id="event-2"><a class="header" href="#event-2">event</a></h1>
+<pre><code>event()
+</code></pre>
+<p>When placed in an on_write formula, event produces the value that the
+user wrote. The final value of the formula becomes the value that is
+actually saved.</p>
+<pre><code>filter_err(sum(ref(rel(1)), event()))
+</code></pre>
+<p>Sum the user's input with the column to the right to produce the final
+saved value, but filter out errors in case the user tries to write a
+non numeric value.</p>
+<h1 id="ref"><a class="header" href="#ref">ref</a></h1>
+<pre><code>ref(path: Expr)
+</code></pre>
+<p>This is equivelent to <code>load(path)</code>, however it is vastly more
+efficient. It only works for paths published by the same container
+server as is running the formula containg <code>ref</code>.</p>
+<pre><code>ref(&quot;/container/sheet0/0000/001&quot;)
+</code></pre>
+<h1 id="rel"><a class="header" href="#rel">rel</a></h1>
+<pre><code>rel()
+rel(col: Expr)
+rel(row: Expr, col: Expr)
+</code></pre>
+<p>Return the path of a cell relative to the position of the cell <code>rel</code>
+is in. In the first form <code>rel()</code>, the path of the current cell will be
+returned. In the second form <code>rel(col)</code>, the path to a cell in the
+same row, but a different column will be returned. In the third form
+<code>rel(row, col)</code>, the path to a cell in a different row and column will
+be returned. The <code>row</code> and <code>col</code> arguments must be integers between
+-255 and 255.</p>
+<pre><code>sum(1, ref(rel(-1)))
+</code></pre>
+<p>Add 1 to the value in the column to the left of this formula.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="higher-level-protocols-built-on-netidx"><a class="header" href="#higher-level-protocols-built-on-netidx">Higher Level Protocols Built on Netidx</a></h1>
 <p>Netidx is meant to be a building block out of which more complex
 things can be constructed.</p>

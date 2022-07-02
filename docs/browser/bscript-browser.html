@@ -160,6 +160,18 @@ second argument, otherwise does not produce anything.</p>
 </code></pre>
 <p>Asks the user to confirm before writing the value of the variable
 <code>volume</code> to <code>[base]/volume</code>.</p>
+<h1 id="current_path"><a class="header" href="#current_path">current_path</a></h1>
+<pre><code>current_path()
+</code></pre>
+<p>Return the current path of the view in netidx (e.g. the .view netidx
+value), or nothing if the view is being loaded from a file. This is
+useful if you have an application that the view needs to interact
+with, and you want to make the view independent of where the
+application is published in netidx.</p>
+<pre><code>store(&quot;[current_path()]/play&quot;, event())
+</code></pre>
+<p>When the user clicks the play button, store <code>null</code> in <code>play</code> relative
+to wherever the application lives in netidx.</p>
 <h1 id="event"><a class="header" href="#event">event</a></h1>
 <pre><code>event()
 </code></pre>
