@@ -1,260 +1,25 @@
-# Language Overview
+The standard bscript functions reference. These functions are
+available in all systems using bscript (currently the browser and the
+container server).
 
-The browser scripting language exists to glue the widgets in your gui
-to the inputs and outputs in netidx, and to compute your formulas in
-the container. If you're familiar with the model view controller gui
-paradigm, browser script is the controller layer. Because of it's
-purpose it works differently from most scripting languages, in that it
-is a 'reactive' or 'incremental' language. Instead of describing
-"steps the computer performs when I click the button" like most other
-languages, browser script describes the plumbing that events flow
-through on their way to their final destination.
-
-For example the event handler for a button might look like so,
+# after_idle
 ```
-store("[base]/app/do_action", event())
+after_idle(timeout: Expr, val: Expr)
 ```
 
-The store function writes it's 2nd argument to the netidx path
-specified by it's first argument. The event function produces a widget
-specific event, in this case it produces a Null whenever the button is
-clicked. The path argument is actually a string with an expression
-interpolation that will generate the path we will write to. So we can
-think of this expression as building an event pipeline that looks
-something like this,
+After idle sets a timer when `val` updates, when the timer expires it
+updates with the value produced by `val`. If `val` updates again
+before the timer expires, then the timer is reset. The timer is a
+number of seconds, fractional seconds are accepted, as well as
+durations.
 
 ```
-get(base) ------------1-> concat_string ---------
-                                ^                |
-                                |                |
-"/app/do_action" -------------2-                 1
-                                                 v
-event() -----------------------------------2-> store
+store("/foo", after_idle(0.8, event()))
 ```
 
-- When the button is clicked the `event()` node emits a `Null` which
-  is received by `store` and ultimately either written right away to
-  the path specified by store's first argument, or retained until
-  store's first argument is a valid path.
-- When the value of `base` is changed it's new value is emitted to
-  `concat_string`, which concatinates it with it's second argument (a
-  constant) and emits the result to store. Store will then either wait
-  for event to emit a value, or if event has already emitted a value
-  in the past then store will store that value to the new path it just
-  received.
+E.G, do the store only after the user has stopped typing for 800ms.
 
-# Compile Time vs Run Time
-
-When a view is first loaded all BScript expressions in it are compiled
-into event graphs like the one visualized above. From then on, as the
-view runs, events are generated and flow through the graphs, but no
-additional compilation takes place.
-
-The only exception to this rule is the `eval` function, which compiles
-and executes new BScript code on the fly from a string.
-
-Since all BScript expressions are compiled at view load time, if you
-write an expression that just immediatly does something, then whatever
-it does will happen when the view is loaded. That holds true no matter
-where you put it, e.g. say we put the following as the `enabled`
-expression of a toggle.
-
-`any(true, store("/foo/bar", 42))`
-
-Since `any` always returns the left most event it receives, it will
-evaluate to true, making the toggle enabled, however every time the
-view containing this expression is loaded `42` will also be stored at
-`/foo/bar`.
-
-It's important to understand these semantics if you want to write more
-complex applications using BScript. The bscript widget is an invisible
-widget specifically meant for setting up these "background" event
-graphs. For example, we might want to have a variable called `base`
-that contains the base relative to which our view will operate. We can
-easily reference this variable in all our widgets, and the correct way
-to set it's value would be to put it's initialization expression in a
-bscript widget. e.g.
-
-```
-base <- load("/where")
-```
-
-# Scope
-
-Bscipt variables are lexically scoped, both in terms of their lexical
-position in code, and the position of the widget they attach to, or in
-the case of the container their base path in netidx. Container widgets
-such as Box, Grid, Paned, etc introduce new scopes, so bscripts that
-are compiled in the context of these widgets may set local variables
-that are not visible above them. Local variable bindings are made
-using,
-
-```
-let var <- expr
-```
-
-This will bind a local variable `var` to `expr`in the current scope,
-or will assign to an already bound local variable in the current
-scope. If a variable of the same name exists in a parent scope, that
-variable will be shadowed in the current scope and below, but it's
-value will not be assigned, and it will remain unchanged in higher and
-sibling scopes.
-
-The bare assignment assigns to the variable in the closest scope with
-a matching name, and if there is no such vaiable, then it binds a
-global variable.
-
-```
-var <- expr
-```
-
-Either assigns to the local variable `var` in the current scope, or
-any parent scope, if it exists, or it binds `var` to `expr` in the
-global scope.
-
-The do expr, `{ expr; expr; ... }`, introduces a new lexical scope
-unless it is the toplevel do in a script expression. e.g.
-
-```
-{
-   let var <- expr;
-   ...
-}
-```
-
-`var` has the same scope as
-
-```
-let var <- expr
-```
-
-However,
-
-```
-{
-   ...;
-   {
-       let var <- expr;
-       ...
-   }
-   ...
-}
-```
-
-In this case the inner do expr introduces a new lexical scope, so
-`var` is only visible inside that scope and it's child scopes. You can
-think of this as each toplevel script expr allowing multiple
-statements at the top level. For code concision we are allowed to omit
-the curly braces when we only have one statement
-
-e.g. every toplevel bscript expression is implicitly,
-
-```
-{ expr }
-```
-
-but we can just write
-
-```
-expr
-```
-
-# Types and Constants
-
-Types in browser script correspond to the netidx value type, and are
-named,
-
-- u32: unsigned 4 byte integer
-- v32: unsigned leb128 encoded integer
-- i32: signed 4 byte integer
-- z32: signed leb128 zig-zag encoded integer
-- u64: unsigned 8 byte integer
-- v64: unsigned leb128 encoded integer
-- i64: signed 8 byte integer
-- z64: signed leb128 zig-zag encoded integer
-- f32: single precision floating point number
-- f64: double precision floating point number
-- bool: boolean
-- string: unicode string
-- bytes: byte array
-- array: an array of values (including arrays)
-- result: ok or error:description of error
-
-Constants may be prefixed with the type name followed by a colon, e.g.
-
-`f32:3.14`
-
-However constant expressions have a default type if none is specified,
-
-- floating point numbers: f64
-- integers: i64
-- strings: string
-- true/false: bool
-- ok: result
-
-e.g. `3.1415` is the same as `f64:3.1415`, and both forms will be
-accepted.
-
-Arrays may be specified with the syntax `[ expr, expr, ... ]`, where
-expr is a regular bscript expression. In the case that any of the
-expressions defining an array update, the entire array will be
-regenerated with the new value substituting for the old one.
-
-```
-[ load("/foo"), load("/bar") ]
-```
-
-Will generate a new pair whenever either foo or bar update.
-
-# Expression Interpolation
-
-In a string literal you may substitute any number of expressions by
-surrounding them with `[]`. To produce a literal `[` or `]` you must
-escape them with `\`, e.g. `\[` and `\]`. To produce a literal `\` you
-may escape it as well, e.g. `\\`. Any expression is a valid
-interpolation (including another interpolation). Non string valued
-expressions will be cast to strings, and any expression that cannot be
-cast to a string will be replaced with the empty string.
-
-e.g.
-```
-"[base]/some/path" => string_concat(get("base"), "/some/path")
-```
-
-```
-"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing" => 
-string_concat(
-    get("base"),
-    "/bar/",
-    if(
-        load(string_concat(get("base"), "/enabled")),
-        "enabled",
-        "disabled"
-    ),
-    "/thing"
-)
-```
-
-# The Expression Inspector
-
-The expression inspector shows a tree representation of a BScript
-expression in it's first column, and the current value of the
-corresponding expression in it's second.
-
-![Expression Inspector](./expression-inspector.png)
-
-In this case the expression being inspected is,
-
-```
-base <- "[archive_base]/[sessionid]/data"
-``` 
-
-You can access the expression inspector by pressing the toggle button
-to the right of the expression box.
-
-# Reference
-
-## all
+# all
 
 ```
 all(Expr, ..., Expr)
@@ -269,7 +34,7 @@ all(11, load("/volume"))
 
 Will produce 11 only when `/volume` is 11.
 
-## and
+# and
 
 ```
 and(Expr, ..., Expr)
@@ -284,7 +49,7 @@ and(load("/cake"), load("/diet"))
 
 Would produce false.
 
-## any
+# any
 
 ```
 any(Expr, ..., Expr)
@@ -307,7 +72,21 @@ mean(any(load("/bench/0/0"), load("/bench/0/1")))
 Will produce the average of the values of `/bench/0/0` and
 `/bench/0/1`.
 
-## call
+# array
+```
+array(Expr, Expr, ...)
+[ Expr, Expr, ... ]
+```
+
+Construct an array from the values of the specified expressions. If
+anyof the expressions update, a new array will be constructed with the
+updated values.
+
+```
+
+```
+
+# call
 
 ```
 call(rpc: Expr, Expr, ..., Expr)
@@ -335,7 +114,7 @@ call `/solar/archive/session` with arguments to replay the last 10
 days, starting 2 seconds after the call finishes, at unlimited speed,
 and store the resulting session id in the variable sessionid.
 
-## cast
+# cast
 
 ```
 cast(Expr, Expr)
@@ -352,7 +131,7 @@ cast("f32", load("/volume"))
 
 Changes volume into a single precision float if possible.
 
-## cmp
+# cmp
 
 ```
 cmp(Expr, Expr, Expr)
@@ -375,7 +154,7 @@ cmp("lt", load("/volume"), 11)
 
 is true if the volume is less than 11, false otherwise.
 
-## confirm
+# confirm
 
 ```
 confirm(msg: Expr, val: Expr)
@@ -398,7 +177,7 @@ store(
 Asks the user to confirm before writing the value of the variable
 `volume` to `[base]/volume`.
 
-## contains
+# contains
 
 ```
 contains(sub: Expr, string: Expr)
@@ -414,7 +193,7 @@ contains("bar", "foobarbaz")
 
 is true
 
-## count
+# count
 
 ```
 count(Expr)
@@ -430,7 +209,7 @@ count(load("/volume"))
 
 will increment every time volume changes.
 
-## divide
+# divide
 
 ```
 divide(Expr, Expr, ..., Expr)
@@ -445,7 +224,7 @@ divide(load("/volume"), 2, load("/additional_divisor"))
 First divides `"/volume"` by 2 and then divides it by
 "/additional_divisor".
 
-## do
+# do
 
 ```
 do(Expr, ..., Expr)
@@ -469,7 +248,7 @@ e.g.
 evaluates to "Hello world!", but also sets the variable "foo", and
 stores it's value to "/tmp/foo".
 
-## ends_with
+# ends_with
 
 ```
 ends_with(Expr, Expr)
@@ -486,7 +265,7 @@ ends_with("hello", "hello world")
 
 The first ends_with is true, and the second one is false
 
-## eval
+# eval
 
 ```
 eval(Expr)
@@ -502,7 +281,7 @@ eval(load("[base]/program"))
 
 Load and execute browser script from `[base]/program`.
 
-## event
+# event
 
 ```
 event()
@@ -525,7 +304,7 @@ store("/text", event())
 When attached to the `on_change` event of an entry would write the
 text to `/text` every time the user changes it.
 
-## filter
+# filter
 
 ```
 filter(predicate: Expr, Expr)
@@ -544,7 +323,7 @@ filter(load("[enabled]"), load("[thing]"))
 
 Passes on updates to "[thing]" only if "[enabled]" is true
 
-## if
+# if
 
 ```
 if(Expr, Expr, [Expr])
@@ -573,7 +352,7 @@ if(cmp("eq", 11, load("/volume")), "huzzah!")
 
 Produces `"huzzah!"` if `/volume` is `11`, otherwise nothing.
 
-## isa
+# isa
 
 ```
 isa(Expr, Expr)
@@ -589,7 +368,7 @@ isa("f32", 10)
 
 would produce false.
 
-## is_error
+# is_error
 
 ```
 is_error(Expr)
@@ -608,7 +387,7 @@ do(
 if load("/tmp/thing") fails then evaluate to "#REF" otherwise to the
 value of load("/tmp/thing").
 
-## load
+# load
 
 ```
 load(Expr)
@@ -623,7 +402,7 @@ load("/some/path/in/netidx")
 load("[base]/thing")
 ```
 
-## get
+# get
 
 ```
 get(var: Expr)
@@ -634,7 +413,7 @@ Produce the value of the variable specified by var, or an error if var
 is not a valid variable name. The second form is syntactic sugar that
 translates into `get("var")`.
 
-## max
+# max
 
 ```
 max(Expr, ..., Expr)
@@ -650,7 +429,7 @@ max(5, load("/volume"))
 produces the value of "/volume" if it is greater than 5, otherwise it
 produces 5.
 
-## mean
+# mean
 
 ```
 mean(Expr)
@@ -665,7 +444,7 @@ mean(load("/volume"))
 
 Produce the average volume over the observed time period.
 
-## min
+# min
 
 ```
 min(Expr, ..., Expr)
@@ -681,7 +460,7 @@ min(42, load("/volume"))
 produces the value of `"/volume"` if it is less than 42, otherwise it
 produces 42.
 
-## navigate
+# navigate
 
 ```
 navigate(Expr)
@@ -699,7 +478,7 @@ e.g.
 navigate(confirm("go to ", "file:[next_view]"))
 ```
 
-## not
+# not
 
 ```
 not(Expr)
@@ -715,7 +494,7 @@ not(load("/solar/control/charging"))
 
 true if the battery is not charging.
 
-## or
+# or
 
 ```
 or(Expr, ..., Expr)
@@ -730,7 +509,7 @@ or(load("/cake"), load("/death"))
 
 Would produce true.
 
-## product
+# product
 
 ```
 product(Expr, ..., Expr)
@@ -743,7 +522,7 @@ e.g.
 product(2, 2)
 ```
 
-## replace
+# replace
 
 ```
 replace(pat: Expr, replacement: Expr, val: Expr)
@@ -759,7 +538,7 @@ replace("foo", "bar", "foobarbaz")
 
 evaluates to "barbarbaz"
 
-## sample
+# sample
 
 ```
 sample(Expr, Expr)
@@ -775,7 +554,7 @@ sample(load("[base]/timestamp"), load("[base]/voltage"))
 
 Produces `[base]/voltage` whenever `[base]/timestamp` updates.
 
-## starts_with
+# starts_with
 
 ```
 starts_with(pat: Expr, val: Expr)
@@ -791,7 +570,7 @@ starts_with("Hello", "Hello World!")
 
 evaluates to true
 
-## store
+# store
 
 ```
 store(path: Expr, val: Expr)
@@ -812,7 +591,7 @@ store("/tmp/thing", 42)
 
 write 42 to /tmp/thing
 
-## set
+# set
 
 ```
 set(name: Expr, val: Expr)
@@ -832,7 +611,7 @@ e.g.
 set("volume", cast("f32", event()))
 ```
 
-## let
+# let
 
 ```
 let(name: Expr, val: Expr)
@@ -857,7 +636,7 @@ e.g.
 } # evals to 42
 ```
 
-## string_concat
+# string_concat
 
 ```
 string_concat(Expr, ..., Expr)
@@ -874,7 +653,7 @@ string_concat(load("/foo"), load("/bar"), "baz")
 is the same as writing `"[load("/foo")][load("/bar")]baz"`. And in
 fact string interpolations are just syntactic sugar for this function.
 
-## string_join
+# string_join
 
 ```
 string_join(sep: Expr, ..., Expr)
@@ -891,7 +670,7 @@ string_join("/", base, "foo", "bar")
 
 is the same a writing `"[base]/foo/bar"`
 
-## strip_prefix
+# strip_prefix
 
 ```
 strip_prefix(pfx: Expr, val: Expr)
@@ -907,7 +686,7 @@ strip_prefix("Hello ", "Hello World!")
 
 evaluates to "World!"
 
-## strip_suffix
+# strip_suffix
 
 ```
 strip_suffix(sfx: Expr, val: Expr)
@@ -923,7 +702,7 @@ strip_suffix(" World!", "Hello World!")
 
 evaluates to "Hello"
 
-## sum
+# sum
 
 ```
 sum(Expr, ..., Expr)
@@ -938,7 +717,7 @@ sum(load("/offset"), load("/random"))
 
 sums `/offset` and `/random`
 
-## trim_end
+# trim_end
 
 ```
 trim_end(Expr)
@@ -954,7 +733,7 @@ trim_end("123456   ")
 
 evaluates to "123456"
 
-## trim
+# trim
 
 ```
 trim(Expr)
@@ -970,7 +749,7 @@ trim(" aaaaaaaaahhhg  ")
 
 evaluates to "aaaaaaaaahhhg"
 
-## trim_start
+# trim_start
 
 ```
 trim_start(Expr)
@@ -986,7 +765,7 @@ trim_start("   123456")
 
 evaluates to "123456"
 
-## uniq
+# uniq
 
 ```
 uniq(Expr)
