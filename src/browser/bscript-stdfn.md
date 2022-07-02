@@ -79,11 +79,28 @@ array(Expr, Expr, ...)
 ```
 
 Construct an array from the values of the specified expressions. If
-anyof the expressions update, a new array will be constructed with the
-updated values.
+any of the expressions update, a new array will be constructed with
+the updated values and the array function will update.
 
 ```
+[ load("/foo"), load("/bar") ]
+```
 
+Construct a pair from the values of "/foo" and "/bar", update the pair
+whenever either of those values changes.
+
+# basename
+```
+basename(path: Expr)
+```
+
+Return the base name, or file name, of the specified path as a
+string. If the argument is not a string return an error. If the path
+has no basename, or the string is not a path return `null`
+
+```
+basename("/foo/bar") => "bar"
+basename("/solar/stats/battery_sense_voltage") => "battery_sense_voltage"
 ```
 
 # call
@@ -153,29 +170,6 @@ cmp("lt", load("/volume"), 11)
 ```
 
 is true if the volume is less than 11, false otherwise.
-
-# confirm
-
-```
-confirm(msg: Expr, val: Expr)
-```
-
-Asks the user msg with val appended, and if they say yes produces it's
-second argument, otherwise does not produce anything.
-
-e.g.
-```
-store(
-  "[base]/volume", 
-  confirm(
-    "are you sure you want to change the volume to ", 
-    volume
-  )
-)
-```
-
-Asks the user to confirm before writing the value of the variable
-`volume` to `[base]/volume`.
 
 # contains
 
@@ -272,7 +266,12 @@ eval(Expr)
 ```
 
 Compiles and executes the browser script program specified by it's
-argument, or produces an error if the program is invalid.
+argument, or produces an error if the program is invalid. This will
+produce a node event graph that keeps running until the text of the
+code fed to eval changes, which will cause the new program to be
+evaluated. As such, once eval is successful for a specific program,
+that program will not be semantically distinguisible from bscript that
+is part of a view definition or in a container cell.
 
 e.g.
 ```
@@ -281,28 +280,19 @@ eval(load("[base]/program"))
 
 Load and execute browser script from `[base]/program`.
 
-# event
-
+# filter_err
 ```
-event()
-```
-
-Produces a widget specific event depending on which widget and which
-event handler the pipeline containing it is attached to. For example,
-when attached to an entry `on_change` handler it produces the string
-value of the entry whenever the user changes the text. When attached
-to the on_activate handler of the entry, it produces the string value
-of the entry when the user presses the Enter key. When attached to the
-`on_click` handler of a button, it produces Null every time the button
-is clicked.
-
-e.g.
-```
-store("/text", event())
+filter_err(Expr)
 ```
 
-When attached to the `on_change` event of an entry would write the
-text to `/text` every time the user changes it.
+Filters out errors in expr. This is equivelent to
+`filter(not(isa("error")), expr)`, but is more concise.
+
+```
+filter_err(load("/foo"))
+```
+
+get the non error values of `/foo`
 
 # filter
 
@@ -322,6 +312,17 @@ filter(load("[enabled]"), load("[thing]"))
 ```
 
 Passes on updates to "[thing]" only if "[enabled]" is true
+
+# get
+
+```
+get(var: Expr)
+var
+```
+
+Produce the value of the variable specified by var, or an error if var
+is not a valid variable name. The second form is syntactic sugar that
+translates into `get("var")`.
 
 # if
 
@@ -351,6 +352,19 @@ if(cmp("eq", 11, load("/volume")), "huzzah!")
 ```
 
 Produces `"huzzah!"` if `/volume` is `11`, otherwise nothing.
+
+# index
+```
+index(array: Expr, index: Expr)
+```
+
+returns the zero based indexed element from the specified
+array. Returns an error if it's first argument isn't an array, or if
+the index is out of bounds.
+
+```
+index([1, 2, 5], 2) => 5
+```
 
 # isa
 
@@ -402,17 +416,6 @@ load("/some/path/in/netidx")
 load("[base]/thing")
 ```
 
-# get
-
-```
-get(var: Expr)
-var
-```
-
-Produce the value of the variable specified by var, or an error if var
-is not a valid variable name. The second form is syntactic sugar that
-translates into `get("var")`.
-
 # max
 
 ```
@@ -460,24 +463,6 @@ min(42, load("/volume"))
 produces the value of `"/volume"` if it is less than 42, otherwise it
 produces 42.
 
-# navigate
-
-```
-navigate(Expr)
-```
-
-Navigate the browser to the location specified by it's first
-argument. The syntax of a location is one of, 
-
-- a valid absolute netidx path, e.g. /foo/bar/baz
-- a view file e.g. file:/path/to/view/file
-- a netidx: prefixed netidx path, e.g. netidx:/foo/bar/baz
-
-e.g.
-```
-navigate(confirm("go to ", "file:[next_view]"))
-```
-
 # not
 
 ```
@@ -493,6 +478,19 @@ not(load("/solar/control/charging"))
 ```
 
 true if the battery is not charging.
+
+# once
+```
+once(Expr)
+```
+
+Returns the value of expr one time. Ignores subsuquent updates.
+
+```
+let foo <- once(filter_err(load("/foo")))
+```
+
+Save a snapshot of the first non error value of `/foo`.
 
 # or
 
@@ -554,6 +552,26 @@ sample(load("[base]/timestamp"), load("[base]/voltage"))
 
 Produces `[base]/voltage` whenever `[base]/timestamp` updates.
 
+# set
+
+```
+set(name: Expr, val: Expr)
+name <- val
+```
+
+Store the value of val in the variable specified by name. Return
+nothing, or an error if name is not a valid variable name. Set will
+set the variable defined in the lexical scope closest to it. If the
+variable is not defined yet, then set will set it in the global
+scope. The second form is a more consise syntax for the first, however
+it is less powerful, as name must be a literal name and may not be an
+expression.
+
+e.g.
+```
+set("volume", cast("f32", event()))
+```
+
 # starts_with
 
 ```
@@ -590,26 +608,6 @@ store("/tmp/thing", 42)
 ```
 
 write 42 to /tmp/thing
-
-# set
-
-```
-set(name: Expr, val: Expr)
-name <- val
-```
-
-Store the value of val in the variable specified by name. Return
-nothing, or an error if name is not a valid variable name. Set will
-set the variable defined in the lexical scope closest to it. If the
-variable is not defined yet, then set will set it in the global
-scope. The second form is a more consise syntax for the first, however
-it is less powerful, as name must be a literal name and may not be an
-expression.
-
-e.g.
-```
-set("volume", cast("f32", event()))
-```
 
 # let
 
@@ -716,6 +714,24 @@ sum(load("/offset"), load("/random"))
 ```
 
 sums `/offset` and `/random`
+
+# timer
+```
+timer(duration: Expr, repeat: Expr)
+```
+
+Set a timer, which will update after `duration` seconds has
+elapsed. If repeat is true, the timer will continue to update every
+`duration` seconds forever. If repeat is a number `n`, then the timer
+will repeat `n` times. If repeat is `false`, then the timer will
+update just once.
+
+```
+store("/foo/bar", sample(timer(0.5, true), v))
+```
+
+Store the value of v to `/foo/bar` twice per second even if it didn't
+change.
 
 # trim_end
 
