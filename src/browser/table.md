@@ -14,24 +14,25 @@ combo boxes in cells. Table has many bscript properties,
 
   ```
   (null | false | external | <column> | spec)
-   external: [false, spec]
+   external: [false, [spec, ...]]
    spec: [<column>, ("ascending" | "descending")]
   ```
 
   - null: no default sort. Sorting is processed within the browser and
-is under the control of the user. Click events will also be generated
-when the user clicks on the header button, see on_header_click.
+    is under the control of the user. Click events will also be
+    generated when the user clicks on the header button, see
+    `on_header_click`.
   - false: sorting within the browser is disabled, but click events
-will still be generated when the user clicks on the header
-buttons. These events could be used to trigger publisher side sorting,
-or any other desired action. See, on_header_click.
+    will still be generated when the user clicks on the header
+    buttons. These events could be used to trigger publisher side
+    sorting, or any other desired action. See, `on_header_click`.
   - external: just like `false`, however sort indicators will be shown
-as specified by the indicator spec. Use this if you implement sorting
-in the publisher, but want to give the user feedback about what is
-sorted.
-  - <column>: by default sort by <column> in descending order. Sorting
-is processed within the browser and is under the user's control. Click
-events will also be generated when the user clicks on the header
-button, see on_header_click.
+    as specified by the indicator spec. Use this if you implement
+    sorting in the publisher, but want to give the user feedback about
+    what is sorted.
+  - `<column>`: by default sort by `<column>` in descending
+    order. Sorting is processed within the browser and is under the
+    user's control. Click events will also be generated when the user
+    clicks on the header button, see `on_header_click`.
   - spec: Same as column, except the sort direction is explicitly
     specified.

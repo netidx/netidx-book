@@ -157,25 +157,26 @@ it updates to a new path then the table will redraw that new path.</p>
 <li>
 <p>sort mode: This defines how sorting is done. It has the form, </p>
 <pre><code>(null | false | external | &lt;column&gt; | spec)
-external: [false, spec]
-spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+ external: [false, [spec, ...]]
+ spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
 </code></pre>
 <ul>
 <li>null: no default sort. Sorting is processed within the browser and
-is under the control of the user. Click events will also be generated
-when the user clicks on the header button, see on_header_click.</li>
+is under the control of the user. Click events will also be
+generated when the user clicks on the header button, see
+<code>on_header_click</code>.</li>
 <li>false: sorting within the browser is disabled, but click events
 will still be generated when the user clicks on the header
-buttons. These events could be used to trigger publisher side sorting,
-or any other desired action. See, on_header_click.</li>
+buttons. These events could be used to trigger publisher side
+sorting, or any other desired action. See, <code>on_header_click</code>.</li>
 <li>external: just like <code>false</code>, however sort indicators will be shown
-as specified by the indicator spec. Use this if you implement sorting
-in the publisher, but want to give the user feedback about what is
-sorted.</li>
-<li><column>: by default sort by <column> in descending order. Sorting
-is processed within the browser and is under the user's control. Click
-events will also be generated when the user clicks on the header
-button, see on_header_click.</li>
+as specified by the indicator spec. Use this if you implement
+sorting in the publisher, but want to give the user feedback about
+what is sorted.</li>
+<li><code>&lt;column&gt;</code>: by default sort by <code>&lt;column&gt;</code> in descending
+order. Sorting is processed within the browser and is under the
+user's control. Click events will also be generated when the user
+clicks on the header button, see <code>on_header_click</code>.</li>
 <li>spec: Same as column, except the sort direction is explicitly
 specified.</li>
 </ul>
