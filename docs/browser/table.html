@@ -143,6 +143,44 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="table"><a class="header" href="#table">Table</a></h1>
+<p><img src="./widget-table.png" alt="Table" /></p>
+<p>The table widget is used for displaying tabular data from netidx. It
+is quite flexable, with many bscript properties, so it can be used for
+many purposes such as lists. It supports direct editing, mediated by
+bscript, and it can even display images, checkboxes, spin buttons, and
+combo boxes in cells. Table has many bscript properties,</p>
+<ul>
+<li>
+<p>path: The path to the data to be displayed. This is bscript, so if
+it updates to a new path then the table will redraw that new path.</p>
+</li>
+<li>
+<p>sort mode: This defines how sorting is done. It has the form, </p>
+<pre><code>(null | false | external | &lt;column&gt; | spec)
+external: [false, spec]
+spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+</code></pre>
+<ul>
+<li>null: no default sort. Sorting is processed within the browser and
+is under the control of the user. Click events will also be generated
+when the user clicks on the header button, see on_header_click.</li>
+<li>false: sorting within the browser is disabled, but click events
+will still be generated when the user clicks on the header
+buttons. These events could be used to trigger publisher side sorting,
+or any other desired action. See, on_header_click.</li>
+<li>external: just like <code>false</code>, however sort indicators will be shown
+as specified by the indicator spec. Use this if you implement sorting
+in the publisher, but want to give the user feedback about what is
+sorted.</li>
+<li><column>: by default sort by <column> in descending order. Sorting
+is processed within the browser and is under the user's control. Click
+events will also be generated when the user clicks on the header
+button, see on_header_click.</li>
+<li>spec: Same as column, except the sort direction is explicitly
+specified.</li>
+</ul>
+</li>
+</ul>
 
                     </main>
 

@@ -143,6 +143,34 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="grid"><a class="header" href="#grid">Grid</a></h1>
+<p><img src="./widget-grid.png" alt="Grid" /></p>
+<p>The Grid widget allows you to layout widgets in a 2d grid. By default,
+grid will make a row for each of it's children. However if the child
+is a GridRow widget, then it's children will become
+columns. Individual grid children may be configured with additional
+parameters by placing them under GridChild widgets. This is a little
+complex, but with it you can get a lot of control over your
+layouts. The GridChild widget can tell the grid that a given widget
+should be more than 1 columns wide, or more than 1 rows tall. GridRows
+can be arranged to precisely define the rows and columns of the
+widget, and you can see the layout change as you drag and drop widgets
+around in the tree. The Grid widget supports the following static properties,</p>
+<ul>
+<li>homogeneous columns: If checked then all widgets in all columns are
+forced to be the same width.</li>
+<li>homogeneous rows: If checked then all widgets in all columns are
+forced to be the same height.</li>
+<li>column spacing: How much empty space to leave between each column</li>
+<li>row spacing: How much empty space to leave between each row</li>
+</ul>
+<p>The GridChild widget supports the following static properties,</p>
+<ul>
+<li>width: The width, in columns, of this widget</li>
+<li>height: The height, in rows, of this widget</li>
+</ul>
+<p>The GridRow widget is just a marker widget, it doesn't support any
+properties.</p>
+<p><img src="./editor-grid.png" alt="Grid Editor" /></p>
 
                     </main>
 

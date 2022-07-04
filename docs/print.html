@@ -3025,11 +3025,148 @@ take bscript expressions instead of static values, these are</p>
 the gui will change.</p>
 <p><img src="browser/./widget-common.png" alt="Common Properties" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="frame"><a class="header" href="#frame">Frame</a></h1>
+<p><img src="browser/./widget-frame.png" alt="Frame" /></p>
+<p>The frame widget draws a frame around it's child widget, with an
+optional label. It supports the following static layout parameters,</p>
+<ul>
+<li>label horizontal alignment: a floating point number between 0 and 1
+that controls the horizontal placement of the label, with 0 being
+the left and 1 being the right.</li>
+<li>label vertical alignment: a floating point number between 0 and 1
+that controls the label's placement relative to the upper line of
+the frame box. 0 being fully below the line, and 1 being fully above
+the line.</li>
+</ul>
+<p>Frame also supports the following bscript parameters,</p>
+<ul>
+<li>label: The text of the label. If this is not a string then no label
+will be drawn.</li>
+</ul>
+<p><img src="browser/./editor-frame.png" alt="Frame Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="box"><a class="header" href="#box">Box</a></h1>
+<p><img src="browser/./widget-box.png" alt="Box" /></p>
+<p>The box widget arranges it's child widgets either vertically or
+horizontally. Box is one of the basic primitives of layout in the
+browser. It supports the following static parameters,</p>
+<ul>
+<li>direction: either vertical or horizontal.</li>
+<li>homogeneous: if checked then the box will force all it's children to
+be the same size.</li>
+<li>spacing: how much empty space to include between each child widget.</li>
+</ul>
+<p>Boxes can be nested to achieve various layout effects.</p>
+<p><img src="browser/./editor-box.png" alt="Box Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="grid"><a class="header" href="#grid">Grid</a></h1>
+<p><img src="browser/./widget-grid.png" alt="Grid" /></p>
+<p>The Grid widget allows you to layout widgets in a 2d grid. By default,
+grid will make a row for each of it's children. However if the child
+is a GridRow widget, then it's children will become
+columns. Individual grid children may be configured with additional
+parameters by placing them under GridChild widgets. This is a little
+complex, but with it you can get a lot of control over your
+layouts. The GridChild widget can tell the grid that a given widget
+should be more than 1 columns wide, or more than 1 rows tall. GridRows
+can be arranged to precisely define the rows and columns of the
+widget, and you can see the layout change as you drag and drop widgets
+around in the tree. The Grid widget supports the following static properties,</p>
+<ul>
+<li>homogeneous columns: If checked then all widgets in all columns are
+forced to be the same width.</li>
+<li>homogeneous rows: If checked then all widgets in all columns are
+forced to be the same height.</li>
+<li>column spacing: How much empty space to leave between each column</li>
+<li>row spacing: How much empty space to leave between each row</li>
+</ul>
+<p>The GridChild widget supports the following static properties,</p>
+<ul>
+<li>width: The width, in columns, of this widget</li>
+<li>height: The height, in rows, of this widget</li>
+</ul>
+<p>The GridRow widget is just a marker widget, it doesn't support any
+properties.</p>
+<p><img src="browser/./editor-grid.png" alt="Grid Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="paned"><a class="header" href="#paned">Paned</a></h1>
+<p><img src="browser/./widget-paned.png" alt="Paned" /></p>
+<p>The paned widget creates two user resizable sub regions of the
+space. The division can be either vertical or horizontal. The Paned
+widget supports the following properties,</p>
+<ul>
+<li>direction: either vertical or horizontal.</li>
+<li>wide handle: if checked the handles will be wider than the default</li>
+</ul>
+<p><img src="browser/./editor-paned.png" alt="Paned Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="notebook"><a class="header" href="#notebook">Notebook</a></h1>
+<p><img src="browser/./widget-notebook.png" alt="Notebook" /></p>
+<p>The notebook widget allows you to create essentailly a tabbed set of
+windows that the user can select, or that you can select with
+bscript. It supports the following static properties,</p>
+<ul>
+<li>position: The position of the tabs, top, left, bottom, or right.</li>
+<li>tabs visible: If this is not checked then the tabs won't be visible,
+bscript will be the only way to switch tabs.</li>
+<li>tabs scrollable: If you have too many tabs to fit on the screen
+checking this will make them scrollable.</li>
+<li>tabs have popup menu: If you have too many tabs to fit on the screen
+checking this will make a popup menu so the user can still select
+the tabs that don't fit.</li>
+</ul>
+<p>As well as static properties the notebook widget also has bscript
+properties,</p>
+<ul>
+<li>page: the 0 indexed page that is currently selected in the
+notebook. When this updates the notebook will change which page is
+shown.</li>
+<li>on switch page: event() will yield the 0 indexed page that the
+notebook is currently displaying. That is, event() will update when
+the page changes.</li>
+</ul>
+<p>The NotebookPage widget can be placed under the notebook in order to
+configure properties of each page. It has the following static properties,</p>
+<ul>
+<li>tab label: the name of the page that is displayed to the user</li>
+<li>reorderable: if checked then the user can reorder the pages by
+dragging them.</li>
+</ul>
+<p><img src="browser/./editor-notebook.png" alt="Notebook Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="table-1"><a class="header" href="#table-1">Table</a></h1>
+<p><img src="browser/./widget-table.png" alt="Table" /></p>
+<p>The table widget is used for displaying tabular data from netidx. It
+is quite flexable, with many bscript properties, so it can be used for
+many purposes such as lists. It supports direct editing, mediated by
+bscript, and it can even display images, checkboxes, spin buttons, and
+combo boxes in cells. Table has many bscript properties,</p>
+<ul>
+<li>
+<p>path: The path to the data to be displayed. This is bscript, so if
+it updates to a new path then the table will redraw that new path.</p>
+</li>
+<li>
+<p>sort mode: This defines how sorting is done. It has the form, </p>
+<pre><code>(null | false | external | &lt;column&gt; | spec)
+external: [false, spec]
+spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+</code></pre>
+<ul>
+<li>null: no default sort. Sorting is processed within the browser and
+is under the control of the user. Click events will also be generated
+when the user clicks on the header button, see on_header_click.</li>
+<li>false: sorting within the browser is disabled, but click events
+will still be generated when the user clicks on the header
+buttons. These events could be used to trigger publisher side sorting,
+or any other desired action. See, on_header_click.</li>
+<li>external: just like <code>false</code>, however sort indicators will be shown
+as specified by the indicator spec. Use this if you implement sorting
+in the publisher, but want to give the user feedback about what is
+sorted.</li>
+<li><column>: by default sort by <column> in descending order. Sorting
+is processed within the browser and is under the user's control. Click
+events will also be generated when the user clicks on the header
+button, see on_header_click.</li>
+<li>spec: Same as column, except the sort direction is explicitly
+specified.</li>
+</ul>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="image"><a class="header" href="#image">Image</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="label"><a class="header" href="#label">Label</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="button"><a class="header" href="#button">Button</a></h1>
