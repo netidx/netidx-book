@@ -29,10 +29,29 @@ combo boxes in cells. Table has many bscript properties,
   - external: just like `false`, however sort indicators will be shown
     as specified by the indicator spec. Use this if you implement
     sorting in the publisher, but want to give the user feedback about
-    what is sorted.
+    what is sorted. Example,
+    
+    `[false, [["artist", "descending"], ["album", "descending"]]]`
+    
+    Indicates that sorting is happening on the publisher side, but the
+    indicators should be show on the artist and album columns.
   - `<column>`: by default sort by `<column>` in descending
     order. Sorting is processed within the browser and is under the
     user's control. Click events will also be generated when the user
-    clicks on the header button, see `on_header_click`.
+    clicks on the header button, see `on_header_click`. Example,
+    
+    `"artist"`
+    
+    sort by the artist column descending
+    
   - spec: Same as column, except the sort direction is explicitly
-    specified.
+    specified. Example,
+
+      `["artist", "ascending"]`
+    
+      sort by the artist column ascending
+- selection mode: "single", "multi", or "none"
+  - "single": The user can only select 1 cell at a time
+  - "multi": The user can select multiple cells by holding shift while
+    clicking or arrowing.
+  - "none": The user can't select cells
