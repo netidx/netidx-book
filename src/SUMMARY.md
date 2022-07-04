@@ -37,7 +37,6 @@
     - [Link Button](./browser/link_button.md)
     - [Switch](./browser/switch.md)
     - [Toggle Button](./browser/toggle_button.md)
-    - [Spin Button](./browser/spin_button.md)
     - [Combo Box](./browser/combo_box.md)
     - [Radio Button](./browser/radio_button.md)
     - [Entry](./browser/entry.md)
