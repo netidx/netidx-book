@@ -143,6 +143,21 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="switch"><a class="header" href="#switch">Switch</a></h1>
+<p><img src="./widget-switch.png" alt="Switch" /></p>
+<p>Switch draws a physically inspired switch. The user can toggle the
+switch by clicking it, however it's state is controlled by bscript. It
+has two bscript properties,</p>
+<ul>
+<li>Value: The value of the switch. If this is any value except <code>false</code>
+or <code>null</code> then the switch is on. If it is <code>false</code> or <code>null</code> then the
+switch is off.</li>
+<li>On Change: <code>event()</code> in this expression will yield the new requested
+state of the switch as a bool. <code>false</code> for off <code>true</code> for on. This
+handler has no direct effect on the state of the switch, instead the
+value should be stored such that the Value expression updates with
+the new state.</li>
+</ul>
+<p><img src="./editor-switch.png" alt="Switch Editor" /></p>
 
                     </main>
 

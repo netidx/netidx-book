@@ -143,6 +143,32 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="combo-box"><a class="header" href="#combo-box">Combo Box</a></h1>
+<p><img src="./widget-combobox.png" alt="Combo Box" /></p>
+<p>The combo box widget allows the user to pick from a list of values. It
+has 3 bscript properties,</p>
+<ul>
+<li>
+<p>Choices: The list of allowed choices. This is a list of pairs. The
+first element of each pair is the string that will be sent by the
+<code>event()</code> function when the user selects the choice, and the second
+is the text that will be shown to the user.</p>
+<p>Example</p>
+<p><code>[[&quot;1&quot;, &quot;One&quot;], [&quot;2&quot;, &quot;Two&quot;]]</code></p>
+<p>The combo box will have allowed choices &quot;One&quot; and &quot;Two&quot;.</p>
+</li>
+<li>
+<p>Selected: This expression should resolve to one of the allowed
+choices. It controls what is displayed as selected in the combo
+box. Even if the user makes a different selection, if this property
+doesn't update the selected item won't change.</p>
+</li>
+<li>
+<p>On Change: <code>event()</code> in this expression will yield the key of the
+item the user has selected. The handler should arrange to update the
+selected property to reflect the user's change.</p>
+</li>
+</ul>
+<p><img src="./editor-combobox.png" alt="Combo editor" /></p>
 
                     </main>
 

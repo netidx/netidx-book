@@ -3642,9 +3642,82 @@ will be invoked.</p>
 </ul>
 <p><img src="browser/./editor-link-button.png" alt="Link Button Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="switch"><a class="header" href="#switch">Switch</a></h1>
+<p><img src="browser/./widget-switch.png" alt="Switch" /></p>
+<p>Switch draws a physically inspired switch. The user can toggle the
+switch by clicking it, however it's state is controlled by bscript. It
+has two bscript properties,</p>
+<ul>
+<li>Value: The value of the switch. If this is any value except <code>false</code>
+or <code>null</code> then the switch is on. If it is <code>false</code> or <code>null</code> then the
+switch is off.</li>
+<li>On Change: <code>event()</code> in this expression will yield the new requested
+state of the switch as a bool. <code>false</code> for off <code>true</code> for on. This
+handler has no direct effect on the state of the switch, instead the
+value should be stored such that the Value expression updates with
+the new state.</li>
+</ul>
+<p><img src="browser/./editor-switch.png" alt="Switch Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="toggle-button"><a class="header" href="#toggle-button">Toggle Button</a></h1>
+<p><img src="browser/./widget-toggle-button.png" alt="Toggle Button" /></p>
+<p>Toggle button is like a switch, it can be pushed in or out. It's state
+is controlled by bscript. It has 4 bscript properties,</p>
+<ul>
+<li>Value: Whether the button is in or out. If <code>true</code> the button is in,
+if <code>false</code> the button is out.</li>
+<li>On Change: <code>event()</code> will yield the new requested state of the
+button. <code>true</code> for in, <code>false</code> for out.</li>
+<li>Label: The text displayed in the button</li>
+<li>Image: The image displayed in the button. This uses the same format
+as the image widget's spec property. If both text and image are
+valid then the button will have both an image and text.</li>
+</ul>
+<p><img src="browser/./editor-toggle-button.png" alt="Toggle Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="combo-box"><a class="header" href="#combo-box">Combo Box</a></h1>
+<p><img src="browser/./widget-combobox.png" alt="Combo Box" /></p>
+<p>The combo box widget allows the user to pick from a list of values. It
+has 3 bscript properties,</p>
+<ul>
+<li>
+<p>Choices: The list of allowed choices. This is a list of pairs. The
+first element of each pair is the string that will be sent by the
+<code>event()</code> function when the user selects the choice, and the second
+is the text that will be shown to the user.</p>
+<p>Example</p>
+<p><code>[[&quot;1&quot;, &quot;One&quot;], [&quot;2&quot;, &quot;Two&quot;]]</code></p>
+<p>The combo box will have allowed choices &quot;One&quot; and &quot;Two&quot;.</p>
+</li>
+<li>
+<p>Selected: This expression should resolve to one of the allowed
+choices. It controls what is displayed as selected in the combo
+box. Even if the user makes a different selection, if this property
+doesn't update the selected item won't change.</p>
+</li>
+<li>
+<p>On Change: <code>event()</code> in this expression will yield the key of the
+item the user has selected. The handler should arrange to update the
+selected property to reflect the user's change.</p>
+</li>
+</ul>
+<p><img src="browser/./editor-combobox.png" alt="Combo editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="radio-button"><a class="header" href="#radio-button">Radio Button</a></h1>
+<p><img src="browser/./widget-radio-button.png" alt="Radio Button" /></p>
+<p>Radio buttons allow another way of selecting between a set of
+options. Radio buttons are grouped together, and within each group
+only one radio button may be active at a time. Radio buttons have 4
+bscript properties,</p>
+<ul>
+<li>Label: The text shown to the right of the radio button.</li>
+<li>Image: The image shown to the right of the radio button. This uses
+the same format as the image widget's spec property. If both image
+and text are present then both will be shown.</li>
+<li>Group: The name of the group this radio button belongs to. Only one
+button in each group may be active at any one time. If the user
+selects a new button in a group then current active button will
+toggle off and the new one will toggle on.</li>
+<li>On Toggled: <code>event()</code> called from this expression will yield <code>true</code>
+or <code>false</code> when the radio button toggles.</li>
+</ul>
+<p><img src="browser/./editor-radio-button.png" alt="Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="entry"><a class="header" href="#entry">Entry</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="search-entry"><a class="header" href="#search-entry">Search Entry</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="scale-1"><a class="header" href="#scale-1">Scale</a></h1>
