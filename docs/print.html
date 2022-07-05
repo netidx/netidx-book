@@ -3132,32 +3132,35 @@ dragging them.</li>
 <p><img src="browser/./widget-table.png" alt="Table" /></p>
 <p>The table widget is used for displaying tabular data from netidx. It
 is quite flexable, with many bscript properties, so it can be used for
-many purposes such as lists. It supports direct editing, mediated by
-bscript, and it can even display images, checkboxes, spin buttons, and
-combo boxes in cells. Table has many bscript properties,</p>
-<ul>
-<li>
-<p>path: The path to the data to be displayed. This is bscript, so if
-it updates to a new path then the table will redraw that new path.</p>
-</li>
-<li>
-<p>sort mode: This defines how sorting is done. It has the form, </p>
-<pre><code>(null | false | external | &lt;column&gt; | spec)
- external: [false, [spec, ...]]
- spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+many purposes. It supports direct editing, mediated by bscript, and it
+can even display images, checkboxes, spin buttons, and combo boxes in
+cells. It's properties are,</p>
+<h2 id="path"><a class="header" href="#path">Path</a></h2>
+<p>The path to the data to be displayed. This is bscript, so if it
+updates to a new path then the table will redraw that new path.</p>
+<h2 id="sort-mode"><a class="header" href="#sort-mode">Sort Mode</a></h2>
+<p>This defines how sorting is done. Sorting can be done internally in
+the browser, in which case the browser will subscribe to every value
+in the column and will sort the values internally. It can also be done
+on the publisher side, or disabled entirely. Sort mode has the form,</p>
+<pre><code>
+(null | false | external | &lt;column&gt; | spec)
+
+external: [false, [spec, ...]]
+
+spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
 </code></pre>
 <ul>
 <li>
-<p>null: no default sort. Sorting is processed within the browser and
-is under the control of the user. Click events will also be
-generated when the user clicks on the header button, see
-<code>on_header_click</code>.</p>
+<p>null: The table is not sorted by default, but the user can sort by
+clicking on column headers. Click events will also be generated when
+the user clicks on the header button, see On Header Click.</p>
 </li>
 <li>
-<p>false: sorting within the browser is disabled, but click events
-will still be generated when the user clicks on the header
-buttons. These events could be used to trigger publisher side
-sorting, or any other desired action. See, <code>on_header_click</code>.</p>
+<p>false: sorting within the browser is disabled, but click events will
+still be generated when the user clicks on the header buttons. These
+events could be used to trigger publisher side sorting, or any other
+desired action. See, On Header Click.</p>
 </li>
 <li>
 <p>external: just like <code>false</code>, however sort indicators will be shown
@@ -3165,14 +3168,14 @@ as specified by the indicator spec. Use this if you implement
 sorting in the publisher, but want to give the user feedback about
 what is sorted. Example,</p>
 <p><code>[false, [[&quot;artist&quot;, &quot;descending&quot;], [&quot;album&quot;, &quot;descending&quot;]]]</code></p>
-<p>Indicates that sorting is happening on the publisher side, but the
+<p>Indicates that sorting is happening on the publisher side, and the
 indicators should be show on the artist and album columns.</p>
 </li>
 <li>
 <p><code>&lt;column&gt;</code>: by default sort by <code>&lt;column&gt;</code> in descending
 order. Sorting is processed within the browser and is under the
 user's control. Click events will also be generated when the user
-clicks on the header button, see <code>on_header_click</code>. Example,</p>
+clicks on the header button, see On Header Click. Example,</p>
 <p><code>&quot;artist&quot;</code></p>
 <p>sort by the artist column descending</p>
 </li>
@@ -3183,8 +3186,330 @@ specified. Example,</p>
 <p>sort by the artist column ascending</p>
 </li>
 </ul>
+<h2 id="selection-mode"><a class="header" href="#selection-mode">Selection Mode</a></h2>
+<p>This controls user selection it can be &quot;single&quot;, &quot;multi&quot;, or &quot;none&quot;</p>
+<ul>
+<li>&quot;single&quot;: The user can only select 1 cell at a time</li>
+<li>&quot;multi&quot;: The user can select multiple cells by holding shift while
+clicking or arrowing.</li>
+<li>&quot;none&quot;: The user can't select cells</li>
+</ul>
+<h2 id="column-filter"><a class="header" href="#column-filter">Column Filter</a></h2>
+<p>The column filter allows you to remove columns from the table, and
+also control their ordering. It has the form,</p>
+<pre><code>
+(null | true | false | list | range)
+
+list: [list-mode, (&lt;col&gt; | [&lt;col&gt;, ...])]
+
+range: [range-mode, [(&lt;n&gt; | &quot;start&quot;), (&lt;m&gt; | &quot;end&quot;)]]
+
+list-mode: (&quot;include&quot; | &quot;exclude&quot; | &quot;include_match&quot; | &quot;exclude_match&quot;)
+
+range-mode: (&quot;keep&quot; | &quot;drop&quot;)
+</code></pre>
+<ul>
+<li>null: all columns are included</li>
+<li>true: all columns are included</li>
+<li>false: no columns are included</li>
+<li>list: Specify a list of columns or column regexes to include or
+exclude.
+<ul>
+<li>&quot;include&quot;: col/cols is a list of columns to show. The order of
+the columns in the list controls the order of the columns that
+are displayed.</li>
+<li>&quot;exclude&quot;: col/cols is a list of columns to hide</li>
+<li>&quot;include_match&quot;: col/cols is a list of regex patterns of columns
+to show</li>
+<li>&quot;exclude_match&quot;: col/cols is a list of regex patterns of columns
+to hide</li>
+</ul>
+</li>
+<li>range: Specify columns to keep or drop by numeric ranges. Range
+patterns apply to the positions of columns in the sorted set.
+<ul>
+<li>&quot;keep&quot;: keep the columns specified by the range, drop any
+others. If the range specifies more columns than exist all
+columns will be kept. Matched items will be &gt;= start and &lt; end.</li>
+<li>&quot;drop&quot;: drop the columns specified by the range, keeping the
+rest. If the range specifies more columns than exist all the
+columns will be dropped. Matched items will be &lt; start or &gt;=
+end.</li>
+</ul>
 </li>
 </ul>
+<p>Examples,</p>
+<p><code>[&quot;include&quot;, [&quot;col0&quot;, &quot;col1&quot;, &quot;col2&quot;]]</code></p>
+<p>include only col0, col1, and col2 in that order</p>
+<p><code>[&quot;exclude&quot;, [&quot;col0&quot;]]</code></p>
+<p>include every column except col0.</p>
+<p><code>[&quot;include_match&quot;, &quot;\[0-9\]+$&quot;]</code></p>
+<p>include all columns that end in a number</p>
+<p><code>[&quot;drop&quot;, [10, &quot;end&quot;]]</code></p>
+<p>drop all columns after column 9.</p>
+<p>It is important to note that only &quot;include&quot; allows you to control the
+column order, in all other cases the columns will be sorted
+lexicographically.</p>
+<h2 id="column-editable"><a class="header" href="#column-editable">Column Editable</a></h2>
+<p>This field has the same format as the column filter, but instead of
+controling visiblity it controls whether the column can be directly
+edited (the user can always try ctrl+w to write).</p>
+<p>The actual editing is not direct, but must be handled by the On Edit
+bscript event handler. So this filter is really determining which
+columns can trigger that event handler.</p>
+<h2 id="column-widths"><a class="header" href="#column-widths">Column Widths</a></h2>
+<p>This expression allows you to control the default widths of columns. </p>
+<pre><code>
+(null | widths)
+
+widths: [[&lt;name&gt;, &lt;w&gt;], ...]
+</code></pre>
+<ul>
+<li>null: initial column widths are automatically determined</li>
+<li>widths: The list of numeric values specify the initial width of the
+corresponding column.</li>
+</ul>
+<p>Example,</p>
+<p><code>[[&quot;col0&quot;, 300], [&quot;col1&quot;, 200], [&quot;col2&quot;, 50]]</code></p>
+<h2 id="columns-resizable"><a class="header" href="#columns-resizable">Columns Resizable</a></h2>
+<p>if true then the user can resize columns, if false they cannot.</p>
+<h2 id="column-types"><a class="header" href="#column-types">Column Types</a></h2>
+<p>Column types allows you to use columns that are not text as well as
+configure additional properties of text columns such as background and
+foreground colors. You don't have to mention every column in the
+column types expression. Any columns you don't mention will be plain
+text columns.</p>
+<pre><code>
+(null | column_types)
+
+null: a default column type specification is generated that
+displays all the columns in the filtered model as text.
+
+column_types: [[&lt;name&gt;, typename, properties], ...]
+
+typename: (&quot;text&quot; | &quot;toggle&quot; | &quot;image&quot; | &quot;combo&quot; | &quot;spin&quot; | &quot;progress&quot; | &quot;hidden&quot;)
+
+common: common properties shared by many columns
+  [&quot;source&quot;, &lt;column-name&gt;],
+    optional, the source column that contains the data for
+    each row. If not specified the default is this column
+    (&lt;name&gt;).
+
+  [&quot;background&quot;, &lt;color-string&gt;],
+    optional, statically specify the background color of the
+    cell. same format as the &quot;foreground&quot; attribute.
+
+  [&quot;background-column&quot;, &lt;column-name&gt;],
+    optional, the column containing the background color of
+    each row in the same format as described in the
+    &quot;foreground&quot; attribute.
+
+
+properties: match typename
+  &quot;text&quot;: [
+    common,
+
+    [&quot;foreground&quot;, &lt;color-string&gt;],
+      optional, statically specify the foreground text
+      color. Any string understood by pango_parse_color is
+      understood here. That includes css color names, and hex
+      strings in various formats.
+
+    [&quot;foreground-column&quot;, &lt;column-name&gt;],
+      optional, the column containing the foreground color of
+      each row, same format as for the &quot;foreground&quot; attribute.
+  ]
+  
+  &quot;toggle&quot;: [
+    common,
+
+    [&quot;radio&quot;, (true | false)],
+      optional, whether to render the toggle as a check button
+      or a radio button.
+
+      true: the entire column is radio buttons, only one row may
+      be selected at any one time
+
+      false: the entire column is check buttons, which may be
+      individually toggled.
+
+      &lt;column-name&gt;: the specified boolean column controls
+      whether or not the toggle in each row is a radio or a
+      check button.
+
+    [&quot;radio-column&quot;, &lt;column-name&gt;]
+      optional, the column containing the &quot;radio&quot; property for
+      each row
+  ]
+
+  &quot;image&quot;: [
+    common,
+  ]
+
+  &quot;combo&quot;: [
+    common,
+
+    [&quot;choices&quot;, [&lt;choice&gt;, ...]],
+      The available choices globally for the entire
+      column. One of choices or choices-column must be
+      specified
+
+    [&quot;choices-column&quot;, &lt;column-name&gt;]
+      The column containing the &quot;choices&quot; attribute
+      for each row. One of choices, or choices-column must be
+      specified.
+
+    [&quot;has-entry&quot;, (true | false)],
+      optional. Should the column have an entry in addition to
+      the combo box menu? If true the user will be able to
+      enter any text they want, even if it isn't a valid
+      choice. If false only valid choices may be entered.
+
+    [&quot;has-entry-column&quot;, &lt;column-name&gt;]
+      optional, the column containing the has-entry attribute for each row.
+  ]
+
+  &quot;spin&quot;: [
+     common,
+
+     [&quot;min&quot;, &lt;n&gt;],
+       optional, if not specified 0 is assumed.
+
+     [&quot;min-column&quot;, &lt;column-name&gt;]
+       optional, the column containing the min attribute for each row
+
+     [&quot;max&quot;, &lt;n&gt;],
+       optional, if not specified 1 is assumed.
+
+     [&quot;max-column&quot;, &lt;column-name&gt;]
+       optonal, the column containing the max attribute for each row
+
+     [&quot;increment&quot;, &lt;n&gt;],
+       optional, the amount the value changes with each spin button press
+
+     [&quot;increment-column&quot;, &lt;column-name&gt;],
+       optional, the column containg the increment property
+
+     [&quot;page-increment&quot;, &lt;n&gt;]
+       optional, the amount the value changes on a page increment
+
+     [&quot;page-increment-column&quot;, &lt;column-name&gt;],
+       optional, the column containg the page-increment property
+
+     [&quot;climb-rate&quot;, &lt;n&gt;],
+       optional. How fast the value should change if the user
+       holds the + or - button down.
+
+     [&quot;climb-rate-column&quot;, &lt;column-name&gt;]
+       optional, the column specifying the climb-rate attribute for each row
+
+     [&quot;digits&quot;, &lt;n&gt;],
+       optional. The number of decimal places to display.
+
+     [&quot;digits-column&quot;, &lt;column-name&gt;]
+       optional. The column specifying the digits attribute for each row.
+  ]
+
+  &quot;progress&quot;: [
+    common,
+      
+    [&quot;activity-mode&quot;, (true | false)],
+      optional, default false. Operate the progressbar in
+      activity mode (see the ProgressBar widget).
+
+    [&quot;activity-mode-column&quot;, &lt;column-name&gt;]
+      optional, the column specifying the activity mode for each row.
+
+    [&quot;text&quot;, &lt;text&gt;],
+      optional, display static text near the progress bar
+
+    [&quot;text-column&quot;, &lt;column-name&gt;],
+      optional, display text from &lt;column-name&gt; near the
+      progress bar.
+
+    [&quot;text-xalign&quot;, &lt;n&gt;],
+      optional, set the horizontal alignment of the displayed
+      text. 0 is full left, 1 is full right.
+
+    [&quot;text-xalign-column&quot;, &lt;column-name&gt;]
+      optional, the column specifying the text-xalign property for each row
+
+    [&quot;text-yalign&quot;, &lt;n&gt;],
+      optional, set the vertical alignment of the displayed
+      text. 0 is top, 1 is bottom.
+
+    [&quot;text-yalign-column&quot;, &lt;column-name&gt;]
+      optonal, the column specifying the text-yalign property for each row
+
+    [&quot;inverted&quot;, (true | false)],
+      optional, invert the meaning of the source data
+
+    [&quot;inverted-column&quot;, &lt;column-name&gt;]
+      optional, the column specifying the inverted property for each row
+ ]
+
+ &quot;hidden&quot;:
+   hidden is a special column type that has no properties. It
+   is used to hide data columns that other visible columns
+   depend on (so they must appear in the model), but that you
+   don't want to show to the user.
+</code></pre>
+<p>all the properties of progress are optional. If none are set
+the entire properties array may be omitted</p>
+<p>The column type specification interacts with the column filter, in
+that a column type specification may name another column as the source
+of it's data or of a given property and the column filter may remove
+that column. If that occurrs the column filter takes precidence. The
+specified typed column will be displayed, but won't get any data if
+it's underlying column is filtered out.</p>
+<p>For properties that can be statically specified and loaded from a
+column, if both ways are specified then the column will override the
+static specification. If the column data is missing or invalid for a
+given row, then the static specification will be used. e.g. if I
+specify both <code>[&quot;text-yalign&quot;, 1]</code> and <code>[&quot;text-yalign-column&quot;, &quot;foo&quot;]</code>,
+then 1 will be used if the data from foo is missing, otherwise foo
+will be used.</p>
+<p>Examples,</p>
+<pre><code>
+[
+  [&quot;images&quot;, &quot;image&quot;, [[&quot;source&quot;, &quot;000&quot;]]],
+  [&quot;checkboxes&quot;, &quot;toggle&quot;, [[&quot;source&quot;, &quot;001&quot;]]],
+  [&quot;combos&quot;, &quot;combo&quot;, [[&quot;source&quot;, &quot;002&quot;], [&quot;choices-column&quot;, &quot;003&quot;]]],
+  [&quot;004&quot;, &quot;hidden&quot;, []],
+  [&quot;005&quot;, &quot;hidden&quot;, []]
+]
+</code></pre>
+<p><img src="browser/./widget-table-advanced.png" alt="Advanced" /></p>
+<p>In this example we start with a container sheet, and we construct a
+table with columns that don't exist in the underlying data (images,
+checkboxes, and combos). These columns reference data in the
+underlying table via the <code>source</code> attribute, and in the combos column
+the choices also come from an underlying column.</p>
+<p>Meanwhile we hide some of the underying columns. In a real application
+we might use these features to create a view of a dataset that is very
+different from what the underying table looks like &quot;raw&quot;.</p>
+<h2 id="row-filter"><a class="header" href="#row-filter">Row filter</a></h2>
+<p>The row filter has the same format as the column filter, except it
+operates on the rows of the table.</p>
+<h2 id="show-row-name"><a class="header" href="#show-row-name">Show Row Name</a></h2>
+<p>By default the first column in the table is the name of the row. If
+this field is false then the row name will not be shown.</p>
+<h2 id="on-activate"><a class="header" href="#on-activate">On Activate</a></h2>
+<p>This event is triggered when the user double clicks a row or presses
+enter in a row. The <code>event()</code> function will yield <code>null</code> when that
+happens.</p>
+<h2 id="on-select"><a class="header" href="#on-select">On Select</a></h2>
+<p>This event is triggered when the user selects one or more cells in the
+table. <code>event()</code> will yield the new selection as a list of paths.</p>
+<h2 id="on-edit"><a class="header" href="#on-edit">On Edit</a></h2>
+<p>This event is triggered when the user edit a cell in an editable
+column. <code>event()</code> will yield a pair of the path of the edited cell and
+the new value.</p>
+<h2 id="on-header-click"><a class="header" href="#on-header-click">On Header Click</a></h2>
+<p>This event is triggered when the user clicks on a column
+header. <code>event()</code> will yield the name of the column who's header was
+clicked.</p>
+<p><img src="browser/./editor-table.png" alt="table editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="image"><a class="header" href="#image">Image</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="label"><a class="header" href="#label">Label</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="button"><a class="header" href="#button">Button</a></h1>
