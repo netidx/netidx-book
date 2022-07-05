@@ -143,6 +143,40 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="link-button"><a class="header" href="#link-button">Link Button</a></h1>
+<p><img src="./widget-link-button.png" alt="Link Button" /></p>
+<p>The link button draws a clickable hypertext link. It has 3 bscript
+properties,</p>
+<ul>
+<li>
+<p>Label: the text of the link</p>
+</li>
+<li>
+<p>URI: The URI of the link.</p>
+</li>
+<li>
+<p>On Activate Link: This event handler will be triggered when the link
+is clicked. The <code>event()</code> function will yield the uri. If the
+handler expression yields <code>true</code>, then the uri will be considered
+handled and no further action will happen. If the handler expression
+doesn't yield <code>true</code>, then the uri will be handled by the system.</p>
+<p>An https uri should open the requested page in the default browser,
+a file uri should open the specified location in the file
+manager. etc. Any uri the system knows how to handle should work.</p>
+<p>Example</p>
+<pre><code>any(
+  confirm(&quot;navigate to: &quot;, event()), 
+  sample(event(), true)
+)
+</code></pre>
+<p>Ask the user if they want to navigate to the uri. If they say no,
+confirm won't update, and sample will update with true, so any will
+update with true, and the click event will be marked as fully
+handled. If they say yes, then confirm will update with the uri any
+will update with the uri, which isn't true, so the system handler
+will be invoked.</p>
+</li>
+</ul>
+<p><img src="./editor-link-button.png" alt="Link Button Editor" /></p>
 
                     </main>
 

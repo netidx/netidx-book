@@ -143,6 +143,34 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="label"><a class="header" href="#label">Label</a></h1>
+<p><img src="./widget-label.png" alt="the humble label" /></p>
+<p>The label widget displays a text label. It has the following bscript
+properties,</p>
+<ul>
+<li>Text: the contents of the label. If the value is not a string it
+will be converted to one.</li>
+<li>Min Width: The minimum desired width in characters. The widget will
+force the window to be at least this wide.</li>
+<li>Ellipsize Mode: one of &quot;none&quot;, &quot;start&quot;, &quot;middle&quot;, or &quot;end&quot;. This
+property defines what happens if the text is too large to fit in the
+widget.
+<ul>
+<li>&quot;none&quot;: the window will be forced to grow until the text fits</li>
+<li>&quot;start&quot;: the text will be truncated and replaced with ... at the
+start.</li>
+<li>&quot;middle&quot;: the text will be truncated and replaced with ... in the
+middle.</li>
+<li>&quot;end&quot;: the text will be truncated and replaced with ... at the
+end.</li>
+</ul>
+</li>
+<li>Single Line: if true then the label is restricted to a single line,
+newlines in the text are ignored. Otherwise it can span multiple
+lines.</li>
+<li>Selectable: if true then the text in the label is selectable, if
+false it is not.</li>
+</ul>
+<p><img src="./editor-label.png" alt="label editor" /></p>
 
                     </main>
 

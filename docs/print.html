@@ -3553,12 +3553,94 @@ supported by gdk_pixbuf.</li>
 <li>image-spec: an alist containing the image bytes in any format
 supported by gdk_pixbuf and some metadata.</li>
 </ul>
+<p>Examples,</p>
+<p><code>&quot;media-floppy-symbolic&quot;</code></p>
+<p>Display the icon from the standard icon set.</p>
+<p><code>&lt;binary-png-data&gt;</code></p>
+<p>Display the png data, literally the raw bytes copied into netidx
+directly from the file.</p>
 <h2 id="on-click"><a class="header" href="#on-click">On Click</a></h2>
 <p>This event handler is triggered when the user clicks on the
 image. <code>event()</code> will yield <code>null</code> when that happens.</p>
+<p><img src="browser/./editor-image.png" alt="image editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="label"><a class="header" href="#label">Label</a></h1>
+<p><img src="browser/./widget-label.png" alt="the humble label" /></p>
+<p>The label widget displays a text label. It has the following bscript
+properties,</p>
+<ul>
+<li>Text: the contents of the label. If the value is not a string it
+will be converted to one.</li>
+<li>Min Width: The minimum desired width in characters. The widget will
+force the window to be at least this wide.</li>
+<li>Ellipsize Mode: one of &quot;none&quot;, &quot;start&quot;, &quot;middle&quot;, or &quot;end&quot;. This
+property defines what happens if the text is too large to fit in the
+widget.
+<ul>
+<li>&quot;none&quot;: the window will be forced to grow until the text fits</li>
+<li>&quot;start&quot;: the text will be truncated and replaced with ... at the
+start.</li>
+<li>&quot;middle&quot;: the text will be truncated and replaced with ... in the
+middle.</li>
+<li>&quot;end&quot;: the text will be truncated and replaced with ... at the
+end.</li>
+</ul>
+</li>
+<li>Single Line: if true then the label is restricted to a single line,
+newlines in the text are ignored. Otherwise it can span multiple
+lines.</li>
+<li>Selectable: if true then the text in the label is selectable, if
+false it is not.</li>
+</ul>
+<p><img src="browser/./editor-label.png" alt="label editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="button"><a class="header" href="#button">Button</a></h1>
+<p><img src="browser/./widget-button.png" alt="The humble button" /></p>
+<p>The button widget draws a clickable button. It has 3 bscript
+properties,</p>
+<ul>
+<li>Label: The text to be drawn in the button.</li>
+<li>Image: The image to be drawn in the button. This field uses the same
+format as the image widget's spec property. The image will be drawn
+in addition to the text label, so if you want just an image leave
+the text blank.</li>
+<li>On Click: The <code>event()</code> function in this property will yield <code>null</code>
+when the user clicks the button.</li>
+</ul>
+<p><img src="browser/./editor-button.png" alt="button editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="link-button"><a class="header" href="#link-button">Link Button</a></h1>
+<p><img src="browser/./widget-link-button.png" alt="Link Button" /></p>
+<p>The link button draws a clickable hypertext link. It has 3 bscript
+properties,</p>
+<ul>
+<li>
+<p>Label: the text of the link</p>
+</li>
+<li>
+<p>URI: The URI of the link.</p>
+</li>
+<li>
+<p>On Activate Link: This event handler will be triggered when the link
+is clicked. The <code>event()</code> function will yield the uri. If the
+handler expression yields <code>true</code>, then the uri will be considered
+handled and no further action will happen. If the handler expression
+doesn't yield <code>true</code>, then the uri will be handled by the system.</p>
+<p>An https uri should open the requested page in the default browser,
+a file uri should open the specified location in the file
+manager. etc. Any uri the system knows how to handle should work.</p>
+<p>Example</p>
+<pre><code>any(
+  confirm(&quot;navigate to: &quot;, event()), 
+  sample(event(), true)
+)
+</code></pre>
+<p>Ask the user if they want to navigate to the uri. If they say no,
+confirm won't update, and sample will update with true, so any will
+update with true, and the click event will be marked as fully
+handled. If they say yes, then confirm will update with the uri any
+will update with the uri, which isn't true, so the system handler
+will be invoked.</p>
+</li>
+</ul>
+<p><img src="browser/./editor-link-button.png" alt="Link Button Editor" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="switch"><a class="header" href="#switch">Switch</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="toggle-button"><a class="header" href="#toggle-button">Toggle Button</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="combo-box"><a class="header" href="#combo-box">Combo Box</a></h1>
