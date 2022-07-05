@@ -143,6 +143,50 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="image"><a class="header" href="#image">Image</a></h1>
+<p><img src="./widget-image.png" alt="Image" /></p>
+<p>The image widget allows displaying an image in the browser. The image
+has two bscript properties.</p>
+<h2 id="spec"><a class="header" href="#spec">spec</a></h2>
+<pre><code>
+(&lt;icon-name&gt; | icon-spec | &lt;image-bytes&gt; | image-spec)
+
+icon-spec: [&lt;icon-name&gt;, icon-size]
+
+icon-size: (&quot;menu&quot; | &quot;small-toolbar&quot; | &quot;large-toolbar&quot; | &quot;dnd&quot; | &quot;dialog&quot;)
+
+image-spec: [
+   [&quot;image&quot;, &lt;image-bytes&gt;],
+     required, the image bytes.
+
+   [&quot;width&quot;, &lt;desired-width&gt;],
+     optional, if specified the image will be scaled to the
+     specified width. If keep-aspect is true then the height
+     will also be scaled to keep the image's aspect ratio even
+     if height is not specified.
+
+   [&quot;height&quot;, &lt;desired-height&gt;],
+     optional, if specifed the image will be scaled to the
+     specified height. If keep-aspect is true then the width
+     will also be scaled to keep the image's aspect ratio even
+     if width is not specified.
+
+   [&quot;keep-aspect&quot;, (true | false)]
+     optional, keep the aspect ratio of the image.
+]
+</code></pre>
+<ul>
+<li><icon-name>: A string naming the stock icon from the current theme
+that should be displayed. The default size is &quot;small-toolbar&quot;.</li>
+<li>icon-spec: A pair specifying the icon name and the icon size.</li>
+<li>icon-size: The size of the icon</li>
+<li><code>&lt;image-bytes&gt;</code>: A bytes value containing the image in any format
+supported by gdk_pixbuf.</li>
+<li>image-spec: an alist containing the image bytes in any format
+supported by gdk_pixbuf and some metadata.</li>
+</ul>
+<h2 id="on-click"><a class="header" href="#on-click">On Click</a></h2>
+<p>This event handler is triggered when the user clicks on the
+image. <code>event()</code> will yield <code>null</code> when that happens.</p>
 
                     </main>
 
