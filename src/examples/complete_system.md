@@ -199,7 +199,7 @@ See the chapter on custom views for more information.
 
 ## Wrapping Up
 
-In this chapter we saw how an application can be designed more or less
+In this example we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We
 didn't cover the opportunities for scripting our solar installation
 now that we can control it using netidx, but we certainly could do any
