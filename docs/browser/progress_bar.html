@@ -143,6 +143,28 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="progress-bar"><a class="header" href="#progress-bar">Progress Bar</a></h1>
+<p><img src="./widget-progressbar.png" alt="Progress Bar" /></p>
+<p>Progress bar displays the progress of some task that takes long enough
+that you need to keep the user informed about it lest they get bored,
+or think the application is stuck. It has several properties,</p>
+<ul>
+<li>Ellipsize: If the text is too large for the window it will be
+ellipsized according to this property. Possible values are, &quot;none&quot;,
+&quot;start&quot;, &quot;middle&quot;, &quot;end&quot;, which specify where the text will be
+truncated and replaced with ...</li>
+<li>Fraction: How far along the task is, expressed as a float between 0
+and 1.</li>
+<li>Pulse: If you don't know how long a task will take, but you still
+want to tell the user &quot;stuff is happening&quot;, then you can set pulse
+to an expression that updates periodically. Each update will cause
+the progress bar to move. You can mix pulse and fraction, e.g. you
+can pulse for a while, and then set fraction, and then pulse for a
+while.</li>
+<li>Text: The text you wish to display above the progress bar,
+e.g. could describe what it's doing now.</li>
+<li>Show Text: <code>true</code> if you want to draw the text, <code>false</code> otherwise.</li>
+</ul>
+<p><img src="./editor-progressbar.png" alt="Progress Bar Editor" /></p>
 
                     </main>
 

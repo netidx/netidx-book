@@ -143,6 +143,51 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="line-plot"><a class="header" href="#line-plot">Line Plot</a></h1>
+<p><img src="./widget-lineplot.png" alt="Line Plot" /></p>
+<p>The lineplot widget draws animated line plots with potentially
+multiple series on a plot and numerous configuration options.</p>
+<h2 id="chart-style"><a class="header" href="#chart-style">Chart Style</a></h2>
+<ul>
+<li>Title: The title of the plot, shown on the top center.</li>
+<li>Fill: The background fill color, if any. If the box is unchecked
+then there will be no fill color</li>
+<li>Margin: The size of the chart margins</li>
+<li>Label Area: The size of the are reserved for the axis labels</li>
+</ul>
+<h2 id="axis-style"><a class="header" href="#axis-style">Axis Style</a></h2>
+<ul>
+<li>X Axis Label: The label of the X axis</li>
+<li>Y Axis Label: The label of the Y axis</li>
+<li>X Labels: The maximum number of points on the X axis that get
+labeled</li>
+<li>Y Labels: The maximum number of points on the Y axis that get
+labeled</li>
+<li>X Axis Grid: Draw grid lines along the X axis</li>
+<li>Y Axis Grid: Draw grid lines along the Y axis</li>
+</ul>
+<h2 id="axis-range"><a class="header" href="#axis-range">Axis Range</a></h2>
+<ul>
+<li>x min: The minimum value on the X axis. If <code>null</code> this will be computed from the data set.</li>
+<li>x max: The maximum value on the X axis. If <code>null</code> this will be computed from the data set.</li>
+<li>y min: the minimum value on the Y axis. If <code>null</code> this will be computed from the data set.</li>
+<li>y max: the maximum value on the Y axis. If <code>null</code> this will be computed from the data set.</li>
+<li>keep points: The number of points of history to keep.</li>
+</ul>
+<h2 id="series"><a class="header" href="#series">Series</a></h2>
+<p>There can be multiple series on a line plot, use the + and - buttons
+to add/remove series from a plot.</p>
+<ul>
+<li>Title: The title of the series</li>
+<li>Line Color: The color of the line associated with the series</li>
+<li>X: The expression that generates the X coordinate of the series</li>
+<li>Y: The expression that generates the Y coordinate of the series</li>
+</ul>
+<p>Example</p>
+<p><code>X: { let tick &lt;- count(timer(f64:0.5, 1024)); tick }</code></p>
+<p><code>Y: product(tick, tick)</code></p>
+<p>This will animate the plot of <code>y = x ^ 2</code> 2 points per second out to
+<code>x = 1024</code>.</p>
+<p><img src="./editor-lineplot.png" alt="Editor" /></p>
 
                     </main>
 
