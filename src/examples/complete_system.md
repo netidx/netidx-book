@@ -1,10 +1,9 @@
 # A Clean Slate Design Using Netidx
 
-In the last chapter we added netidx publishing of one data point from
-an existing system, and then explored what we could do with the
-data. In this chapter we're going to look at a system designed from
-scratch to use netidx as it's primary means of communication and
-control.
+In the last example we added netidx publishing of one data point, and
+then explored what we could do with the data. In this example we're
+going to look at a system designed from scratch to use netidx as it's
+primary means of communication and control.
 
 The system we're going to look at is the control program of an off the
 grid solar generator. The system uses a Prostar MPPT controller, which
