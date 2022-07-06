@@ -3,26 +3,18 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Constructing Custom Views - Introduction to Netidx</title>
-        
-        
+        <title>GUI Builder - Introduction to Netidx</title>
 
 
         <!-- Custom HTML head -->
         
-
-
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        
         <link rel="icon" href="../favicon.svg">
-        
-        
         <link rel="shortcut icon" href="../favicon.png">
-        
         <link rel="stylesheet" href="../css/variables.css">
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
@@ -30,9 +22,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        
         <link rel="stylesheet" href="../fonts/fonts.css">
-        
 
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
@@ -40,9 +30,7 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        
 
-        
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -93,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../examples/overview.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../examples/vmstat.html"><strong aria-hidden="true">3.1.</strong> Publishing vmstat</a></li><li class="chapter-item expanded "><a href="../examples/integration.html"><strong aria-hidden="true">3.2.</strong> Integration into an Existing System</a></li><li class="chapter-item expanded "><a href="../examples/complete_system.html"><strong aria-hidden="true">3.3.</strong> Clean Slate System Design</a></li></ol></li><li class="chapter-item expanded "><a href="../administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../administration/authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="../administration/startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="../administration/listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="../administration/subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="../administration/fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="../tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="../tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="../tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="../tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="../tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="../tools/stress.html"><strong aria-hidden="true">5.6.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="../browser/overview.html"><strong aria-hidden="true">6.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/views.html" class="active"><strong aria-hidden="true">6.1.</strong> Constructing Custom Views</a></li><li class="chapter-item expanded "><a href="../browser/scripting.html"><strong aria-hidden="true">6.2.</strong> BScript</a></li></ol></li><li class="chapter-item expanded "><a href="../protocols/overview.html"><strong aria-hidden="true">7.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../protocols/rpc.html"><strong aria-hidden="true">7.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="../protocols/clustering.html"><strong aria-hidden="true">7.2.</strong> Clustering</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="../administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../administration/authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="../administration/startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="../administration/listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="../administration/subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="../administration/fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="../tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="../tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="../tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="../tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="../tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="../tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="../tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="../examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="../browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/views.html" class="active"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="../browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="../browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="../browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="../browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="../browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="../browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="../browser/table.html"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="../browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="../browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="../browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="../browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="../browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="../browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="../browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="../browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="../browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="../browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="../browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="../browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="../browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="../protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="../protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="../bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="../bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="../bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="../bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -101,8 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -118,11 +105,9 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
-                        
                     </div>
 
                     <h1 class="menu-title">Introduction to Netidx</h1>
@@ -131,14 +116,13 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        
+
                     </div>
                 </div>
 
-                
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -146,7 +130,6 @@
                         </ul>
                     </div>
                 </div>
-                
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
@@ -159,22 +142,19 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#constructing-custom-views" id="constructing-custom-views">Constructing Custom Views</a></h1>
-<p>Custom browser views are meant to fill the gap between full blown gui
-apps that use netidx, and just tables. The goal is that it should be
-possible to create moderately complex applications using custom
-browser views and bscript (see <a href="./complete_system.html">Clean Slate System
-Design</a> for an example). The first step is to
-enter design mode.</p>
-<p><img src="./browser-design-mode-empty.png" alt="Design Mode" /></p>
-<p>Design mode has 3 parts,</p>
-<ol>
-<li>The widget tree. As the browser is based on Gtk+, this tree pretty
-much directly visualizes the Gtk+ widget tree. In Gtk+ layout is
-automatic, and is based on the structure of the widget tree, as
-such, you get the visual look you want for your app by manipulating
-this tree. You can drag and drop nodes around, and using the
-buttons just above the tree you can,
+                        <h1 id="gui-builder"><a class="header" href="#gui-builder">GUI Builder</a></h1>
+<p>The browser is not only for displaying tables, it is a custom gui
+builder with it's own embedded scripting language and access to most
+of the widgets in GTK. The design mode button opens the GUI builder
+window, which allows you to display and modify an existing GUI as well
+as build one from scratch.</p>
+<p><img src="./browser-gui-builder.png" alt="Design Mode" /></p>
+<p>The GUI builder has two parts, starting from the top,</p>
+<p>On top is the widget tree. Layout is automatic, and is based on the
+structure of the widget tree, as such, you get the visual look you
+want for your app by manipulating this tree as well as setting widget
+properties. You can drag and drop nodes around, and using the buttons
+just above the tree you can,</p>
 <ul>
 <li>create a sibling of the currently selected node</li>
 <li>create a child of the currently selected node</li>
@@ -182,94 +162,30 @@ buttons just above the tree you can,
 <li>duplicate the currently selected node as well as all of it's children</li>
 <li>undo</li>
 </ul>
-</li>
-<li>This box displays the properties and controls of the currently
-selected widget, if any.</li>
-<li>The content area; this displays the actual live gui as it is being
-built. The content area behaves exactly the same in design mode vs
-normal mode, and is fully interactive. It's entirely what you see
-is what you will get.</li>
-</ol>
-<p>The normal default operation of the gui is in fact technically a
-custom view, it is however automatically generated for each subtree if
-no specific custom view is found for that subtree. The default
-generated custom view is a table with the <code>Path</code> property set to the
-path of the current subtree. For example, we can click on the table in
-the widget tree to see the properties sheet.</p>
-<p><img src="./browser-table-properties.png" alt="Table Properties" /></p>
-<p>There are several things about this worth pointing out.</p>
-<ul>
-<li>The widget selected in the widget tree will always be outlined in
-blue in the content area.</li>
-<li>The table widget has some configurable options that allow us to
-control column order, default sort, and which columns even appear.</li>
-<li>The layout properties expander is present on nearly every widget,
-and allows setting properties that all Gtk+ widets share.</li>
-</ul>
-<h2><a class="header" href="#our-first-custom-view" id="our-first-custom-view">Our First Custom View</a></h2>
-<p>Now, lets make a custom view that displays 2 tables looking at
-different subtrees at the same time. To do this, we need a container
-widget to hold both tables, in Gtk+ we use a Box widget for this kind
-of job. Since layout is procedural, we won't need to fiddle with
-coordinates or anything like that, so it's very much like html, we
-make a box, put some widgets into it, and let the toolkit figure out
-how to make it look nice.</p>
-<p><img src="./browser-two-tables-design.png" alt="Two Tables" /></p>
-<p>If you've used tools like Glade then this will be quite familiar to
-you, except that the content area is completely live while the layout
-is being designed. You can save the view you've designed by pressing
-the disk icon in the header bar. This will allow you to save the view
-definition in a file, or you can write it to a location in netidx.</p>
-<p>If you write your custom view to a location in netidx that ends in
-<code>.view</code>, e.g. <code>/solar/.view</code>, then when the browser is asked to
-navigate to that subtree it will draw your view instead of the default
-table.</p>
-<h2><a class="header" href="#toggle-buttons" id="toggle-buttons">Toggle Buttons</a></h2>
-<p>Lets refine this little solar gui a bit, the top table takes up too
-much space, and could be easier to interact with. There is a nice Gtk+
-widget called a toggle that is great for both visualizing and
-controlling boolean values.</p>
-<p><img src="./browser-buttons-and-table.png" alt="Buttons and Table" /></p>
-<p>We'd like the toggles and their labels to line up in nice neat columns
-and rows, we could accomplish that with boxes, however Gtk+ has a grid
-container widget that makes it much easier. We can also see our first
-BScript looking at the properties of the first toggle button.</p>
-<ul>
-<li>enabled: This could be any expression, but in our case it's just the
-constant <code>true</code>, as this button is always enabled.</li>
-<li>value: <code>load(&quot;/solar/control/charging&quot;)</code> defines the value of the
-toggle button, it should evaluate to true or false. In this case we
-are loading the value directly from netidx. If the value in netidx
-changes, then the toggle button's state will change too.</li>
-<li>on change: <code>store(&quot;/solar/control/charging&quot;, event())</code> defines what
-happens when the user changes the state of the button. In this case
-we store the requested state of the button, which is <code>event()</code>, to
-the same path we loaded the value from. It's up to the publisher to
-decide whether the new requested state is actually valid right
-now. If it is, then it will update it's published value and the
-state of the toggle will reflect that.</li>
-</ul>
-<p>We can test out if these buttons work without leaving design mode. We
-can also use the expression inspector, by clicking the tool button
-right next to the expression, to construct and debug more complex
-expressions. Using that tool will be covered more in the next section
-on BScript.</p>
+<p>Below the widget tree the properties of the currently selected widget
+are shown. This includes all visual options, as well as event
+handlers.</p>
+<p>When the GUI builder window is open, the main browser window continues
+to function normally. Any changes made in the design window are
+reflected immediatly in the main window. The currently selected widget
+in the widget tree is highlighted in blue in the main window.</p>
+<p><img src="./browser-design-mode.png" alt="Design Mode" /></p>
+<p>When building GUIs using the browser, most of the interesting code
+should live in the publisher. However some logic specific to the user
+interface may be needed, and for this there is bscript, which will be
+covered in the next section.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
                             <a rel="prev" href="../browser/overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                        
 
-                        
                             <a rel="next" href="../browser/scripting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -277,49 +193,35 @@ on BScript.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
                     <a rel="prev" href="../browser/overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                
 
-                
                     <a rel="next" href="../browser/scripting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
             </nav>
 
         </div>
 
-        
 
-        
 
-        
 
-        
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        
 
-        
 
-        
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
 
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
 
-        
 
     </body>
 </html>

@@ -57,9 +57,10 @@ underlying IO device and the number of processor cores available.
 - Args that apply to playback
   - `--publish-base <path>`: required for playback, enables playback
     if specified, the path where playback sessions will be published.
-  - `--bind <spec>`: required for playback, a specification describing
+  - `-b, --bind <spec>`: required for playback, a specification describing
     the network interface to bind to. See
     [publisher](./publisher_tool.md) for details.
+  - `-a, --auth`: the authentication mechanism, anonymous, local, or krb5.
   - `--spn <service-principal>`: optional, required for kerberos, the
     service princial to publish as.
   - `--max-sessions <n>`: optional, How many total client sessions to allow at
@@ -108,11 +109,9 @@ setup how we like by default we can do that as well, e.g.
 
 ```
 netidx subscriber <<EOF
-WRITE|/solar/archive/session/start/val|string|-3d
-WRITE|/solar/archive/session/speed/val|f32|2
-WRITE|/solar/archive/session|string|null
+CALL|/solar/archive/session|start="-3d",speed=2
 EOF
-/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
+CALLED|/archive/session|"ef93a9dce21f40c49f5888e64964f93f"
 ```
 
 Now our new session would be setup to start 3 days ago, and playback

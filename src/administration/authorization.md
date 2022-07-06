@@ -1,11 +1,11 @@
 # Authorization
 
-When using Kerberos we also need a permissions file in order to run a
-resolver server, it's a separate file because it's not meant to be
-shared with everyone using the cluster. e.g.
+When using the Kerberos or Local auth mechanisms we also need to
+specify permissions in the cluster config file, e.g.
 
 ``` json
-{
+...
+"perms": {
     "/": {
         "eric@RYU-OH.ORG": "swlpd"
     },
@@ -101,18 +101,17 @@ permissions that the other grants the deny always takes precidence.
 
 Each server cluster is completely independent for permissions. If for
 example this cluster had a child cluster, the administrators of that
-cluster would be responsible for deciding what permissions file it
-should use. It certainly could use the same file, but it doesn't have
-to.
+cluster would be responsible for deciding it's permissions map.
 
 ### Anonymous
 
 It's possible to give anonymous users permissions even on a Kerberos
-enabled system, and this could allow them to use whatever functions
-you deem non sensitive, subject to some limitations. There is no
-encryption. There is no tamper protection. There is no publisher ->
-subscriber authentication. Anonymous users can't subscribe to non
-anonymous publishers. Non anonymous users can't subscribe to anonymous
+or Local auth mechanism system, and this could allow them to use
+whatever functions you deem non sensitive, subject to some
+limitations. There is no encryption. There is no tamper
+protection. There is no publisher -> subscriber
+authentication. Anonymous users can't subscribe to non anonymous
+publishers. Non anonymous users can't subscribe to anonymous
 publishers. You name anonymous "" in the permissions file, e.g.
 
 ``` json

@@ -8,7 +8,7 @@ and service integration. Starting a resolver server is done from the
 
 ``` bash
 $ KRB5_KTNAME=FILE:/path/to/keytab \
-netidx resolver-server --permissions ./netidx-perms.json
+netidx resolver-server -c resolver.json
 ```
 
 By default the server will daemonize, include `-f` to prevent that. If

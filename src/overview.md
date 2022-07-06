@@ -1,22 +1,54 @@
 # What is Netidx
 
-- It's a directory service; like LDAP or X.500
-  - It keeps track of a hierarchical directory of things
-  - It's browsable and queryable
-  - It's distributed, lightweight, and scalable
+Netidx is middleware that enables publishing a value, like 42, in one
+program and consuming it in another program, either on the same
+machine or across the network.
 
-- It's a tuple space; like JavaSpaces, zookeeper, or memcached
-  - Except it's distributed. The directory server keeps track of where
-    things are, publishers keep the data.
-  - Each tuple is identified by a unique path in the directory server,
-    and holds a flexible set of primitive data types
+Values are given globally unique names in a hierarchical
+namespace. For example our published 42 might be named
+/the-ultimate-answer (normally we wouldn't put values directly under
+the root, but in this case it's appropriate). Any other program on the
+network can refer to 42 by that name, and will receive updates in the
+(unlikely) event that /the-ultimate-answer changes.
 
-- It's a publish/subscribe messaging system; like MQTT
-  - Except there is no centralized broker. Communication happens
-    directly between publishers and subscribers
-  - Message archiving and other services provided by MQTT brokers can
-    be provided by normal publishers, or omitted if they aren't needed
-  - Decentralization allows it to scale to huge message rates
+## Comparison With Other Systems
+
+- Like LDAP
+  - Netidx keeps track of a hierarchical directory of values
+  - Netidx is browsable and queryable to some extent
+  - Netidx supports authentication, authorization, and encryption
+  - Netidx values can be written as well as read.
+  - Larger Netidx systems can be constructed by adding referrals
+    between smaller systems. Resolver server clusters may have parents
+    and children.
+
+- Unlike LDAP
+  - In Netidx the resolver server (like slapd) only keeps the location
+    of the publisher that has the data, not the data iself.
+  - There are no 'entries', 'attributes', 'ldif records', etc. Every
+    name in the system is either structural, or a single value. Entry
+    like structure is created using hierarchy. As a result there is
+    also no schema checking.
+  - One can subscribe to a value, and will then be notified immediatly
+    if it changes.
+  - There are no global filters on data, e.g. you can't query for
+    (&(cn=bob)(uid=foo)), because netidx isn't a database. Whether and
+    what query mechanisms exist are up to the publishers. You can,
+    however, query the structure, e.g. /foo/**/bar would return any
+    path under foo that ends in bar.
+
+- Like MQTT
+  - Netidx values are publish/subscribe
+  - A single Netidx value may have multiple subscribers
+  - All Netidx subscribers receive an update when a value they are
+    subscribed to changes.
+  - Netidx Message delivery is reliable and ordered.
+
+- Unlike MQTT
+  - In Netidx there is no centralized message broker. Messages flow
+    directly over TCP from the publishers to the subscribers. The
+    resolver server only stores the address of the publisher/s
+    publishing a value.
 
 ## The Namespace
 
@@ -32,35 +64,31 @@ both a file and a directory. For example we might have,
 
     /apps/solar/stats/battery_sense_voltage/millivolts
 
-Where the `.../battery_sense_voltage` points to the number in volts,
-and it's 'millivolts' child gives the same number in millivolts.
+Where the `.../battery_sense_voltage` is the number in volts, and it's
+'millivolts' child gives the same number in millivolts.
 
 Sometimes a name like `battery_sense_voltage` is published deep in the
 hierarchy and it's parents are just structure. Unlike the file system
 the resolver server will create and delete those structural containers
 automatically, there is no need to manually manage them.
 
-The term 'points to' is literal. In netidx the actual data is
-completely separate from the names. The names are stored in the
-resolver server cluster. Each name points to the ip address and port
-of the publisher that actually has the data.
+When a client wants to subscribe to a published value, it queries the
+resolver server cluster, and is given the addresses of all the
+publishers that publish the value. Multiple publishers can publish the
+same value, and the client will try all of them in a random order
+until it finds one that works. All the actual data flows from
+publishers to subscribers directly without ever going through any kind
+of centralized infrastructure.
 
-When a client wants to subscribe to the value pointed to by a name, it
-queries the resolver server cluster, and is given the addresses of all
-the publishers that publish said data point. It then randomly permutes
-that list, and tries to subscribe to each address. If one of them
-succeeds, then the subscription succeeds, if they all fail then it
-doesn't. All the actual data flows from publishers to subscribers
-directly without ever going through any kind of centralized
-infrastructure.
+## The Data Format
 
-## What's a Value
+In Netidx the data that is published is called a value. Values are
+mostly primitive types, consisting of numbers, strings, durations,
+timestamps, packed byte arrays, and arrays of values. Arrays of values
+can be nested.
 
-Values are primitives, e.g. various kinds of number, strings,
-durations, timestamps, and byte arrays. Values don't have any inherent
-structure, but of course you can use byte arrays to publish anything
-that can be serialized, and since byte arrays are zero copy that is
-even quite efficient.
+Byte arrays and strings are zero copy decoded, so they can be a
+building block for sending other encoded data efficiently.
 
 Published values have some other properties as well,
 
@@ -70,92 +98,18 @@ Published values have some other properties as well,
 * Updates arrive reliably and in the order the publisher made them
   (like a TCP stream)
 
-## Scale
-
-Netidx is meant to be a building block, and as such a lot of thought
-has gone into scale. There are multiple different parts of the system
-that need to scale. The resolver servers, being the only centralized
-piece of infrastructure, are perhaps the most important piece, though
-the publisher and subscriber also need to be fast or it won't be worth
-using.
-
-### Resolver Server
-
-The resolver servers implement two strategies to achieve
-scale. Replication is the first, one can deploy multiple replicas to
-multiple machines in order to protect against a single machine outage,
-and also increase throughput. In netidx, the publisher itself is the
-primary, and as such it is responsible for replicating the names it
-publishes out to all the configured resolver servers. This makes the
-system very resilient, as even if the entire resolver server cluster
-goes down, the data isn't lost if the publishers are still alive. They
-will keep trying to republish their data with linear backoff until
-they are killed.
-
-Hierarchy is the second scaling strategy. When a system grows too big
-to fit in even a large cluster of servers, then busy parts of the
-namespace can be delegated to 'child' server clusters. Readers
-familiar with DNS will recognize the basic strategy, though the
-details not exactly the same. The administration overhead is similarly
-hierarchical, since each cluster config file must only know about it's
-immediate superior and immediate children. It's entirely possible for
-a large organization to run a central 'root' resolver server cluster
-without needing to micro manage the delegation going on in various
-organizational units.
-
-While the primary design goal was a scaleable architecture, the
-resolver server itself is also architected for efficiency, and uses a
-number of strategies to minimize memory use. As a result it's possible
-to put 100 million names in a single instance on a single machine with
-32 - 64 gig of ram. As a rule of thumb you get roughly 1 million names
-per 500 MB of ram, assuming your paths are a reasonable length.
-
-### Publisher/Subscriber
-
-On the wire, the netidx protocol is almost exactly the same as
-protobuf. In protobuf, each record is extensible and rather cleverly
-encoded. Each field in the record has a LEB128 Id, followed by a data
-value.
-
-In netidx, the subscriber sends the name it wants to one of the
-publishers specified by the resolver server cluster. The publisher
-looks up that value, and responds with the id it will use in
-subsequent messages, along with the current value. From then on
-updates to that value transmit only the id, which is LEB128 encoded,
-and the updated value. So on the wire, in terms of overhead, it looks
-very much like a protobuf record where the fields are exactly what the
-subscriber has requested and nothing more. The overhead of sending an
-f64 can be as small as 2 additional bytes (so 10 in total, 1 id byte,
-1 tag byte).
-
-Publisher and subscriber performance is fairly good, such that sending
-many millions of messages per second is possible. As of this writing a
-fast machine can send about 15 million kerberos encrypted
-messages/second and more then 20 million in the clear. The per message
-overhead is on the order of about 50ns of wall clock time per message
-with kerberos encryption on. That depends on the exact hardware you're
-running on, and it depends on your workload batching well.
-
-The subscriber library also implements zero copy decoding for strings
-and byte arrays, so it is possible to receive large binary encoded
-things quite efficiently.
-
 ## Security
 
-No system like netidx can be taken seriously without a plausible
-design for securing data against unauthorized access, interception,
-manipulation, etc.
+Netidx currently supports two authentication mechanisms, Kerberos v5,
+and Local. Local applies only on the same machine (and isn't supported
+on Windows), while many organizations already have Kerberos v5
+deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
+Directory Server, or one of the many other compatible solutions.
 
-The heart of netidx security is Kerberos v5, mainly because most users
-already have it set up in the form of Microsoft Active Directory,
-Samba ADS, Redhat Directory Server, or one of the many other
-compatible solutions.
-
-That said security is optional in netidx. It's possible to deploy a
-netidx system with no security at all, and it's possible to deploy a
-system where some publishers require security, and some do not. While
-it's possible to mix secured and non secured publishers on the same
-resolver cluster there are some restrictions. 
+Security is optional in netidx, it's possible to deploy a netidx
+system with no security at all, or it's possible to deploy a mixed
+system where only some publishers require security, with some
+restrictions.
 
 * If a subscriber is configured with security, then it won't talk to
   publishers that aren't.
@@ -182,3 +136,17 @@ When security is enabled you get the following guarantees,
 
 While netidx is primarily developed on Linux, it has been tested on
 Windows, and Mac OS.
+
+## Scale
+
+Netidx has been designed to support single namespaces that are pretty
+large. This is done by allowing delegation of subtrees to different
+resolver clusters, which can be done to an existing system without
+disturbing running publishers or subscribers. Resolver clusters
+themselves can also have a number of replicas, with read load split
+between them, further augmenting scaling.
+
+At the publisher level, multiple publishers may publish the same
+name. When a client subscribes it will randomly pick one of them. This
+property can be used to balance load on an application, so long as the
+publishers syncronize with each other.
