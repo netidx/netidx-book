@@ -144,10 +144,10 @@
                     <main>
                         <h1 id="radio-button"><a class="header" href="#radio-button">Radio Button</a></h1>
 <p><img src="./widget-radio-button.png" alt="Radio Button" /></p>
-<p>Radio buttons allow another way of selecting between a set of
-options. Radio buttons are grouped together, and within each group
-only one radio button may be active at a time. Radio buttons have 4
-bscript properties,</p>
+<p>Radio buttons allow the user to select from a set of options. Radio
+buttons only work when there are two or more, as they are are grouped
+together, and within each group only one radio button may be active at
+a time. There are 5 bscript properties,</p>
 <ul>
 <li>Label: The text shown to the right of the radio button.</li>
 <li>Image: The image shown to the right of the radio button. This uses
@@ -157,6 +157,13 @@ and text are present then both will be shown.</li>
 button in each group may be active at any one time. If the user
 selects a new button in a group then current active button will
 toggle off and the new one will toggle on.</li>
+<li>Value: The value of the radio button, <code>true</code> the radio button is
+selected, <code>false</code> the radio button is not selected. If your
+expressions produce an inconsistent state for a given group, then
+the browser will pick one of the group members that is true to be
+the one button that is selected. If your expression doesn't update
+when the user selects an option, then the user's selection will
+override your value.</li>
 <li>On Toggled: <code>event()</code> called from this expression will yield <code>true</code>
 or <code>false</code> when the radio button toggles.</li>
 </ul>

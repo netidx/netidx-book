@@ -143,6 +143,49 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="scale"><a class="header" href="#scale">Scale</a></h1>
+<p><img src="./widget-scale.png" alt="Scale" /></p>
+<p>Scale visualizes a floating point number between a minimum and maximum
+value, and allows the user to drag the slider to change the value. It
+has several properties,</p>
+<h2 id="direction"><a class="header" href="#direction">Direction</a></h2>
+<p>This static property indicates whether the slider is horizontal or
+vertical.</p>
+<h2 id="draw-value"><a class="header" href="#draw-value">Draw Value</a></h2>
+<p>if <code>true</code> then the actual value is drawn, if <code>false</code> it is not.</p>
+<h2 id="marks"><a class="header" href="#marks">Marks</a></h2>
+<p>Allows displaying marks along the scale's axis. When dragging the
+slider the browser will snap to the nearest mark, making these values
+easy to hit exactly.</p>
+<pre><code>[mark, ...]
+
+mark: [&lt;pos&gt;, position-spec, (null | &lt;text&gt;)]
+
+position-spec: (&quot;left&quot; | &quot;right&quot; | &quot;top&quot; | &quot;bottom&quot;)
+</code></pre>
+<p>Example</p>
+<pre><code>[
+  [0.25, &quot;bottom&quot;, &quot;0.25&quot;], 
+  [0.5, &quot;bottom&quot;, &quot;0.5&quot;], 
+  [0.75, &quot;bottom&quot;, &quot;0.75&quot;]
+]
+</code></pre>
+<p>Will draw marks at 1/4, 1/2, and 3/4 along the axis on the bottom
+side.</p>
+<h2 id="has-origin"><a class="header" href="#has-origin">Has Origin</a></h2>
+<p>If this propery is <code>true</code> then the left or top of the scale is
+considered the origin, and the part from there to the handle will be
+filled in.</p>
+<h2 id="value"><a class="header" href="#value">Value</a></h2>
+<p>This defines the position of the handle. It must be between the
+minimum and maximum values.</p>
+<h2 id="min"><a class="header" href="#min">Min</a></h2>
+<p>The minimum value, this defines the origin if Has Origin is true.</p>
+<h2 id="max"><a class="header" href="#max">Max</a></h2>
+<p>The maximum value.</p>
+<h2 id="on-change"><a class="header" href="#on-change">On Change</a></h2>
+<p><code>event()</code> in this expression will yield the value of the slider
+whenever the user changes it.</p>
+<p><img src="./editor-scale.png" alt="Editor" /></p>
 
                     </main>
 
