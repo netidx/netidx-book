@@ -2198,10 +2198,11 @@ impl HwPub {
     pub async fn new(host: &amp;str, current: f64) -&gt; Result&lt;HwPub&gt; {
         // load the site cluster config from the path in the
         // environment variable NETIDX_CFG, or from
-        // dirs::config_dir()/netidx.json if the environment variable
-        // isn't specified, or from ~/.netidx.json if the previous
-        // file isn't present. Note this uses the cross platform dirs
-        // library, so yes, it does something reasonable on windows.
+        // dirs::config_dir()/netidx/client.json if the environment
+        // variable isn't specified, or from ~/.netidx.json if the
+        // previous file isn't present. Note this uses the cross
+        // platform dirs library, so yes, it does something reasonable
+        // on windows.
         let cfg = Config::load_default()?;
 
         // for this small service we don't need authentication
@@ -2250,7 +2251,7 @@ to make this interaction easy, here's an example of how we might use
 the data.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
@@ -2265,7 +2266,7 @@ are too high, and then publish the temperature and the timestamp when
 it was observed.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
@@ -2273,7 +2274,7 @@ while IFS='|' read path typ temp; do
         echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
     fi
 done | \
-netidx publisher --bind 192.168.0.0/24
+netidx publisher -a anonymous --bind 192.168.0.0/24
 </code></pre>
 <p>Now we've done something very interesting, we took some data out of
 netidx, did a computation on it, and published the result into the
@@ -2288,7 +2289,7 @@ quite what you might want it to do. Someone might, for example, want
 to write the following additional script.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/overtemp-ts') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/overtemp-ts') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     ring-very-loud-alarm ${pparts[2]}
@@ -2309,9 +2310,9 @@ after the event is detected. So lets change the code ...</p>
 <pre><code class="language-bash">#! /bin/bash
 
 declare -A HOSTS
-netidx resolver list -w '/hw/*/cpu-temp' | \
+netidx resolver -a anonymous list -w '/hw/*/cpu-temp' | \
     sed -u -e 's/^/ADD|/' | \
-    netidx subscriber | \
+    netidx subscriber -a anonymous | \
     while IFS='|' read path typ temp
     do
         IFS='/' pparts=($path)
@@ -2326,7 +2327,7 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
             echo &quot;/hw/${host}/overtemp-ts|null&quot;
             echo &quot;/hw/${host}/overtemp|null&quot;
         fi
-    done | netidx publisher --bind 192.168.0.0/24
+    done | netidx publisher -a anonymous --bind 192.168.0.0/24
 </code></pre>
 <p>We use <code>resolver list -w</code> to list all paths that match
 <code>/hw/*/cpu-temp</code>, and watch for new ones that might appear later. We
@@ -3841,7 +3842,7 @@ subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
 <p>This can be built using design mode in the browser, the view can then
 be saved to a file or written directly to a netidx path.</p>
 <p><img src="examples/browser-design-mode.png" alt="Browser Design Mode" /></p>
-<p>See the chapter on custom views for more information.</p>
+<p>See the GUI Builder chapter for more information.</p>
 <h2 id="wrapping-up"><a class="header" href="#wrapping-up">Wrapping Up</a></h2>
 <p>In this example we saw how an application can be designed more or less
 from the start to communicate with the outside world using netidx. We

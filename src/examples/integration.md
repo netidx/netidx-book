@@ -31,10 +31,11 @@ impl HwPub {
     pub async fn new(host: &str, current: f64) -> Result<HwPub> {
         // load the site cluster config from the path in the
         // environment variable NETIDX_CFG, or from
-        // dirs::config_dir()/netidx.json if the environment variable
-        // isn't specified, or from ~/.netidx.json if the previous
-        // file isn't present. Note this uses the cross platform dirs
-        // library, so yes, it does something reasonable on windows.
+        // dirs::config_dir()/netidx/client.json if the environment
+        // variable isn't specified, or from ~/.netidx.json if the
+        // previous file isn't present. Note this uses the cross
+        // platform dirs library, so yes, it does something reasonable
+        // on windows.
         let cfg = Config::load_default()?;
 
         // for this small service we don't need authentication
@@ -88,7 +89,7 @@ the data.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp > 75)); then
@@ -106,7 +107,7 @@ it was observed.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/cpu-temp') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-temp') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp > 75)); then
@@ -114,7 +115,7 @@ while IFS='|' read path typ temp; do
         echo "/hw/${pparts[2]}/overtemp|f64|$temp"
     fi
 done | \
-netidx publisher --bind 192.168.0.0/24
+netidx publisher -a anonymous --bind 192.168.0.0/24
 ```
 
 Now we've done something very interesting, we took some data out of
@@ -133,7 +134,7 @@ to write the following additional script.
 ``` bash
 #! /bin/bash
 
-netidx subscriber $(netidx resolver list '/hw/*/overtemp-ts') | \
+netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/overtemp-ts') | \
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     ring-very-loud-alarm ${pparts[2]}
@@ -157,9 +158,9 @@ after the event is detected. So lets change the code ...
 #! /bin/bash
 
 declare -A HOSTS
-netidx resolver list -w '/hw/*/cpu-temp' | \
+netidx resolver -a anonymous list -w '/hw/*/cpu-temp' | \
     sed -u -e 's/^/ADD|/' | \
-    netidx subscriber | \
+    netidx subscriber -a anonymous | \
     while IFS='|' read path typ temp
     do
         IFS='/' pparts=($path)
@@ -174,7 +175,7 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
             echo "/hw/${host}/overtemp-ts|null"
             echo "/hw/${host}/overtemp|null"
         fi
-    done | netidx publisher --bind 192.168.0.0/24
+    done | netidx publisher -a anonymous --bind 192.168.0.0/24
 ```
 
 We use `resolver list -w` to list all paths that match

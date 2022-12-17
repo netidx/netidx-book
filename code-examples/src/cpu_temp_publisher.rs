@@ -15,10 +15,11 @@ impl HwPub {
     pub async fn new(host: &str, current: f64) -> Result<HwPub> {
         // load the site cluster config from the path in the
         // environment variable NETIDX_CFG, or from
-        // dirs::config_dir()/netidx.json if the environment variable
-        // isn't specified, or from ~/.netidx.json if the previous
-        // file isn't present. Note this uses the cross platform dirs
-        // library, so yes, it does something reasonable on windows.
+        // dirs::config_dir()/netidx/client.json if the environment
+        // variable isn't specified, or from ~/.netidx.json if the
+        // previous file isn't present. Note this uses the cross
+        // platform dirs library, so yes, it does something reasonable
+        // on windows.
         let cfg = Config::load_default()?;
 
         // for this small service we don't need authentication

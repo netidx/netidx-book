@@ -195,7 +195,7 @@ be saved to a file or written directly to a netidx path.
 
 ![Browser Design Mode](browser-design-mode.png)
 
-See the chapter on custom views for more information.
+See the GUI Builder chapter for more information.
 
 ## Wrapping Up
 
