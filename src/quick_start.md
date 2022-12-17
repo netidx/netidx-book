@@ -107,7 +107,7 @@ connect to the resolver cluster.
 
 To test the configuration run,
 
-`netidx stress publisher -a local -b 127.0.0.1/0 --delay 1000 1000 10`
+`netidx stress -a local publisher -b 127.0.0.1/0 --delay 1000 1000 10`
 
 This will publish 10,000 items following the pattern `/bench/$r/$c`
 where `$r` is a row number and `$c` is a column

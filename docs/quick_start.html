@@ -8,7 +8,6 @@
 
         <!-- Custom HTML head -->
         
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
@@ -34,13 +33,13 @@
     </head>
     <body>
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -56,7 +55,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -68,7 +67,7 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
             var sidebar = 'hidden';
             if (document.body.clientWidth >= 1080) {
@@ -99,7 +98,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -132,7 +131,7 @@
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -185,13 +184,14 @@ server, as well as the publisher/subscriber command line tools</p>
   }
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx-resolver.json</code>. This is
-the config for the local resolver on your machine. Make sure port 4564
-is free, or change it to a free port of your choosing. If necessary
-you can change the local auth socket to one of your choosing.</p>
-<p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
-command will return immediatly, and the resolver server will
-daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<p>Install the above config in
+<code>~/.config/netidx/netidx-resolver.json</code>. This is the config for the
+local resolver on your machine. Make sure port 4564 is free, or change
+it to a free port of your choosing. If necessary you can change the
+local auth socket to one of your choosing.</p>
+<p>run <code>netidx resolver-server -c ~/.config/netidx/netidx-resolver.json</code>. This command will return
+immediatly, and the resolver server will daemonize. Check that it's
+running using <code>ps auxwww | grep netidx</code>.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd. </p>
 <pre><code>[Unit]
@@ -217,18 +217,23 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
     &quot;base&quot;: &quot;/&quot;
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx.json</code>. This is the
-config all netidx clients (publishers and subscribers) will use to
+<p>Install the above config in <code>~/.config/netidx/client.json</code>. This is
+the config all netidx clients (publishers and subscribers) will use to
 connect to the resolver cluster.</p>
+<ul>
+<li>On Mac OS replace <code>~/.config/netidx</code> with <code>~/Library/Application Support</code>.</li>
+<li>On Windows replace <code>~/.config/netidx</code> with <code>~\AppData\Roaming</code>
+(that's <code>{FOLDERID_RoamingAppData}</code>)</li>
+</ul>
 <p>To test the configuration run,</p>
-<p><code>netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10</code></p>
+<p><code>netidx stress -a local publisher -b 127.0.0.1/0 --delay 1000 1000 10</code></p>
 <p>This will publish 10,000 items following the pattern <code>/bench/$r/$c</code>
 where <code>$r</code> is a row number and <code>$c</code> is a column
 number. e.g. <code>/bench/100/8</code> corresponds to row 100 column 8. The
 browser will draw this as a table with 1000 rows and 10 columns,
 however for this test we will use the command line subscriber to look
 at one cell in the table.</p>
-<p><code>netidx subscriber /bench/0/0</code></p>
+<p><code>netidx subscriber -a local /bench/0/0</code></p>
 <p>should print out one line like this every second</p>
 <p><code>/bench/0/0|v64|1</code></p>
 <p>The final number should increment, and if that works then netidx is
@@ -268,18 +273,18 @@ gtk development files installed to build it, on debian/ubuntu add those with </p
 
 
 
-        <script type="text/javascript">
+        <script>
             window.playground_copyable = true;
         </script>
 
 
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
 

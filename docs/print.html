@@ -9,7 +9,6 @@
 
         <!-- Custom HTML head -->
         
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
@@ -35,13 +34,13 @@
     </head>
     <body>
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -57,7 +56,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -69,7 +68,7 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
             var sidebar = 'hidden';
             if (document.body.clientWidth >= 1080) {
@@ -100,7 +99,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -133,7 +132,7 @@
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -186,13 +185,14 @@ server, as well as the publisher/subscriber command line tools</p>
   }
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx-resolver.json</code>. This is
-the config for the local resolver on your machine. Make sure port 4564
-is free, or change it to a free port of your choosing. If necessary
-you can change the local auth socket to one of your choosing.</p>
-<p>run <code>netidx resolver-server -c ~/.config/netidx-resolver.json</code>. This
-command will return immediatly, and the resolver server will
-daemonize. Check that it's running using <code>ps auxwww | grep netidx</code>.</p>
+<p>Install the above config in
+<code>~/.config/netidx/netidx-resolver.json</code>. This is the config for the
+local resolver on your machine. Make sure port 4564 is free, or change
+it to a free port of your choosing. If necessary you can change the
+local auth socket to one of your choosing.</p>
+<p>run <code>netidx resolver-server -c ~/.config/netidx/netidx-resolver.json</code>. This command will return
+immediatly, and the resolver server will daemonize. Check that it's
+running using <code>ps auxwww | grep netidx</code>.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd. </p>
 <pre><code>[Unit]
@@ -218,18 +218,23 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
     &quot;base&quot;: &quot;/&quot;
 }
 </code></pre>
-<p>Install the above config in <code>~/.config/netidx.json</code>. This is the
-config all netidx clients (publishers and subscribers) will use to
+<p>Install the above config in <code>~/.config/netidx/client.json</code>. This is
+the config all netidx clients (publishers and subscribers) will use to
 connect to the resolver cluster.</p>
+<ul>
+<li>On Mac OS replace <code>~/.config/netidx</code> with <code>~/Library/Application Support</code>.</li>
+<li>On Windows replace <code>~/.config/netidx</code> with <code>~\AppData\Roaming</code>
+(that's <code>{FOLDERID_RoamingAppData}</code>)</li>
+</ul>
 <p>To test the configuration run,</p>
-<p><code>netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10</code></p>
+<p><code>netidx stress -a local publisher -b 127.0.0.1/0 --delay 1000 1000 10</code></p>
 <p>This will publish 10,000 items following the pattern <code>/bench/$r/$c</code>
 where <code>$r</code> is a row number and <code>$c</code> is a column
 number. e.g. <code>/bench/100/8</code> corresponds to row 100 column 8. The
 browser will draw this as a table with 1000 rows and 10 columns,
 however for this test we will use the command line subscriber to look
 at one cell in the table.</p>
-<p><code>netidx subscriber /bench/0/0</code></p>
+<p><code>netidx subscriber -a local /bench/0/0</code></p>
 <p>should print out one line like this every second</p>
 <p><code>/bench/0/0|v64|1</code></p>
 <p>The final number should increment, and if that works then netidx is
@@ -2174,8 +2179,7 @@ important case. What code do we need to add to our daemon, and what
 options do we have for using the data?</p>
 <p>We can modify our Cargo.toml to include netidx, and then add a small
 self contained module, publisher.rs</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use anyhow::Result;
 use netidx::{
@@ -2232,8 +2236,7 @@ impl HwPub {
         batch.commit(None).await
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>Now all we would need to do is create a HwPub on startup, and call
 HwPub::update whenever we learn about a new cpu temperature value. Of
 course we also need to deploy a resolver server, and distribute a
@@ -2490,8 +2493,7 @@ pub async fn main() -&gt; Result&lt;()&gt; {
         }
     }
     Ok(())
-}
-</code></pre></pre>
+}</code></pre></pre>
 <p>This does almost exactly the same thing as the shell script, the only
 semantic difference being that it sends an actual DateTime value for
 the timestamp instead of a string, which would certainly make life
@@ -3678,8 +3680,7 @@ interface of the Prostar and netidx. Full source code
 <p>The main loop takes commands from either the local command socket, or
 the netidx publisher, and sends them via modbus to the charge
 controller, e.g.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    loop {
         ...
@@ -3698,14 +3699,12 @@ controller, e.g.</p>
                         .await
                 }
                 ...
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>A message is either a timer Tick, on which we send out (and log)
 updated stats, or an actual command, which we handle individually. The
 publisher module is fed a new stats record read from modbus on each
 timer tick. e.g.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    fn update(&amp;self, st: &amp;Stats) {
         use chrono::prelude::*;
@@ -3722,8 +3721,7 @@ timer tick. e.g.</p>
         self.battery_terminal_voltage
             .update_changed(Value::F32(st.battery_terminal_voltage.get::&lt;volt&gt;()));
     ...
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>These are all published under <code>/solar/stats</code>, there are a lot of them,
 so I won't show them all here, you can read the full source if you're
 curious. Essentially it's an infinite loop of read stats from modbus,
@@ -3733,12 +3731,10 @@ update netidx, flush netidx, loop.</p>
 control we need some way to send commands from the subscriber back to
 the publisher, and that's where writes come in. If you've read the api
 documentation you might have noticed,</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn write(&amp;self, v: Value)
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>Continuing with the metaphor of exporting variables to a cross machine
 global namespace, it fits perfectly well to imagine that we can write
 to those variables as well as read from them, publisher willing.</p>
@@ -3748,8 +3744,7 @@ batteries), <code>/solar/control/load</code> (to control whether the inverter is
 or off), and <code>/solar/control/reset</code> (to trigger a controller
 reset). These values will all be boolean, and they will be valid for
 both read and write. Here is the full code of the control section,</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct PublishedControl {
     charging: Val,
@@ -3820,8 +3815,7 @@ impl PublishedControl {
             .collect()
     }
 }
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>In process_writes we translate each WriteRequest that is targeted at
 one of the published controls into a FromClient message that the main
 loop will act on. So from the main loop's perspective it doesn't
@@ -3959,16 +3953,14 @@ is possible for a single client to concurrently issue many rpc calls
 to the same publisher, and in that case the messages will
 automatically batch allowing processing overhead to be amortized on
 both sides. e.g.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>futures::join_all(vec![
     proc.call(args1), 
     proc.call(args2), 
     proc.call(args3)
 ]).await
-<span class="boring">}
-</span></code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>This will cause only one batch containing all the data needed to make
 all three calls to be sent to the publisher. It isn't clear whether
 the results will also be sent as a batch, simply because each call may
@@ -4602,22 +4594,22 @@ from the previous one.</p>
 
 
 
-        <script type="text/javascript">
+        <script>
             window.playground_copyable = true;
         </script>
 
 
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
 
-        <script type="text/javascript">
+        <script>
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
