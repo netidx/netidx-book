@@ -101,9 +101,9 @@ Install the above config in `~/.config/netidx/client.json`. This is
 the config all netidx clients (publishers and subscribers) will use to
 connect to the resolver cluster.
 
-- On Mac OS replace `~/.config/netidx` with `~/Library/Application Support`.
-- On Windows replace `~/.config/netidx` with `~\AppData\Roaming`
-  (that's `{FOLDERID_RoamingAppData}`)
+- On Mac OS replace `~/.config/netidx` with `~/Library/Application Support/netidx`.
+- On Windows replace `~/.config/netidx` with `~\AppData\Roaming\netidx`
+  (that's `{FOLDERID_RoamingAppData}\netidx`)
 
 To test the configuration run,
 
