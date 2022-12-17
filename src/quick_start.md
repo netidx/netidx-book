@@ -50,14 +50,16 @@ You will need some build dependencies,
 }
 ```
 
-Install the above config in `~/.config/netidx-resolver.json`. This is
-the config for the local resolver on your machine. Make sure port 4564
-is free, or change it to a free port of your choosing. If necessary
-you can change the local auth socket to one of your choosing.
+Install the above config in
+`~/.config/netidx/netidx-resolver.json`. This is the config for the
+local resolver on your machine. Make sure port 4564 is free, or change
+it to a free port of your choosing. If necessary you can change the
+local auth socket to one of your choosing.
 
-run `netidx resolver-server -c ~/.config/netidx-resolver.json`. This
-command will return immediatly, and the resolver server will
-daemonize. Check that it's running using `ps auxwww | grep netidx`.
+run `netidx resolver-server -c
+~/.config/netidx/netidx-resolver.json`. This command will return
+immediatly, and the resolver server will daemonize. Check that it's
+running using `ps auxwww | grep netidx`.
 
 ### Systemd
 
@@ -95,13 +97,17 @@ and
 }
 ```
 
-Install the above config in `~/.config/netidx.json`. This is the
-config all netidx clients (publishers and subscribers) will use to
+Install the above config in `~/.config/netidx/client.json`. This is
+the config all netidx clients (publishers and subscribers) will use to
 connect to the resolver cluster.
+
+- On Mac OS replace `~/.config/netidx` with `~/Library/Application Support`.
+- On Windows replace `~/.config/netidx` with `~\AppData\Roaming`
+  (that's `{FOLDERID_RoamingAppData}`)
 
 To test the configuration run,
 
-`netidx stress publisher --bind 127.0.0.1/0 --delay 1000 1000 10`
+`netidx stress publisher -a local -b 127.0.0.1/0 --delay 1000 1000 10`
 
 This will publish 10,000 items following the pattern `/bench/$r/$c`
 where `$r` is a row number and `$c` is a column
@@ -110,7 +116,7 @@ browser will draw this as a table with 1000 rows and 10 columns,
 however for this test we will use the command line subscriber to look
 at one cell in the table.
 
-`netidx subscriber /bench/0/0`
+`netidx subscriber -a local /bench/0/0`
 
 should print out one line like this every second
 
