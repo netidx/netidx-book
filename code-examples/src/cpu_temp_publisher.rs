@@ -3,7 +3,7 @@ use netidx::{
     config::Config,
     path::Path,
     publisher::{Publisher, Val, Value},
-    resolver::Auth,
+    resolver_client::DesiredAuth,
 };
 
 pub struct HwPub {
@@ -22,7 +22,7 @@ impl HwPub {
         let cfg = Config::load_default()?;
 
         // for this small service we don't need authentication
-        let auth = Auth::Anonymous;
+        let auth = DesiredAuth::Anonymous;
 
         // listen on any unique address matching 192.168.0.0/24. If
         // our network was large and complex we might need to make

@@ -19,7 +19,7 @@ use netidx::{
     config::Config,
     path::Path,
     publisher::{Publisher, Val, Value},
-    resolver::Auth,
+    resolver_client::DesiredAuth,
 };
 
 pub struct HwPub {
@@ -38,7 +38,7 @@ impl HwPub {
         let cfg = Config::load_default()?;
 
         // for this small service we don't need authentication
-        let auth = Auth::Anonymous;
+        let auth = DesiredAuth::Anonymous;
 
         // listen on any unique address matching 192.168.0.0/24. If
         // our network was large and complex we might need to make
@@ -220,7 +220,7 @@ use netidx::{
     path::Path,
     pool::Pooled,
     publisher::{self, Publisher, Value},
-    resolver::{Auth, ChangeTracker, Glob, GlobSet},
+    resolver_client::{DesiredAuth, ChangeTracker, Glob, GlobSet},
     subscriber::{self, Event, SubId, Subscriber, UpdatesFlags},
 };
 use std::{
@@ -307,7 +307,7 @@ async fn watch_hosts(
 pub async fn main() -> Result<()> {
     // load the default netidx config
     let config = Config::load_default()?;
-    let auth = Auth::Krb5 {upn: None, spn: Some("publish/blackbird.ryu-oh.org@RYU-OH.ORG".into())};
+    let auth = DesiredAuth::Krb5 {upn: None, spn: Some("publish/blackbird.ryu-oh.org@RYU-OH.ORG".into())};
     // setup subscriber and publisher
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
     let publisher = Publisher::new(config, auth, "192.168.0.0/24".parse()?).await?;

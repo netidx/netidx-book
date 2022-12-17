@@ -2,7 +2,7 @@
 name = "code-examples"
 version = "0.1.0"
 authors = ["Eric Stokes <letaris@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [[bin]]
 name = "cpu_overtemp_detector"
@@ -16,5 +16,5 @@ path = "src/cpu_temp_publisher.rs"
 chrono = "0.4"
 tokio = { version = "1", features = ["full"] }
 futures = "0.3"
-netidx = "0.9"
+netidx = "0.12"
 anyhow = "1"
