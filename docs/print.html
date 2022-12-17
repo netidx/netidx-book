@@ -222,9 +222,9 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
 the config all netidx clients (publishers and subscribers) will use to
 connect to the resolver cluster.</p>
 <ul>
-<li>On Mac OS replace <code>~/.config/netidx</code> with <code>~/Library/Application Support</code>.</li>
-<li>On Windows replace <code>~/.config/netidx</code> with <code>~\AppData\Roaming</code>
-(that's <code>{FOLDERID_RoamingAppData}</code>)</li>
+<li>On Mac OS replace <code>~/.config/netidx</code> with <code>~/Library/Application Support/netidx</code>.</li>
+<li>On Windows replace <code>~/.config/netidx</code> with <code>~\AppData\Roaming\netidx</code>
+(that's <code>{FOLDERID_RoamingAppData}\netidx</code>)</li>
 </ul>
 <p>To test the configuration run,</p>
 <p><code>netidx stress -a local publisher -b 127.0.0.1/0 --delay 1000 1000 10</code></p>
