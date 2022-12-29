@@ -1,7 +1,7 @@
 # Remote Procedure Call
 
-At the library level RPCs in netidix are just like any other untyped
-RPC. The procedure name is the netidx path, the arguments are an array
+At the library level RPCs in netidix are just like any other RPC. 
+The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.
 
