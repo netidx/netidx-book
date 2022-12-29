@@ -27,6 +27,7 @@ talking about.
   - Resolver server addresses that are routeable by some clients and not others
   - Wrong Kerberos SPNs
   - Misconfigured Kerberos
+  - Bad tls certificates
 
 ### Subscriber & Publisher
 
@@ -78,7 +79,7 @@ talking about.
     connection process again. That roughly entails taking the list of
     all servers, permuting it, and then connecting to each server in
     the list until one of them answers, says a proper hello, and
-    successfully authenticates (if kerberos is on). For each batch a
+    successfully authenticates (if authentication is on). For each batch a
     resolver client will do this abandon and reconnect dance 3 times,
     and then it will give up and return an error for that
     batch. Subsuquent batches will start over from the beginning. In a
@@ -101,5 +102,5 @@ talking about.
 
 One important consequence of the write client behavior is that in the
 event all the resolver servers crash, when they come back up
-publishers will republishing everything after a maximum of 1/2
+publishers will republish everything after a maximum of 1/2
 `writer_ttl` has elapsed.

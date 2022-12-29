@@ -99,8 +99,17 @@ components are involved.
    the GSSAPI session, and over the same TCP session that was
    established earlier).
 
-In the case netidx is not configured to use kerberos the KDC is not
-involved, and none of the authentication or authorization tokens are
-established/sent, it's just a simple matter of look up the address
-from the resolver, and then subscribe to the publisher. In that case
-all data goes in the clear.
+### Other Authentication Methods
+
+In the case of Tls and Local authentication, the subscription flow is similar,
+it just doesn't involve the KDC. Under local authentication, the resolver server
+is listening on a unix domain socket at an agreed upon path. The client connects
+to the socket, and the server is able to determine the local user on the other end.
+It then sends the client a token that it can use to make requests. From step 2 on local
+auth is more or less the same as kerberos.
+
+Tls is very similar as well, except instead of a kdc, it's doing a TLS handshake. If the
+certificates check out, then from step 2 on, it's pretty much identical to kerberos.
+
+In the case of anonymous authentication it's just a simple matter of look up the address
+from the resolver, and then subscribe to the publisher. All the data goes in the clear.

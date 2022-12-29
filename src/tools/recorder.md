@@ -63,6 +63,7 @@ underlying IO device and the number of processor cores available.
   - `-a, --auth`: the authentication mechanism, anonymous, local, or krb5.
   - `--spn <service-principal>`: optional, required for kerberos, the
     service princial to publish as.
+  - `--identity <name>`: optional, the tls identity to use for publishing
   - `--max-sessions <n>`: optional, How many total client sessions to allow at
     any given time. When a session is no longer used, it will be
     garbage collected. default 256.

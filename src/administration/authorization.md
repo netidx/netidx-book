@@ -1,6 +1,6 @@
 # Authorization
 
-When using the Kerberos or Local auth mechanisms we also need to
+When using the Kerberos, Local, or Tls auth mechanisms we also need to
 specify permissions in the cluster config file, e.g.
 
 ``` json

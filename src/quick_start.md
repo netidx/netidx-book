@@ -12,6 +12,10 @@ you haven't already. Ensure cargo is in your and then run,
 
 `cargo install netidx-tools`
 
+if you are on Max OS you must use,
+
+`cargo install --no-default-features netidx-tools`
+
 This will build and install the `netidx` command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools
@@ -51,15 +55,16 @@ You will need some build dependencies,
 ```
 
 Install the above config in
-`~/.config/netidx/netidx-resolver.json`. This is the config for the
+`~/.config/netidx/resolver.json`. This is the config for the
 local resolver on your machine. Make sure port 4564 is free, or change
 it to a free port of your choosing. If necessary you can change the
 local auth socket to one of your choosing.
 
-run `netidx resolver-server -c
-~/.config/netidx/netidx-resolver.json`. This command will return
+run `netidx resolver-server -c ~/.config/netidx/resolver.json`. This command will return
 immediatly, and the resolver server will daemonize. Check that it's
 running using `ps auxwww | grep netidx`.
+
+NOTE, the resolver server does not currently support Windows.
 
 ### Systemd
 
@@ -70,7 +75,7 @@ If desired you can start the resolver server automatically with systemd.
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/resolver.json -f
 
 [Install]
 WantedBy=default.target

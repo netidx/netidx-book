@@ -109,6 +109,15 @@ path will be referred to the child.
 This section is a list of all the servers in this cluster. The fields
 on each server are,
 
+- id_map_command: Optional. The path to the command the server should run
+  in order to map a user name to a user and a set of groups that user is
+  a member of. Default is `/usr/bin/id`. If a custom command is specified
+  then it's output MUST be in the same format as the `/usr/bin/id` command.
+  This command will be passed the name of the user as a single argument.
+  Depending on the auth mechanism this "name" could be e.g. `eric@RYU-OH.ORG` for
+  kerberos, just `eric` for local auth, or `eric.users.architect.com` for
+  tls auth (it will pass the common name of the users' certificate)
+
 - pid_file: the path to the pid file you want the server to write. The
   server id folowed by .pid will be appended to whatever is in this
   field. So server 0 in the above example will write it's pid to
@@ -139,9 +148,24 @@ on each server are,
   publisher will remain in the resolver.
 
 - auth: The authentication mechanism used by this server. One of
-  Anonymous, Local, or Krb5. Local must include the path to the local
+  Anonymous, Local, Krb5, or Tls. Local must include the path to the local
   auth socket file that will be used to verify the identity of
-  clients. Krb5 must include the server's spn.
+  clients. Krb5 must include the server's spn. Tls must include the 
+  domain name of the server, the path to the trusted certificates, 
+  the server's certificate (it's CN must match the domain name), 
+  and the path to the server's private key. For example,
+  
+  ``` json
+  "Tls": {
+      "name": "resolver.architect.com",
+      "trusted": "trusted.pem",
+      "certificate": "cert.pem",
+      "private_key": "private.key"
+  }
+  ```
+  
+  The certificate `CN` must be `resolver.architect.com`. The
+  may not be encrypted.
 
 ### perms
 
@@ -190,3 +214,48 @@ socket file. Krb5 should include the server's spn.
 The base path of this server cluster in the tree. This should
 correspond to the server cluster's parent, or "/" if it's parent is
 null.
+
+#### default_auth
+
+Optional. Specify the default authentication mechanism. May be one of
+`Anonymous`, `Local`, `Krb5`, or `Tls`
+
+#### tls
+
+This is required only if using tls. Because netidx is a 
+distributed system, when in tls mode a subscriber may need to interact
+with different organizations that don't necessarially trust each other enough
+to share a certificate authority. That is why subscribers may be configured
+with multiple identities. When connecting to another netidx entity a
+subscriber will pick the identity that most closely matches the domain
+of that entity. For example, in the below config, when connecting to 
+`resolver.footraders.com` the client will use the `footraders.com` identity.
+When connecting to `core.architect.com` it will choose the `architect.com`
+identity. When connecting to `a-feed.marketdata.architect.com` it would
+choose the `marketdata.architect.com` identity.
+ 
+When publishing, the default identity is used unless another identity is
+specified to the publisher.
+ 
+``` json
+"tls": {
+    "default_identity": "footraders.com",
+    "identities": {
+        "footraders.com": {
+            "trusted": "/home/joe/.config/netidx/footradersca.pem",
+            "certificate": "/home/joe/.config/netidx/footraders.crt",
+            "private_key": "/home/joe/.config/netidx/footraders.key"
+        },
+        "architect.com": {
+            "trusted": "/home/joe/.config/netidx/architectca.pem",
+            "certificate": "/home/joe/.config/netidx/architect.crt",
+            "private_key": "/home/joe/.config/netidx/architect.key"
+        },
+        "marketdata.architect.com": {
+            "trusted": "/home/joe/.config/netidx/architectca.pem",
+            "certificate": "/home/joe/.config/netidx/architectmd.crt",
+            "private_key": "/home/joe/.config/netidx/architectmd.key"
+        }
+    }
+}
+```

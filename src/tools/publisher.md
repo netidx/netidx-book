@@ -72,6 +72,7 @@ There are several command line options to the `netidx publisher` command,
   resolver server as a prinicpal other than the logged in user then
   you can specify that principal here. You must have a TGT for the
   specified principal.
+- `--identity`: optional, the tls identity to use for publishing.
 - `--timeout <seconds>`: optional, if specified requires subscribers
   to consume published values within the specified number of seconds
   or be disconnected. By default the publisher will wait forever for a

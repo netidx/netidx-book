@@ -100,11 +100,14 @@ Published values have some other properties as well,
 
 ## Security
 
-Netidx currently supports two authentication mechanisms, Kerberos v5,
-and Local. Local applies only on the same machine (and isn't supported
+Netidx currently supports three authentication mechanisms, Kerberos v5, 
+Local, and Tls. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
 deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
-Directory Server, or one of the many other compatible solutions.
+Directory Server, or one of the many other compatible solutions. Tls
+requires each participant in netidx (resolver server, subscriber, publisher)
+to have a certificate issued by a certificate authority that the others
+it wants to interact with trust.
 
 Security is optional in netidx, it's possible to deploy a netidx
 system with no security at all, or it's possible to deploy a mixed
@@ -116,15 +119,17 @@ restrictions.
 * If a publisher is configured with security, then it won't talk to a
   subscriber that isn't.
 
-When security is enabled you get the following guarantees,
+When security is enabled, regardless of which of the three mechanisms
+you get the following guarantees,
 
 * **Mutual Authentication**, the publisher knows the subscriber is who
   they claim to be, and the subscriber knows the publisher is who they
   claim to be. This applies for the resolver <-> subscriber, and
   resolver <-> publisher as well.
   
-* **Confidentiality** and Tamper detection, all messages are encrypted,
-  and data cannot be altered undetected by a man in the middle.
+* **Confidentiality** and Tamper detection, all messages are encrypted
+  if they will leave the local machine, and data cannot be altered 
+  undetected by a man in the middle.
 
 * **Authorization**, The user subscribing to a given data value is
   authorized to do so. The resolver servers maintain a permissions
