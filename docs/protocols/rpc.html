@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -142,8 +145,8 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
-<p>At the library level RPCs in netidix are just like any other untyped
-RPC. The procedure name is the netidx path, the arguments are an array
+<p>At the library level RPCs in netidix are just like any other RPC. 
+The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.</p>
 <pre><code>/app/rpcs/do_thing                            &lt;- the procedure
@@ -302,5 +305,6 @@ a shared locked data structure.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

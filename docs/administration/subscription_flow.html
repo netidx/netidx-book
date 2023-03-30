@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -245,11 +248,17 @@ the GSSAPI session, and over the same TCP session that was
 established earlier).</p>
 </li>
 </ol>
-<p>In the case netidx is not configured to use kerberos the KDC is not
-involved, and none of the authentication or authorization tokens are
-established/sent, it's just a simple matter of look up the address
-from the resolver, and then subscribe to the publisher. In that case
-all data goes in the clear.</p>
+<h3 id="other-authentication-methods"><a class="header" href="#other-authentication-methods">Other Authentication Methods</a></h3>
+<p>In the case of Tls and Local authentication, the subscription flow is similar,
+it just doesn't involve the KDC. Under local authentication, the resolver server
+is listening on a unix domain socket at an agreed upon path. The client connects
+to the socket, and the server is able to determine the local user on the other end.
+It then sends the client a token that it can use to make requests. From step 2 on local
+auth is more or less the same as kerberos.</p>
+<p>Tls is very similar as well, except instead of a kdc, it's doing a TLS handshake. If the
+certificates check out, then from step 2 on, it's pretty much identical to kerberos.</p>
+<p>In the case of anonymous authentication it's just a simple matter of look up the address
+from the resolver, and then subscribe to the publisher. All the data goes in the clear.</p>
 
                     </main>
 
@@ -299,5 +308,6 @@ all data goes in the clear.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

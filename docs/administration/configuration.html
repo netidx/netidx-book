@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -248,6 +251,16 @@ path will be referred to the child.</p>
 on each server are,</p>
 <ul>
 <li>
+<p>id_map_command: Optional. The path to the command the server should run
+in order to map a user name to a user and a set of groups that user is
+a member of. Default is <code>/usr/bin/id</code>. If a custom command is specified
+then it's output MUST be in the same format as the <code>/usr/bin/id</code> command.
+This command will be passed the name of the user as a single argument.
+Depending on the auth mechanism this &quot;name&quot; could be e.g. <code>eric@RYU-OH.ORG</code> for
+kerberos, just <code>eric</code> for local auth, or <code>eric.users.architect.com</code> for
+tls auth (it will pass the common name of the users' certificate)</p>
+</li>
+<li>
 <p>pid_file: the path to the pid file you want the server to write. The
 server id folowed by .pid will be appended to whatever is in this
 field. So server 0 in the above example will write it's pid to
@@ -284,9 +297,21 @@ publisher will remain in the resolver.</p>
 </li>
 <li>
 <p>auth: The authentication mechanism used by this server. One of
-Anonymous, Local, or Krb5. Local must include the path to the local
+Anonymous, Local, Krb5, or Tls. Local must include the path to the local
 auth socket file that will be used to verify the identity of
-clients. Krb5 must include the server's spn.</p>
+clients. Krb5 must include the server's spn. Tls must include the 
+domain name of the server, the path to the trusted certificates, 
+the server's certificate (it's CN must match the domain name), 
+and the path to the server's private key. For example,</p>
+<pre><code class="language-json">&quot;Tls&quot;: {
+    &quot;name&quot;: &quot;resolver.architect.com&quot;,
+    &quot;trusted&quot;: &quot;trusted.pem&quot;,
+    &quot;certificate&quot;: &quot;cert.pem&quot;,
+    &quot;private_key&quot;: &quot;private.key&quot;
+}
+</code></pre>
+<p>The certificate <code>CN</code> must be <code>resolver.architect.com</code>. The
+may not be encrypted.</p>
 </li>
 </ul>
 <h3 id="perms"><a class="header" href="#perms">perms</a></h3>
@@ -332,6 +357,44 @@ socket file. Krb5 should include the server's spn.</p>
 <p>The base path of this server cluster in the tree. This should
 correspond to the server cluster's parent, or &quot;/&quot; if it's parent is
 null.</p>
+<h4 id="default_auth"><a class="header" href="#default_auth">default_auth</a></h4>
+<p>Optional. Specify the default authentication mechanism. May be one of
+<code>Anonymous</code>, <code>Local</code>, <code>Krb5</code>, or <code>Tls</code></p>
+<h4 id="tls"><a class="header" href="#tls">tls</a></h4>
+<p>This is required only if using tls. Because netidx is a 
+distributed system, when in tls mode a subscriber may need to interact
+with different organizations that don't necessarially trust each other enough
+to share a certificate authority. That is why subscribers may be configured
+with multiple identities. When connecting to another netidx entity a
+subscriber will pick the identity that most closely matches the domain
+of that entity. For example, in the below config, when connecting to 
+<code>resolver.footraders.com</code> the client will use the <code>footraders.com</code> identity.
+When connecting to <code>core.architect.com</code> it will choose the <code>architect.com</code>
+identity. When connecting to <code>a-feed.marketdata.architect.com</code> it would
+choose the <code>marketdata.architect.com</code> identity.</p>
+<p>When publishing, the default identity is used unless another identity is
+specified to the publisher.</p>
+<pre><code class="language-json">&quot;tls&quot;: {
+    &quot;default_identity&quot;: &quot;footraders.com&quot;,
+    &quot;identities&quot;: {
+        &quot;footraders.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/footradersca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/footraders.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/footraders.key&quot;
+        },
+        &quot;architect.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/architectca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/architect.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/architect.key&quot;
+        },
+        &quot;marketdata.architect.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/architectca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/architectmd.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/architectmd.key&quot;
+        }
+    }
+}
+</code></pre>
 
                     </main>
 
@@ -381,5 +444,6 @@ null.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

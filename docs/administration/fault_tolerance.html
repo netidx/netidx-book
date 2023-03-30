@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -173,6 +176,7 @@ causes it not to work. e.g.
 <li>Resolver server addresses that are routeable by some clients and not others</li>
 <li>Wrong Kerberos SPNs</li>
 <li>Misconfigured Kerberos</li>
+<li>Bad tls certificates</li>
 </ul>
 </li>
 </ul>
@@ -229,7 +233,7 @@ time between 1 and 12 seconds, and then go through the whole
 connection process again. That roughly entails taking the list of
 all servers, permuting it, and then connecting to each server in
 the list until one of them answers, says a proper hello, and
-successfully authenticates (if kerberos is on). For each batch a
+successfully authenticates (if authentication is on). For each batch a
 resolver client will do this abandon and reconnect dance 3 times,
 and then it will give up and return an error for that
 batch. Subsuquent batches will start over from the beginning. In a
@@ -260,7 +264,7 @@ clients,
 </ul>
 <p>One important consequence of the write client behavior is that in the
 event all the resolver servers crash, when they come back up
-publishers will republishing everything after a maximum of 1/2
+publishers will republish everything after a maximum of 1/2
 <code>writer_ttl</code> has elapsed.</p>
 
                     </main>
@@ -311,5 +315,6 @@ publishers will republishing everything after a maximum of 1/2
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

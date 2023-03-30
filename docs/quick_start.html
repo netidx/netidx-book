@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -150,6 +153,8 @@ publishers, subscribers, and tools without much setup.</p>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure cargo is in your and then run,</p>
 <p><code>cargo install netidx-tools</code></p>
+<p>if you are on Max OS you must use,</p>
+<p><code>cargo install --no-default-features netidx-tools</code></p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools</p>
@@ -185,20 +190,21 @@ server, as well as the publisher/subscriber command line tools</p>
 }
 </code></pre>
 <p>Install the above config in
-<code>~/.config/netidx/netidx-resolver.json</code>. This is the config for the
+<code>~/.config/netidx/resolver.json</code>. This is the config for the
 local resolver on your machine. Make sure port 4564 is free, or change
 it to a free port of your choosing. If necessary you can change the
 local auth socket to one of your choosing.</p>
-<p>run <code>netidx resolver-server -c ~/.config/netidx/netidx-resolver.json</code>. This command will return
+<p>run <code>netidx resolver-server -c ~/.config/netidx/resolver.json</code>. This command will return
 immediatly, and the resolver server will daemonize. Check that it's
 running using <code>ps auxwww | grep netidx</code>.</p>
+<p>NOTE, the resolver server does not currently support Windows.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd. </p>
 <pre><code>[Unit]
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/resolver.json -f
 
 [Install]
 WantedBy=default.target
@@ -289,5 +295,6 @@ gtk development files installed to build it, on debian/ubuntu add those with </p
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

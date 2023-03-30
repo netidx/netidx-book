@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -216,6 +219,7 @@ must set the environment variable
 resolver server as a prinicpal other than the logged in user then
 you can specify that principal here. You must have a TGT for the
 specified principal.</li>
+<li><code>--identity</code>: optional, the tls identity to use for publishing.</li>
 <li><code>--timeout &lt;seconds&gt;</code>: optional, if specified requires subscribers
 to consume published values within the specified number of seconds
 or be disconnected. By default the publisher will wait forever for a
@@ -314,5 +318,6 @@ number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

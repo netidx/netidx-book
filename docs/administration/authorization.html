@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -142,7 +145,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="authorization"><a class="header" href="#authorization">Authorization</a></h1>
-<p>When using the Kerberos or Local auth mechanisms we also need to
+<p>When using the Kerberos, Local, or Tls auth mechanisms we also need to
 specify permissions in the cluster config file, e.g.</p>
 <pre><code class="language-json">...
 &quot;perms&quot;: {
@@ -315,5 +318,6 @@ every 8 hours if you like.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

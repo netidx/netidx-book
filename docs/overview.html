@@ -32,6 +32,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
@@ -69,10 +70,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -243,11 +246,14 @@ building block for sending other encoded data efficiently.</p>
 (like a TCP stream)</li>
 </ul>
 <h2 id="security"><a class="header" href="#security">Security</a></h2>
-<p>Netidx currently supports two authentication mechanisms, Kerberos v5,
-and Local. Local applies only on the same machine (and isn't supported
+<p>Netidx currently supports three authentication mechanisms, Kerberos v5, 
+Local, and Tls. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
 deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
-Directory Server, or one of the many other compatible solutions.</p>
+Directory Server, or one of the many other compatible solutions. Tls
+requires each participant in netidx (resolver server, subscriber, publisher)
+to have a certificate issued by a certificate authority that the others
+it wants to interact with trust.</p>
 <p>Security is optional in netidx, it's possible to deploy a netidx
 system with no security at all, or it's possible to deploy a mixed
 system where only some publishers require security, with some
@@ -258,7 +264,8 @@ publishers that aren't.</li>
 <li>If a publisher is configured with security, then it won't talk to a
 subscriber that isn't.</li>
 </ul>
-<p>When security is enabled you get the following guarantees,</p>
+<p>When security is enabled, regardless of which of the three mechanisms
+you get the following guarantees,</p>
 <ul>
 <li>
 <p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
@@ -267,8 +274,9 @@ claim to be. This applies for the resolver &lt;-&gt; subscriber, and
 resolver &lt;-&gt; publisher as well.</p>
 </li>
 <li>
-<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
-and data cannot be altered undetected by a man in the middle.</p>
+<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted
+if they will leave the local machine, and data cannot be altered 
+undetected by a man in the middle.</p>
 </li>
 <li>
 <p><strong>Authorization</strong>, The user subscribing to a given data value is
@@ -341,5 +349,6 @@ publishers syncronize with each other.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

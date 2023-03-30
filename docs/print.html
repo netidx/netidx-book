@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
@@ -70,10 +71,12 @@
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -151,6 +154,8 @@ publishers, subscribers, and tools without much setup.</p>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure cargo is in your and then run,</p>
 <p><code>cargo install netidx-tools</code></p>
+<p>if you are on Max OS you must use,</p>
+<p><code>cargo install --no-default-features netidx-tools</code></p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools</p>
@@ -186,20 +191,21 @@ server, as well as the publisher/subscriber command line tools</p>
 }
 </code></pre>
 <p>Install the above config in
-<code>~/.config/netidx/netidx-resolver.json</code>. This is the config for the
+<code>~/.config/netidx/resolver.json</code>. This is the config for the
 local resolver on your machine. Make sure port 4564 is free, or change
 it to a free port of your choosing. If necessary you can change the
 local auth socket to one of your choosing.</p>
-<p>run <code>netidx resolver-server -c ~/.config/netidx/netidx-resolver.json</code>. This command will return
+<p>run <code>netidx resolver-server -c ~/.config/netidx/resolver.json</code>. This command will return
 immediatly, and the resolver server will daemonize. Check that it's
 running using <code>ps auxwww | grep netidx</code>.</p>
+<p>NOTE, the resolver server does not currently support Windows.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd. </p>
 <pre><code>[Unit]
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/resolver.json -f
 
 [Install]
 WantedBy=default.target
@@ -349,11 +355,14 @@ building block for sending other encoded data efficiently.</p>
 (like a TCP stream)</li>
 </ul>
 <h2 id="security"><a class="header" href="#security">Security</a></h2>
-<p>Netidx currently supports two authentication mechanisms, Kerberos v5,
-and Local. Local applies only on the same machine (and isn't supported
+<p>Netidx currently supports three authentication mechanisms, Kerberos v5, 
+Local, and Tls. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
 deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
-Directory Server, or one of the many other compatible solutions.</p>
+Directory Server, or one of the many other compatible solutions. Tls
+requires each participant in netidx (resolver server, subscriber, publisher)
+to have a certificate issued by a certificate authority that the others
+it wants to interact with trust.</p>
 <p>Security is optional in netidx, it's possible to deploy a netidx
 system with no security at all, or it's possible to deploy a mixed
 system where only some publishers require security, with some
@@ -364,7 +373,8 @@ publishers that aren't.</li>
 <li>If a publisher is configured with security, then it won't talk to a
 subscriber that isn't.</li>
 </ul>
-<p>When security is enabled you get the following guarantees,</p>
+<p>When security is enabled, regardless of which of the three mechanisms
+you get the following guarantees,</p>
 <ul>
 <li>
 <p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
@@ -373,8 +383,9 @@ claim to be. This applies for the resolver &lt;-&gt; subscriber, and
 resolver &lt;-&gt; publisher as well.</p>
 </li>
 <li>
-<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
-and data cannot be altered undetected by a man in the middle.</p>
+<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted
+if they will leave the local machine, and data cannot be altered 
+undetected by a man in the middle.</p>
 </li>
 <li>
 <p><strong>Authorization</strong>, The user subscribing to a given data value is
@@ -752,6 +763,16 @@ path will be referred to the child.</p>
 on each server are,</p>
 <ul>
 <li>
+<p>id_map_command: Optional. The path to the command the server should run
+in order to map a user name to a user and a set of groups that user is
+a member of. Default is <code>/usr/bin/id</code>. If a custom command is specified
+then it's output MUST be in the same format as the <code>/usr/bin/id</code> command.
+This command will be passed the name of the user as a single argument.
+Depending on the auth mechanism this &quot;name&quot; could be e.g. <code>eric@RYU-OH.ORG</code> for
+kerberos, just <code>eric</code> for local auth, or <code>eric.users.architect.com</code> for
+tls auth (it will pass the common name of the users' certificate)</p>
+</li>
+<li>
 <p>pid_file: the path to the pid file you want the server to write. The
 server id folowed by .pid will be appended to whatever is in this
 field. So server 0 in the above example will write it's pid to
@@ -788,9 +809,21 @@ publisher will remain in the resolver.</p>
 </li>
 <li>
 <p>auth: The authentication mechanism used by this server. One of
-Anonymous, Local, or Krb5. Local must include the path to the local
+Anonymous, Local, Krb5, or Tls. Local must include the path to the local
 auth socket file that will be used to verify the identity of
-clients. Krb5 must include the server's spn.</p>
+clients. Krb5 must include the server's spn. Tls must include the 
+domain name of the server, the path to the trusted certificates, 
+the server's certificate (it's CN must match the domain name), 
+and the path to the server's private key. For example,</p>
+<pre><code class="language-json">&quot;Tls&quot;: {
+    &quot;name&quot;: &quot;resolver.architect.com&quot;,
+    &quot;trusted&quot;: &quot;trusted.pem&quot;,
+    &quot;certificate&quot;: &quot;cert.pem&quot;,
+    &quot;private_key&quot;: &quot;private.key&quot;
+}
+</code></pre>
+<p>The certificate <code>CN</code> must be <code>resolver.architect.com</code>. The
+may not be encrypted.</p>
 </li>
 </ul>
 <h3 id="perms"><a class="header" href="#perms">perms</a></h3>
@@ -836,8 +869,46 @@ socket file. Krb5 should include the server's spn.</p>
 <p>The base path of this server cluster in the tree. This should
 correspond to the server cluster's parent, or &quot;/&quot; if it's parent is
 null.</p>
+<h4 id="default_auth"><a class="header" href="#default_auth">default_auth</a></h4>
+<p>Optional. Specify the default authentication mechanism. May be one of
+<code>Anonymous</code>, <code>Local</code>, <code>Krb5</code>, or <code>Tls</code></p>
+<h4 id="tls"><a class="header" href="#tls">tls</a></h4>
+<p>This is required only if using tls. Because netidx is a 
+distributed system, when in tls mode a subscriber may need to interact
+with different organizations that don't necessarially trust each other enough
+to share a certificate authority. That is why subscribers may be configured
+with multiple identities. When connecting to another netidx entity a
+subscriber will pick the identity that most closely matches the domain
+of that entity. For example, in the below config, when connecting to 
+<code>resolver.footraders.com</code> the client will use the <code>footraders.com</code> identity.
+When connecting to <code>core.architect.com</code> it will choose the <code>architect.com</code>
+identity. When connecting to <code>a-feed.marketdata.architect.com</code> it would
+choose the <code>marketdata.architect.com</code> identity.</p>
+<p>When publishing, the default identity is used unless another identity is
+specified to the publisher.</p>
+<pre><code class="language-json">&quot;tls&quot;: {
+    &quot;default_identity&quot;: &quot;footraders.com&quot;,
+    &quot;identities&quot;: {
+        &quot;footraders.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/footradersca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/footraders.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/footraders.key&quot;
+        },
+        &quot;architect.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/architectca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/architect.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/architect.key&quot;
+        },
+        &quot;marketdata.architect.com&quot;: {
+            &quot;trusted&quot;: &quot;/home/joe/.config/netidx/architectca.pem&quot;,
+            &quot;certificate&quot;: &quot;/home/joe/.config/netidx/architectmd.crt&quot;,
+            &quot;private_key&quot;: &quot;/home/joe/.config/netidx/architectmd.key&quot;
+        }
+    }
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="authorization"><a class="header" href="#authorization">Authorization</a></h1>
-<p>When using the Kerberos or Local auth mechanisms we also need to
+<p>When using the Kerberos, Local, or Tls auth mechanisms we also need to
 specify permissions in the cluster config file, e.g.</p>
 <pre><code class="language-json">...
 &quot;perms&quot;: {
@@ -999,17 +1070,16 @@ resolver server with</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="listener-check"><a class="header" href="#listener-check">Listener Check</a></h1>
 <p>The listener check is an extra security measure that is intended to
 prevent an authenticated user from denying service to another
-publisher by overwriting it's gssapi session. When a client connects
-to the resolver server for write, and kerberos is enabled, then after
-authentication the resolver server encrypts a challenge using the
-newly created gssapi session. It then connects to the write address
+publisher by overwriting it's session. When a client connects
+to the resolver server for write, and kerberos, tls, or local auth 
+is enabled, then after authentication the resolver server encrypts 
+a challenge using the newly created session. It then connects to the write address
 proposed by this new publisher and presents the challenge, which the
 publisher must answer correctly, otherwise the old session will be
 kept, and the new client will be disconnected. So in order to publish
 at a given address you must,</p>
 <ul>
-<li>Be a valid kerberos user with a valid service ticket for the
-resolver server.</li>
+<li>Be a valid user</li>
 <li>Actually be listening on the write address you propose to use for
 publishing. And the write address must be routable from the resolver
 server's position on the network.</li>
@@ -1017,21 +1087,13 @@ server's position on the network.</li>
 </ul>
 <h2 id="why-is-the-listener-check-important"><a class="header" href="#why-is-the-listener-check-important">Why is the listener check important?</a></h2>
 <p>Since connecting to the resolver as a publisher can be done by any
-kerberos user who can get a service ticket for the resolver,
-essentially anyone on your network, and since the address and port a
+user who can authenticate to the resolver, and since the address and port a
 publisher is going to insert into the resolver server as their address
 is just part of the hello message, without some kind of check anyone
 on your network could figure out the address of an important
 publisher, then connect to the resolver server and say they <em>are</em> that
-publisher address. Even if they don't have permission to actually
-publish paths where that publisher is publishing, the gssapi sessions
-are tied to the write ip/port in the resolver server. If the gssapi
-session of an existing publisher is replaced without it's knowledge,
-then it would no longer be able to validate authorization tokens from
-the resolver server, and all subscriptions to it would fail. So
-essentially the listener check exists to prevent an unauthorized
-elevation of privledges leading to a denial of service. There are
-several other implications,</p>
+publisher address, even if they don't have permission to publish. There
+are several implications.</p>
 <ul>
 <li>publishers on different network segments that might share ip
 addresses can't use the same resolver server.</li>
@@ -1143,11 +1205,17 @@ the GSSAPI session, and over the same TCP session that was
 established earlier).</p>
 </li>
 </ol>
-<p>In the case netidx is not configured to use kerberos the KDC is not
-involved, and none of the authentication or authorization tokens are
-established/sent, it's just a simple matter of look up the address
-from the resolver, and then subscribe to the publisher. In that case
-all data goes in the clear.</p>
+<h3 id="other-authentication-methods"><a class="header" href="#other-authentication-methods">Other Authentication Methods</a></h3>
+<p>In the case of Tls and Local authentication, the subscription flow is similar,
+it just doesn't involve the KDC. Under local authentication, the resolver server
+is listening on a unix domain socket at an agreed upon path. The client connects
+to the socket, and the server is able to determine the local user on the other end.
+It then sends the client a token that it can use to make requests. From step 2 on local
+auth is more or less the same as kerberos.</p>
+<p>Tls is very similar as well, except instead of a kdc, it's doing a TLS handshake. If the
+certificates check out, then from step 2 on, it's pretty much identical to kerberos.</p>
+<p>In the case of anonymous authentication it's just a simple matter of look up the address
+from the resolver, and then subscribe to the publisher. All the data goes in the clear.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="fault-tolerance"><a class="header" href="#fault-tolerance">Fault Tolerance</a></h1>
 <p>As a system netidx depends on fault tolerant strategies in the
 subscriber, publisher, and resolver server in order to minimize
@@ -1180,6 +1248,7 @@ causes it not to work. e.g.
 <li>Resolver server addresses that are routeable by some clients and not others</li>
 <li>Wrong Kerberos SPNs</li>
 <li>Misconfigured Kerberos</li>
+<li>Bad tls certificates</li>
 </ul>
 </li>
 </ul>
@@ -1236,7 +1305,7 @@ time between 1 and 12 seconds, and then go through the whole
 connection process again. That roughly entails taking the list of
 all servers, permuting it, and then connecting to each server in
 the list until one of them answers, says a proper hello, and
-successfully authenticates (if kerberos is on). For each batch a
+successfully authenticates (if authentication is on). For each batch a
 resolver client will do this abandon and reconnect dance 3 times,
 and then it will give up and return an error for that
 batch. Subsuquent batches will start over from the beginning. In a
@@ -1267,7 +1336,7 @@ clients,
 </ul>
 <p>One important consequence of the write client behavior is that in the
 event all the resolver servers crash, when they come back up
-publishers will republishing everything after a maximum of 1/2
+publishers will republish everything after a maximum of 1/2
 <code>writer_ttl</code> has elapsed.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-tools"><a class="header" href="#command-line-tools">Command Line Tools</a></h1>
 <p>You don't need to program to use netidx, it comes with a set of useful
@@ -1347,6 +1416,7 @@ must set the environment variable
 resolver server as a prinicpal other than the logged in user then
 you can specify that principal here. You must have a TGT for the
 specified principal.</li>
+<li><code>--identity</code>: optional, the tls identity to use for publishing.</li>
 <li><code>--timeout &lt;seconds&gt;</code>: optional, if specified requires subscribers
 to consume published values within the specified number of seconds
 or be disconnected. By default the publisher will wait forever for a
@@ -1600,65 +1670,126 @@ interfere with each other, so the only limitation should be the
 underlying IO device and the number of processor cores available.</p>
 <h2 id="args-1"><a class="header" href="#args-1">Args</a></h2>
 <ul>
-<li>Args that apply to both recording and playback
+<li><code>--example</code>: optional, print an example configuration file</li>
+<li><code>--config</code>: required, path to the recorder config file</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>e.g.</p>
+<pre><code>{
+  &quot;archive_directory&quot;: &quot;/foo/bar&quot;,
+  &quot;archive_cmds&quot;: {
+    &quot;list&quot;: [
+      &quot;cmd_to_list_dates_in_archive&quot;,
+      []
+    ],
+    &quot;get&quot;: [
+      &quot;cmd_to_fetch_file_from_archive&quot;,
+      []
+    ],
+    &quot;put&quot;: [
+      &quot;cmd_to_put_file_into_archive&quot;,
+      []
+    ]
+  },
+  &quot;netidx_config&quot;: null,
+  &quot;desired_auth&quot;: null,
+  &quot;record&quot;: {
+    &quot;spec&quot;: [
+      &quot;/tmp/**&quot;
+    ],
+    &quot;poll_interval&quot;: {
+      &quot;secs&quot;: 5,
+      &quot;nanos&quot;: 0
+    },
+    &quot;image_frequency&quot;: 67108864,
+    &quot;flush_frequency&quot;: 65534,
+    &quot;flush_interval&quot;: {
+      &quot;secs&quot;: 30,
+      &quot;nanos&quot;: 0
+    },
+    &quot;rotate_interval&quot;: {
+      &quot;secs&quot;: 86400,
+      &quot;nanos&quot;: 0
+    }
+  },
+  &quot;publish&quot;: {
+    &quot;base&quot;: &quot;/archive&quot;,
+    &quot;bind&quot;: null,
+    &quot;max_sessions&quot;: 512,
+    &quot;max_sessions_per_client&quot;: 64,
+    &quot;shards&quot;: 0
+  }
+}
+</code></pre>
 <ul>
-<li><code>--archive &lt;file&gt;</code>: required by both modes of operation, the name
-of the file to record the data into or play it back from. If an
-existing archive is specified and recording is requested then the
-data will be appended to that archive.</li>
-<li><code>--shards &lt;n&gt;</code>: optional, The number of recorder shards to
-expect. If you want to record/playback a huge namespace, or one
-that updates a lot, it may not be possible to use just one
-computer. The recorder supports sharding across an arbitrary
-number of processes for both recording and playback. n is the
-number of shards that are expected in a given cluster. playback
-will not be avaliable until all the shards have appeared and
-synced with each other, however recording will begin
-immediatly. default 1.</li>
-<li><code>-f, --foreground</code>: don't daemonize</li>
+<li><code>archive_directory</code>: The directory where archive files will be
+written. The archive currently being written is <code>current</code> and
+previous rotated files are named the rfc3339 timestamp when they
+ended.</li>
+<li><code>archive_commands</code>: These are shell hooks that are run when various
+events happen
+<ul>
+<li><code>list</code>: Shell hook to list available historical archive
+files. This will be combined with the set of timestamped files in
+<code>archive_directory</code> to form the full set of available archive
+files.</li>
+<li><code>get</code>: Shell hook that is run before an archive file needs to be
+accessed. It will be accessed just after this command
+returns. This can, for example, move the file into place after
+fetching it from long term storage. It is passed the name of the
+file the archiver would like, which will be in the union of the
+local files and the set returned by list.</li>
+<li><code>pub</code>: Shell hook that is run just after the current file is
+rotated. Could, for example, back the newly rotated file up, or
+move it to long term storage.</li>
 </ul>
 </li>
-<li>Args that apply to recording
+<li><code>netidx_config</code>: Optional path to the netidx config. Omit to use the default.</li>
+<li><code>desired_auth</code>: Optional desired authentication mechanism. Omit to use the default.</li>
+<li><code>record</code>: Section of the config used to record, omit to only play back.
 <ul>
-<li><code>--spec &lt;glob&gt;</code>: required by recording, enables recording if
-specified, may be specified multiple times, a glob describing what
-to archive. If multiple globs are specified and they overlap, the
-overlapped items will only be archived once.</li>
-<li><code>--flush-frequency &lt;pages&gt;</code>: optional, How much data to write
-before flushing to disk, in pages, where a page is a filesystem
-page. default 65534. This is the maximum amount of data you will
-probably lose in a power outage, system crash, or program
-crash. The recorder uses two phase commits to the archive file to
-ensure that partially written data does not corrupt the file.</li>
-<li><code>--flush-interval &lt;seconds&gt;</code>: optional, How long in seconds to wait
-before flushing data to disk even if <code>flush-frequency</code> pages was not
-yet written. 0 to disable, default 30.</li>
-<li><code>--image-frequency &lt;bytes&gt;</code>: optional, How often, in bytes, to write a full
-image of every current value, even if it did not update. Writing
-images increases the file size, but makes seeking to an arbitrary
+<li><code>spec</code>: a list of globs describing what to record. If multiple
+globs are specified and they overlap, the overlapped items will
+only be archived once.</li>
+<li><code>poll_interval</code>: How often, in seconds, to poll the resolver
+server for changes to the specified glob set. 0 never poll,
+if omitted, the default is 5 seconds.</li>
+<li><code>image_frequency</code>: How often, in bytes, to write a full image of
+every current value, even if it did not update. Writing images
+increases the file size, but makes seeking to an arbitrary
 position in the archive much faster. 0 to disable images, in which
 case a seek back will read all the data before the requested
 position, default 64MiB.</li>
-<li><code>--poll-interval &lt;seconds&gt;</code>: optional, How often, in seconds, to
-poll the resolver server for changes to the specified glob set. 0
-never poll, default 5.</li>
+<li><code>flush_frequency</code>: How much data to write before flushing to disk,
+in pages, where a page is a filesystem page. default 65534. This
+is the maximum amount of data you will probably lose in a power
+outage, system crash, or program crash. The recorder uses two
+phase commits to the archive file to ensure that partially written
+data does not corrupt the file.</li>
+<li><code>flush_interval</code>: How long in seconds to wait before flushing data
+to disk even if <code>flush_frequency</code> pages was not yet written. 0 to
+disable, default if omitted 30 seconds.</li>
+<li><code>rotate_interval</code>: How long in seconds to wait before rotating the
+current archive file. Default if omitted, never rotate.</li>
 </ul>
 </li>
-<li>Args that apply to playback
+<li><code>publish</code>: Section of the config file to enable publishing
 <ul>
-<li><code>--publish-base &lt;path&gt;</code>: required for playback, enables playback
-if specified, the path where playback sessions will be published.</li>
-<li><code>-b, --bind &lt;spec&gt;</code>: required for playback, a specification describing
-the network interface to bind to. See
-<a href="tools/./publisher_tool.html">publisher</a> for details.</li>
-<li><code>-a, --auth</code>: the authentication mechanism, anonymous, local, or krb5.</li>
-<li><code>--spn &lt;service-principal&gt;</code>: optional, required for kerberos, the
-service princial to publish as.</li>
-<li><code>--max-sessions &lt;n&gt;</code>: optional, How many total client sessions to allow at
-any given time. When a session is no longer used, it will be
-garbage collected. default 256.</li>
-<li><code>--max-sessions-per-client &lt;n&gt;</code>: optional, The maximum number of
-sessions a single client is allowed to have. default 64.</li>
+<li><code>base</code>: The base path to publish at</li>
+<li><code>bind</code>: The bind config to use. Omit to use the default.</li>
+<li><code>max_sessions</code>: The maximum total number of replay sessions
+concurrently in progress.</li>
+<li><code>max_sessions_per_client</code>: The maximum number of replay sessions
+in progress for any single client.</li>
+<li><code>shards</code>: The number of recorder shards to expect. If you want to
+record/playback a huge namespace, or one that updates a lot, it
+may not be possible to use just one computer. The recorder
+supports sharding across an arbitrary number of processes for both
+recording and playback. n is the number of shards that are
+expected in a given cluster. playback will not be avaliable until
+all the shards have appeared and synced with each other, however
+recording will begin immediatly. default if omitted 0 (meaning
+just one recorder).</li>
 </ul>
 </li>
 </ul>
@@ -1744,16 +1875,6 @@ batching.</p>
 <h3 id="deleting-a-playback-session"><a class="header" href="#deleting-a-playback-session">Deleting a Playback Session</a></h3>
 <p>Simply stop subscribing to any value or control in the session and the
 recorder will garbage collect it.</p>
-<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
-<p>To record and publish the archive of the data generated by my solar
-installation I use the following command.</p>
-<pre><code>netidx record \
-    --archive ~/solar \
-    --spec '/solar/{control,stats,settings}/**' \
-    --bind 192.168.0.0/24 \
-    --spn publish/blackbird.ryu-oh.org@RYU-OH.ORG \
-    --publish-base /solar/archive
-</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="container"><a class="header" href="#container">Container</a></h1>
 <p>The container is a persistent store for netidx values, a bit like a
 pasteboard, or a nosql database. At startup it reads and publishes all
@@ -3860,8 +3981,8 @@ easy, and that's really the point of the whole thing.</p>
 <p>Netidx is meant to be a building block out of which more complex
 things can be constructed.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
-<p>At the library level RPCs in netidix are just like any other untyped
-RPC. The procedure name is the netidx path, the arguments are an array
+<p>At the library level RPCs in netidix are just like any other RPC. 
+The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.</p>
 <pre><code>/app/rpcs/do_thing                            &lt;- the procedure
@@ -4616,5 +4737,6 @@ from the previous one.</p>
         });
         </script>
 
+    </div>
     </body>
 </html>
