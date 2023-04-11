@@ -54,7 +54,7 @@ There are several command line options to the `netidx publisher` command,
     - 10.0.0.0/8 selects the interface bound to a 10.x.x.x address
     - 192.168.0.0/16 selects the interface bound to a 192.168.x.x address
     - The publisher will choose a free port automatically starting at 5000
- - if you must specify an exact address and port e.g.
+  - if you must specify an exact address and port e.g.
     - 127.0.0.1:5000
     - 127.0.0.1:0, in which case the OS will choose the port at
       random, depending on the OS/libc this may pick an ephemeral
