@@ -1401,16 +1401,6 @@ prefered, e.g.
 <li>The publisher will choose a free port automatically starting at 5000</li>
 </ul>
 </li>
-<li>a public ip followed by the first form for the internal bind ip. Use this
-if you are running publishers behind a NAT (e.g. aws elastic ips)
-<ul>
-<li>54.32.223.1@172.31.0.0/16 will bind to any interface matching 172.31.0.0,
-but will advertise it's address to the resolver as 54.32.223.1.</li>
-<li>54.32.224.1@0.0.0.0/32 will bind to every interface on the local machine
-but will advertise it's address to the resolver as 54.32.223.1.</li>
-<li>54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
-but will advertise it's address to the resolver as 54.32.224.1:5001. This
-would correspond to a typical single port forward NAT situation.</li>
 </ul>
 </li>
 <li>if you must specify an exact address and port e.g.
@@ -1421,6 +1411,16 @@ random, depending on the OS/libc this may pick an ephemeral
 port, so be careful.</li>
 </ul>
 </li>
+<li>a public ip followed by the first or second forms for the internal bind ip. 
+Use this if you are running publishers behind a NAT (e.g. aws elastic ips)
+<ul>
+<li>54.32.223.1@172.31.0.0/16 will bind to any interface matching 172.31.0.0,
+but will advertise it's address to the resolver as 54.32.223.1.</li>
+<li>54.32.224.1@0.0.0.0/32 will bind to every interface on the local machine
+but will advertise it's address to the resolver as 54.32.223.1.</li>
+<li>54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
+but will advertise it's address to the resolver as 54.32.224.1:5001. This
+would correspond to a typical single port forward NAT situation.</li>
 </ul>
 </li>
 <li><code>-a, --auth</code>: optional, specifies the authentication mechanism,
