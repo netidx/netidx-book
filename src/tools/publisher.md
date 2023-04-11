@@ -46,14 +46,23 @@ e.g. `\\`. e.g.
 There are several command line options to the `netidx publisher` command,
 
 - `-b, --bind`: optional, specify the network address to bind to. This can
-  be specified in two forms.
+  be specified in three forms.
   - an expression consisting of an ip/netmask that must match a unique
     network interface on the machine running the publisher. This is
     prefered, e.g.
-    - local, the default, selects 127.0.0.1/24
+    - local, selects 127.0.0.1/24
     - 10.0.0.0/8 selects the interface bound to a 10.x.x.x address
     - 192.168.0.0/16 selects the interface bound to a 192.168.x.x address
     - The publisher will choose a free port automatically starting at 5000
+  - a public ip followed by the first form for the internal bind ip. Use this
+    if you are running publishers behind a NAT (e.g. aws elastic ips)
+    - 54.32.223.1@172.31.0.0/16 will bind to any interface matching 172.31.0.0,
+      but will advertise it's address to the resolver as 54.32.223.1.
+    - 54.32.224.1@0.0.0.0/32 will bind to every interface on the local machine
+      but will advertise it's address to the resolver as 54.32.223.1.
+    - 54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
+      but will advertise it's address to the resolver as 54.32.224.1:5001. This
+      would correspond to a typical single port forward NAT situation.
   - if you must specify an exact address and port e.g.
     - 127.0.0.1:5000
     - 127.0.0.1:0, in which case the OS will choose the port at

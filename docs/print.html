@@ -779,8 +779,16 @@ field. So server 0 in the above example will write it's pid to
 /var/run/netidx0.pid</p>
 </li>
 <li>
-<p>addr: The socket address and port that this member server should
-bind to.</p>
+<p>addr: The socket address and port that this member server will report
+to clients. This should be it's public ip, the ip clients use to connect
+to it from the outside.</p>
+</li>
+<li>
+<p>bind_addr: The socket address that the server will actually bind to on
+the local machine. This defaults to 0.0.0.0. In the case where you are
+behind a NAT, or some other contraption, you should set this to the private
+ip address corresponding to the interface you actually want to receive
+traffic on.</p>
 </li>
 <li>
 <p>max_connections: The maximum number of simultaneous client
@@ -1381,16 +1389,28 @@ e.g. <code>\\</code>. e.g.</p>
 <p>There are several command line options to the <code>netidx publisher</code> command,</p>
 <ul>
 <li><code>-b, --bind</code>: optional, specify the network address to bind to. This can
-be specified in two forms.
+be specified in three forms.
 <ul>
 <li>an expression consisting of an ip/netmask that must match a unique
 network interface on the machine running the publisher. This is
 prefered, e.g.
 <ul>
-<li>local, the default, selects 127.0.0.1/24</li>
+<li>local, selects 127.0.0.1/24</li>
 <li>10.0.0.0/8 selects the interface bound to a 10.x.x.x address</li>
 <li>192.168.0.0/16 selects the interface bound to a 192.168.x.x address</li>
 <li>The publisher will choose a free port automatically starting at 5000</li>
+</ul>
+</li>
+<li>a public ip followed by the first form for the internal bind ip. Use this
+if you are running publishers behind a NAT (e.g. aws elastic ips)
+<ul>
+<li>54.32.223.1@172.31.0.0/16 will bind to any interface matching 172.31.0.0,
+but will advertise it's address to the resolver as 54.32.223.1.</li>
+<li>54.32.224.1@0.0.0.0/32 will bind to every interface on the local machine
+but will advertise it's address to the resolver as 54.32.223.1.</li>
+<li>54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
+but will advertise it's address to the resolver as 54.32.224.1:5001. This
+would correspond to a typical single port forward NAT situation.</li>
 </ul>
 </li>
 <li>if you must specify an exact address and port e.g.
