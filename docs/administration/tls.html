@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Managing TLS - Introduction to Netidx</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="../administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../administration/tls.html" class="active"><strong aria-hidden="true">4.2.</strong> Managing TLS</a></li><li class="chapter-item expanded "><a href="../administration/authorization.html"><strong aria-hidden="true">4.3.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="../administration/startup.html"><strong aria-hidden="true">4.4.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="../administration/listener_check.html"><strong aria-hidden="true">4.5.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="../administration/subscription_flow.html"><strong aria-hidden="true">4.6.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="../administration/fault_tolerance.html"><strong aria-hidden="true">4.7.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="../tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="../tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="../tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="../tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="../tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="../tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="../tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="../examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="../browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="../browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="../browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="../browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="../browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="../browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="../browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="../browser/table.html"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="../browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="../browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="../browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="../browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="../browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="../browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="../browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="../browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="../browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="../browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="../browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="../browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="../browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="../protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="../protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="../bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="../bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="../bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="../bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Introduction to Netidx</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="managing-tls"><a class="header" href="#managing-tls">Managing TLS</a></h1>
+<p>Tls authentication requires a bit more care than even Kerberos. Here we'll go over
+a quick configuration using the openssl command line tool. I'll be using,</p>
+<pre><code>$ openssl version
+OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)
+</code></pre>
+<h2 id="setting-up-a-local-certificate-authority"><a class="header" href="#setting-up-a-local-certificate-authority">Setting Up a Local Certificate Authority</a></h2>
+<p>Unless you already have a corporate certificate authority, or you actually want to buy
+certificates for your netidx resolvers, publishers, and users from a commercial CA then
+you need to set up a certificate authority. This sounds like a big deal, but it's actually
+not. A CA is really just a certificate and accompanying private key that serves as the root
+of trust. That means that it is self signed, and people in your organization choose to trust
+it. It will then sign certificates for your users, publishers, and resolver servers, and they
+will be configured to trust certificates that it has signed.</p>
+<pre><code>openssl genrsa -aes256 -out ca.key 4096
+</code></pre>
+<p>This will generate the private key we will use for the local ca. This is the most important
+thing to keep secret. Use a strong password on it, and ideally keep it somewhere safe.</p>
+<pre><code>openssl req -new -key ./ca.key -x509 -sha512 -out ca.crt -days 7300 \
+  -subj "/CN=mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization" \
+  -addext "basicConstraints=critical, CA:TRUE" \
+  -addext "subjectKeyIdentifier=hash" \
+  -addext "authorityKeyIdentifier=keyid:always, issuer:always" \
+  -addext "keyUsage=critical, cRLSign, digitalSignature, keyCertSign" \
+  -addext "subjectAltName=DNS:mycompany.com"
+</code></pre>
+<p>This will generate a certificate for the certificate authority and sign it with the private key.
+The <code>-addext</code> flags add x509v3 attributes. Once this is complete we can view the certificate with</p>
+<pre><code>openssl x509 -text -in ca.crt
+</code></pre>
+<h2 id="generating-user-resolver-and-publisher-certificates"><a class="header" href="#generating-user-resolver-and-publisher-certificates">Generating User, Resolver, and Publisher Certificates</a></h2>
+<p>Now we can create certificates for various parts of the netidx system. Lets make one for the resolver
+server.</p>
+<pre><code># generate the resolver server key. It must not be encrypted.
+openssl genrsa -out resolver.key 4096
+
+# generate a certificate signing request that will be signed our CA
+openssl req -new -key ./resolver.key -sha512 -out resolver.req \
+  -subj "/CN=resolver.mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization"
+
+# sign the certificate request with the CA key and add restrictions to it using x509v3 extentions
+openssl x509 -req -in ./resolver.req -CA ca.crt -CAkey ca.key \
+  -CAcreateserial -out resolver.crt -days 730 -extfile &lt;(cat &lt;&lt;EOF
+basicConstraints=critical, CA:FALSE
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always, issuer:always
+keyUsage=nonRepudiation,digitalSignature,keyEncipherment
+subjectAltName=DNS:resolver.mycompany.com
+EOF
+)
+
+ # check it
+openssl verify -trusted ca.crt resolver.crt
+</code></pre>
+<p>This has one extra step, the generation of the request to be signed. If we were using a commercial
+certificate authority we would send this request to them and they would return the signed certificate
+to us. In this case it's just an extra file we can delete once we've signed the request.</p>
+<p>The resolver server private key must not be encrypted, this is because it probably doesn't have any
+way to ask for a password on startup, since it's likely running on a headless server somewhere.
+So it's extra important to keep this certificate safe.</p>
+<p>Generating user and publisher certificates is exactly the same as the above, except that they are
+permitted to have password protected private keys. However if you do this, make sure there is an
+<code>askpass</code> command configured, and that your system level keychain service is running and unlocked.
+Once the password has been entered once, it will be added to the keychain and should not need to
+be entered again.</p>
+<p>It's possible to use the same certificate for multiple services, however it's probably not a great
+idea unless it's for multiple components of the same system (e.g. lots of publishers in a cluster),
+or if a user is testing a new publisher it can probably just use their certificate.</p>
+<h2 id="distributing-certificates"><a class="header" href="#distributing-certificates">Distributing Certificates</a></h2>
+<p>With the configuration above you only need to distribute the CA certificate. Every netidx component
+that will participate needs to have a copy of it, and it needs to be configured as trusted in the client
+config, and the resolver server config.</p>
+<p>Other components only need to have their own certificate, as well as their private key.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../administration/configuration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../administration/authorization.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../administration/configuration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../administration/authorization.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

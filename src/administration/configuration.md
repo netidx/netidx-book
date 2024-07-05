@@ -123,9 +123,16 @@ on each server are,
   field. So server 0 in the above example will write it's pid to
   /var/run/netidx0.pid
 
-- addr: The socket address and port that this member server should
-  bind to.
-  
+- addr: The socket address and port that this member server will report
+  to clients. This should be it's public ip, the ip clients use to connect
+  to it from the outside.
+
+- bind_addr: The socket address that the server will actually bind to on
+  the local machine. This defaults to 0.0.0.0. In the case where you are
+  behind a NAT, or some other contraption, you should set this to the private
+  ip address corresponding to the interface you actually want to receive
+  traffic on.
+
 - max_connections: The maximum number of simultaneous client
   connections that this server will allow. Client connections in
   excess of this number will be accepted and immediatly closed (so

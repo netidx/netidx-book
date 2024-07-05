@@ -188,66 +188,126 @@ interfere with each other, so the only limitation should be the
 underlying IO device and the number of processor cores available.</p>
 <h2 id="args"><a class="header" href="#args">Args</a></h2>
 <ul>
-<li>Args that apply to both recording and playback
+<li><code>--example</code>: optional, print an example configuration file</li>
+<li><code>--config</code>: required, path to the recorder config file</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>e.g.</p>
+<pre><code>{
+  "archive_directory": "/foo/bar",
+  "archive_cmds": {
+    "list": [
+      "cmd_to_list_dates_in_archive",
+      []
+    ],
+    "get": [
+      "cmd_to_fetch_file_from_archive",
+      []
+    ],
+    "put": [
+      "cmd_to_put_file_into_archive",
+      []
+    ]
+  },
+  "netidx_config": null,
+  "desired_auth": null,
+  "record": {
+    "spec": [
+      "/tmp/**"
+    ],
+    "poll_interval": {
+      "secs": 5,
+      "nanos": 0
+    },
+    "image_frequency": 67108864,
+    "flush_frequency": 65534,
+    "flush_interval": {
+      "secs": 30,
+      "nanos": 0
+    },
+    "rotate_interval": {
+      "secs": 86400,
+      "nanos": 0
+    }
+  },
+  "publish": {
+    "base": "/archive",
+    "bind": null,
+    "max_sessions": 512,
+    "max_sessions_per_client": 64,
+    "shards": 0
+  }
+}
+</code></pre>
 <ul>
-<li><code>--archive &lt;file&gt;</code>: required by both modes of operation, the name
-of the file to record the data into or play it back from. If an
-existing archive is specified and recording is requested then the
-data will be appended to that archive.</li>
-<li><code>--shards &lt;n&gt;</code>: optional, The number of recorder shards to
-expect. If you want to record/playback a huge namespace, or one
-that updates a lot, it may not be possible to use just one
-computer. The recorder supports sharding across an arbitrary
-number of processes for both recording and playback. n is the
-number of shards that are expected in a given cluster. playback
-will not be avaliable until all the shards have appeared and
-synced with each other, however recording will begin
-immediatly. default 1.</li>
-<li><code>-f, --foreground</code>: don't daemonize</li>
+<li><code>archive_directory</code>: The directory where archive files will be
+written. The archive currently being written is <code>current</code> and
+previous rotated files are named the rfc3339 timestamp when they
+ended.</li>
+<li><code>archive_commands</code>: These are shell hooks that are run when various
+events happen
+<ul>
+<li><code>list</code>: Shell hook to list available historical archive
+files. This will be combined with the set of timestamped files in
+<code>archive_directory</code> to form the full set of available archive
+files.</li>
+<li><code>get</code>: Shell hook that is run before an archive file needs to be
+accessed. It will be accessed just after this command
+returns. This can, for example, move the file into place after
+fetching it from long term storage. It is passed the name of the
+file the archiver would like, which will be in the union of the
+local files and the set returned by list.</li>
+<li><code>pub</code>: Shell hook that is run just after the current file is
+rotated. Could, for example, back the newly rotated file up, or
+move it to long term storage.</li>
 </ul>
 </li>
-<li>Args that apply to recording
+<li><code>netidx_config</code>: Optional path to the netidx config. Omit to use the default.</li>
+<li><code>desired_auth</code>: Optional desired authentication mechanism. Omit to use the default.</li>
+<li><code>record</code>: Section of the config used to record, omit to only play back.
 <ul>
-<li><code>--spec &lt;glob&gt;</code>: required by recording, enables recording if
-specified, may be specified multiple times, a glob describing what
-to archive. If multiple globs are specified and they overlap, the
-overlapped items will only be archived once.</li>
-<li><code>--flush-frequency &lt;pages&gt;</code>: optional, How much data to write
-before flushing to disk, in pages, where a page is a filesystem
-page. default 65534. This is the maximum amount of data you will
-probably lose in a power outage, system crash, or program
-crash. The recorder uses two phase commits to the archive file to
-ensure that partially written data does not corrupt the file.</li>
-<li><code>--flush-interval &lt;seconds&gt;</code>: optional, How long in seconds to wait
-before flushing data to disk even if <code>flush-frequency</code> pages was not
-yet written. 0 to disable, default 30.</li>
-<li><code>--image-frequency &lt;bytes&gt;</code>: optional, How often, in bytes, to write a full
-image of every current value, even if it did not update. Writing
-images increases the file size, but makes seeking to an arbitrary
+<li><code>spec</code>: a list of globs describing what to record. If multiple
+globs are specified and they overlap, the overlapped items will
+only be archived once.</li>
+<li><code>poll_interval</code>: How often, in seconds, to poll the resolver
+server for changes to the specified glob set. 0 never poll,
+if omitted, the default is 5 seconds.</li>
+<li><code>image_frequency</code>: How often, in bytes, to write a full image of
+every current value, even if it did not update. Writing images
+increases the file size, but makes seeking to an arbitrary
 position in the archive much faster. 0 to disable images, in which
 case a seek back will read all the data before the requested
 position, default 64MiB.</li>
-<li><code>--poll-interval &lt;seconds&gt;</code>: optional, How often, in seconds, to
-poll the resolver server for changes to the specified glob set. 0
-never poll, default 5.</li>
+<li><code>flush_frequency</code>: How much data to write before flushing to disk,
+in pages, where a page is a filesystem page. default 65534. This
+is the maximum amount of data you will probably lose in a power
+outage, system crash, or program crash. The recorder uses two
+phase commits to the archive file to ensure that partially written
+data does not corrupt the file.</li>
+<li><code>flush_interval</code>: How long in seconds to wait before flushing data
+to disk even if <code>flush_frequency</code> pages was not yet written. 0 to
+disable, default if omitted 30 seconds.</li>
+<li><code>rotate_interval</code>: How long in seconds to wait before rotating the
+current archive file. Default if omitted, never rotate.</li>
 </ul>
 </li>
-<li>Args that apply to playback
+<li><code>publish</code>: Section of the config file to enable publishing
 <ul>
-<li><code>--publish-base &lt;path&gt;</code>: required for playback, enables playback
-if specified, the path where playback sessions will be published.</li>
-<li><code>-b, --bind &lt;spec&gt;</code>: required for playback, a specification describing
-the network interface to bind to. See
-<a href="./publisher_tool.html">publisher</a> for details.</li>
-<li><code>-a, --auth</code>: the authentication mechanism, anonymous, local, or krb5.</li>
-<li><code>--spn &lt;service-principal&gt;</code>: optional, required for kerberos, the
-service princial to publish as.</li>
-<li><code>--identity &lt;name&gt;</code>: optional, the tls identity to use for publishing</li>
-<li><code>--max-sessions &lt;n&gt;</code>: optional, How many total client sessions to allow at
-any given time. When a session is no longer used, it will be
-garbage collected. default 256.</li>
-<li><code>--max-sessions-per-client &lt;n&gt;</code>: optional, The maximum number of
-sessions a single client is allowed to have. default 64.</li>
+<li><code>base</code>: The base path to publish at</li>
+<li><code>bind</code>: The bind config to use. Omit to use the default.</li>
+<li><code>max_sessions</code>: The maximum total number of replay sessions
+concurrently in progress.</li>
+<li><code>max_sessions_per_client</code>: The maximum number of replay sessions
+in progress for any single client.</li>
+<li><code>shards</code>: The number of recorder shards to expect. If you want to
+record/playback a huge namespace, or one that updates a lot, it
+may not be possible to use just one computer. The recorder
+supports sharding across an arbitrary number of processes for both
+recording and playback. n is the number of shards that are
+expected in a given cluster. playback will not be avaliable until
+all the shards have appeared and synced with each other, however
+recording will begin immediatly. default if omitted 0 (meaning
+just one recorder).</li>
 </ul>
 </li>
 </ul>
@@ -333,16 +393,6 @@ batching.</p>
 <h3 id="deleting-a-playback-session"><a class="header" href="#deleting-a-playback-session">Deleting a Playback Session</a></h3>
 <p>Simply stop subscribing to any value or control in the session and the
 recorder will garbage collect it.</p>
-<h2 id="example"><a class="header" href="#example">Example</a></h2>
-<p>To record and publish the archive of the data generated by my solar
-installation I use the following command.</p>
-<pre><code>netidx record \
-    --archive ~/solar \
-    --spec '/solar/{control,stats,settings}/**' \
-    --bind 192.168.0.0/24 \
-    --spn publish/blackbird.ryu-oh.org@RYU-OH.ORG \
-    --publish-base /solar/archive
-</code></pre>
 
                     </main>
 

@@ -16,59 +16,122 @@ underlying IO device and the number of processor cores available.
 
 ## Args
 
-- Args that apply to both recording and playback
-  - `--archive <file>`: required by both modes of operation, the name
-    of the file to record the data into or play it back from. If an
-    existing archive is specified and recording is requested then the
-    data will be appended to that archive.
-  - `--shards <n>`: optional, The number of recorder shards to
-    expect. If you want to record/playback a huge namespace, or one
-    that updates a lot, it may not be possible to use just one
-    computer. The recorder supports sharding across an arbitrary
-    number of processes for both recording and playback. n is the
-    number of shards that are expected in a given cluster. playback
-    will not be avaliable until all the shards have appeared and
-    synced with each other, however recording will begin
-    immediatly. default 1.
-  - `-f, --foreground`: don't daemonize
-- Args that apply to recording
-  - `--spec <glob>`: required by recording, enables recording if
-    specified, may be specified multiple times, a glob describing what
-    to archive. If multiple globs are specified and they overlap, the
-    overlapped items will only be archived once.
-  - `--flush-frequency <pages>`: optional, How much data to write
-    before flushing to disk, in pages, where a page is a filesystem
-    page. default 65534. This is the maximum amount of data you will
-    probably lose in a power outage, system crash, or program
-    crash. The recorder uses two phase commits to the archive file to
-    ensure that partially written data does not corrupt the file.
-  - `--flush-interval <seconds>`: optional, How long in seconds to wait
-    before flushing data to disk even if `flush-frequency` pages was not
-    yet written. 0 to disable, default 30.
-  - `--image-frequency <bytes>`: optional, How often, in bytes, to write a full
-    image of every current value, even if it did not update. Writing
-    images increases the file size, but makes seeking to an arbitrary
+- `--example`: optional, print an example configuration file
+- `--config`: required, path to the recorder config file
+
+## Configuration
+
+e.g.
+
+```
+{
+  "archive_directory": "/foo/bar",
+  "archive_cmds": {
+    "list": [
+      "cmd_to_list_dates_in_archive",
+      []
+    ],
+    "get": [
+      "cmd_to_fetch_file_from_archive",
+      []
+    ],
+    "put": [
+      "cmd_to_put_file_into_archive",
+      []
+    ]
+  },
+  "netidx_config": null,
+  "desired_auth": null,
+  "record": {
+    "spec": [
+      "/tmp/**"
+    ],
+    "poll_interval": {
+      "secs": 5,
+      "nanos": 0
+    },
+    "image_frequency": 67108864,
+    "flush_frequency": 65534,
+    "flush_interval": {
+      "secs": 30,
+      "nanos": 0
+    },
+    "rotate_interval": {
+      "secs": 86400,
+      "nanos": 0
+    }
+  },
+  "publish": {
+    "base": "/archive",
+    "bind": null,
+    "max_sessions": 512,
+    "max_sessions_per_client": 64,
+    "shards": 0
+  }
+}
+```
+
+- `archive_directory`: The directory where archive files will be
+  written. The archive currently being written is `current` and
+  previous rotated files are named the rfc3339 timestamp when they
+  ended.
+- `archive_commands`: These are shell hooks that are run when various
+  events happen
+  - `list`: Shell hook to list available historical archive
+    files. This will be combined with the set of timestamped files in
+    `archive_directory` to form the full set of available archive
+    files.
+  - `get`: Shell hook that is run before an archive file needs to be
+    accessed. It will be accessed just after this command
+    returns. This can, for example, move the file into place after
+    fetching it from long term storage. It is passed the name of the
+    file the archiver would like, which will be in the union of the
+    local files and the set returned by list.
+  - `pub`: Shell hook that is run just after the current file is
+    rotated. Could, for example, back the newly rotated file up, or
+    move it to long term storage.
+- `netidx_config`: Optional path to the netidx config. Omit to use the default.
+- `desired_auth`: Optional desired authentication mechanism. Omit to use the default.
+- `record`: Section of the config used to record, omit to only play back.
+  - `spec`: a list of globs describing what to record. If multiple
+    globs are specified and they overlap, the overlapped items will
+    only be archived once.
+  - `poll_interval`: How often, in seconds, to poll the resolver
+    server for changes to the specified glob set. 0 never poll,
+    if omitted, the default is 5 seconds.
+  - `image_frequency`: How often, in bytes, to write a full image of
+    every current value, even if it did not update. Writing images
+    increases the file size, but makes seeking to an arbitrary
     position in the archive much faster. 0 to disable images, in which
     case a seek back will read all the data before the requested
     position, default 64MiB.
-  - `--poll-interval <seconds>`: optional, How often, in seconds, to
-    poll the resolver server for changes to the specified glob set. 0
-    never poll, default 5.
-- Args that apply to playback
-  - `--publish-base <path>`: required for playback, enables playback
-    if specified, the path where playback sessions will be published.
-  - `-b, --bind <spec>`: required for playback, a specification describing
-    the network interface to bind to. See
-    [publisher](./publisher_tool.md) for details.
-  - `-a, --auth`: the authentication mechanism, anonymous, local, or krb5.
-  - `--spn <service-principal>`: optional, required for kerberos, the
-    service princial to publish as.
-  - `--identity <name>`: optional, the tls identity to use for publishing
-  - `--max-sessions <n>`: optional, How many total client sessions to allow at
-    any given time. When a session is no longer used, it will be
-    garbage collected. default 256.
-  - `--max-sessions-per-client <n>`: optional, The maximum number of
-    sessions a single client is allowed to have. default 64.
+  - `flush_frequency`: How much data to write before flushing to disk,
+    in pages, where a page is a filesystem page. default 65534. This
+    is the maximum amount of data you will probably lose in a power
+    outage, system crash, or program crash. The recorder uses two
+    phase commits to the archive file to ensure that partially written
+    data does not corrupt the file.
+  - `flush_interval`: How long in seconds to wait before flushing data
+    to disk even if `flush_frequency` pages was not yet written. 0 to
+    disable, default if omitted 30 seconds.
+  - `rotate_interval`: How long in seconds to wait before rotating the
+    current archive file. Default if omitted, never rotate.
+- `publish`: Section of the config file to enable publishing
+  - `base`: The base path to publish at
+  - `bind`: The bind config to use. Omit to use the default.
+  - `max_sessions`: The maximum total number of replay sessions
+    concurrently in progress.
+  - `max_sessions_per_client`: The maximum number of replay sessions
+    in progress for any single client.
+  - `shards`: The number of recorder shards to expect. If you want to
+    record/playback a huge namespace, or one that updates a lot, it
+    may not be possible to use just one computer. The recorder
+    supports sharding across an arbitrary number of processes for both
+    recording and playback. n is the number of shards that are
+    expected in a given cluster. playback will not be avaliable until
+    all the shards have appeared and synced with each other, however
+    recording will begin immediatly. default if omitted 0 (meaning
+    just one recorder).
 
 ## Using Playback Sessions
 
@@ -170,17 +233,3 @@ batching.
 
 Simply stop subscribing to any value or control in the session and the
 recorder will garbage collect it.
-
-## Example
-
-To record and publish the archive of the data generated by my solar
-installation I use the following command.
-
-```
-netidx record \
-    --archive ~/solar \
-    --spec '/solar/{control,stats,settings}/**' \
-    --bind 192.168.0.0/24 \
-    --spn publish/blackbird.ryu-oh.org@RYU-OH.ORG \
-    --publish-base /solar/archive
-```
