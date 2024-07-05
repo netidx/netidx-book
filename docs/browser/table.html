@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -10,7 +10,7 @@
         
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="../favicon.svg">
         <link rel="shortcut icon" href="../favicon.png">
@@ -31,7 +31,8 @@
         <!-- Custom theme stylesheets -->
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -60,40 +61,71 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="../administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../administration/authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="../administration/startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="../administration/listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="../administration/subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="../administration/fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="../tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="../tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="../tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="../tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="../tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="../tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="../tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="../examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="../browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="../browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="../browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="../browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="../browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="../browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="../browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="../browser/table.html" class="active"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="../browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="../browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="../browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="../browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="../browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="../browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="../browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="../browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="../browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="../browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="../browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="../browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="../browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="../protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="../protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="../bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="../bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="../bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="../bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="../administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../administration/tls.html"><strong aria-hidden="true">4.2.</strong> Managing TLS</a></li><li class="chapter-item expanded "><a href="../administration/authorization.html"><strong aria-hidden="true">4.3.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="../administration/startup.html"><strong aria-hidden="true">4.4.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="../administration/listener_check.html"><strong aria-hidden="true">4.5.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="../administration/subscription_flow.html"><strong aria-hidden="true">4.6.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="../administration/fault_tolerance.html"><strong aria-hidden="true">4.7.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="../tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="../tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="../tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="../tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="../tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="../tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="../tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="../examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="../browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="../browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="../browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="../browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="../browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="../browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="../browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="../browser/table.html" class="active"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="../browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="../browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="../browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="../browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="../browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="../browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="../browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="../browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="../browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="../browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="../browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="../browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="../browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="../protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="../protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="../bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="../bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="../bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="../bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="../bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="../bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="../bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
                                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -161,7 +193,7 @@ on the publisher side, or disabled entirely. Sort mode has the form,</p>
 
 external: [false, [spec, ...]]
 
-spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+spec: [&lt;column&gt;, ("ascending" | "descending")]
 </code></pre>
 <ul>
 <li>
@@ -180,7 +212,7 @@ desired action. See, On Header Click.</p>
 as specified by the indicator spec. Use this if you implement
 sorting in the publisher, but want to give the user feedback about
 what is sorted. Example,</p>
-<p><code>[false, [[&quot;artist&quot;, &quot;descending&quot;], [&quot;album&quot;, &quot;descending&quot;]]]</code></p>
+<p><code>[false, [["artist", "descending"], ["album", "descending"]]]</code></p>
 <p>Indicates that sorting is happening on the publisher side, and the
 indicators should be show on the artist and album columns.</p>
 </li>
@@ -189,23 +221,23 @@ indicators should be show on the artist and album columns.</p>
 order. Sorting is processed within the browser and is under the
 user's control. Click events will also be generated when the user
 clicks on the header button, see On Header Click. Example,</p>
-<p><code>&quot;artist&quot;</code></p>
+<p><code>"artist"</code></p>
 <p>sort by the artist column descending</p>
 </li>
 <li>
 <p>spec: Same as column, except the sort direction is explicitly
 specified. Example,</p>
-<p><code>[&quot;artist&quot;, &quot;ascending&quot;]</code></p>
+<p><code>["artist", "ascending"]</code></p>
 <p>sort by the artist column ascending</p>
 </li>
 </ul>
 <h2 id="selection-mode"><a class="header" href="#selection-mode">Selection Mode</a></h2>
-<p>This controls user selection it can be &quot;single&quot;, &quot;multi&quot;, or &quot;none&quot;</p>
+<p>This controls user selection it can be "single", "multi", or "none"</p>
 <ul>
-<li>&quot;single&quot;: The user can only select 1 cell at a time</li>
-<li>&quot;multi&quot;: The user can select multiple cells by holding shift while
+<li>"single": The user can only select 1 cell at a time</li>
+<li>"multi": The user can select multiple cells by holding shift while
 clicking or arrowing.</li>
-<li>&quot;none&quot;: The user can't select cells</li>
+<li>"none": The user can't select cells</li>
 </ul>
 <h2 id="column-filter"><a class="header" href="#column-filter">Column Filter</a></h2>
 <p>The column filter allows you to remove columns from the table, and
@@ -215,11 +247,11 @@ also control their ordering. It has the form,</p>
 
 list: [list-mode, (&lt;col&gt; | [&lt;col&gt;, ...])]
 
-range: [range-mode, [(&lt;n&gt; | &quot;start&quot;), (&lt;m&gt; | &quot;end&quot;)]]
+range: [range-mode, [(&lt;n&gt; | "start"), (&lt;m&gt; | "end")]]
 
-list-mode: (&quot;include&quot; | &quot;exclude&quot; | &quot;include_match&quot; | &quot;exclude_match&quot;)
+list-mode: ("include" | "exclude" | "include_match" | "exclude_match")
 
-range-mode: (&quot;keep&quot; | &quot;drop&quot;)
+range-mode: ("keep" | "drop")
 </code></pre>
 <ul>
 <li>null: all columns are included</li>
@@ -228,23 +260,23 @@ range-mode: (&quot;keep&quot; | &quot;drop&quot;)
 <li>list: Specify a list of columns or column regexes to include or
 exclude.
 <ul>
-<li>&quot;include&quot;: col/cols is a list of columns to show. The order of
+<li>"include": col/cols is a list of columns to show. The order of
 the columns in the list controls the order of the columns that
 are displayed.</li>
-<li>&quot;exclude&quot;: col/cols is a list of columns to hide</li>
-<li>&quot;include_match&quot;: col/cols is a list of regex patterns of columns
+<li>"exclude": col/cols is a list of columns to hide</li>
+<li>"include_match": col/cols is a list of regex patterns of columns
 to show</li>
-<li>&quot;exclude_match&quot;: col/cols is a list of regex patterns of columns
+<li>"exclude_match": col/cols is a list of regex patterns of columns
 to hide</li>
 </ul>
 </li>
 <li>range: Specify columns to keep or drop by numeric ranges. Range
 patterns apply to the positions of columns in the sorted set.
 <ul>
-<li>&quot;keep&quot;: keep the columns specified by the range, drop any
+<li>"keep": keep the columns specified by the range, drop any
 others. If the range specifies more columns than exist all
 columns will be kept. Matched items will be &gt;= start and &lt; end.</li>
-<li>&quot;drop&quot;: drop the columns specified by the range, keeping the
+<li>"drop": drop the columns specified by the range, keeping the
 rest. If the range specifies more columns than exist all the
 columns will be dropped. Matched items will be &lt; start or &gt;=
 end.</li>
@@ -252,15 +284,15 @@ end.</li>
 </li>
 </ul>
 <p>Examples,</p>
-<p><code>[&quot;include&quot;, [&quot;col0&quot;, &quot;col1&quot;, &quot;col2&quot;]]</code></p>
+<p><code>["include", ["col0", "col1", "col2"]]</code></p>
 <p>include only col0, col1, and col2 in that order</p>
-<p><code>[&quot;exclude&quot;, [&quot;col0&quot;]]</code></p>
+<p><code>["exclude", ["col0"]]</code></p>
 <p>include every column except col0.</p>
-<p><code>[&quot;include_match&quot;, &quot;\[0-9\]+$&quot;]</code></p>
+<p><code>["include_match", "\[0-9\]+$"]</code></p>
 <p>include all columns that end in a number</p>
-<p><code>[&quot;drop&quot;, [10, &quot;end&quot;]]</code></p>
+<p><code>["drop", [10, "end"]]</code></p>
 <p>drop all columns after column 9.</p>
-<p>It is important to note that only &quot;include&quot; allows you to control the
+<p>It is important to note that only "include" allows you to control the
 column order, in all other cases the columns will be sorted
 lexicographically.</p>
 <h2 id="column-editable"><a class="header" href="#column-editable">Column Editable</a></h2>
@@ -271,7 +303,7 @@ edited (the user can always try ctrl+w to write).</p>
 bscript event handler. So this filter is really determining which
 columns can trigger that event handler.</p>
 <h2 id="column-widths"><a class="header" href="#column-widths">Column Widths</a></h2>
-<p>This expression allows you to control the default widths of columns. </p>
+<p>This expression allows you to control the default widths of columns.</p>
 <pre><code>
 (null | widths)
 
@@ -283,7 +315,7 @@ widths: [[&lt;name&gt;, &lt;w&gt;], ...]
 corresponding column.</li>
 </ul>
 <p>Example,</p>
-<p><code>[[&quot;col0&quot;, 300], [&quot;col1&quot;, 200], [&quot;col2&quot;, 50]]</code></p>
+<p><code>[["col0", 300], ["col1", 200], ["col2", 50]]</code></p>
 <h2 id="columns-resizable"><a class="header" href="#columns-resizable">Columns Resizable</a></h2>
 <p>if true then the user can resize columns, if false they cannot.</p>
 <h2 id="column-types"><a class="header" href="#column-types">Column Types</a></h2>
@@ -300,43 +332,43 @@ displays all the columns in the filtered model as text.
 
 column_types: [[&lt;name&gt;, typename, properties], ...]
 
-typename: (&quot;text&quot; | &quot;toggle&quot; | &quot;image&quot; | &quot;combo&quot; | &quot;spin&quot; | &quot;progress&quot; | &quot;hidden&quot;)
+typename: ("text" | "toggle" | "image" | "combo" | "spin" | "progress" | "hidden")
 
 common: common properties shared by many columns
-  [&quot;source&quot;, &lt;column-name&gt;],
+  ["source", &lt;column-name&gt;],
     optional, the source column that contains the data for
     each row. If not specified the default is this column
     (&lt;name&gt;).
 
-  [&quot;background&quot;, &lt;color-string&gt;],
+  ["background", &lt;color-string&gt;],
     optional, statically specify the background color of the
-    cell. same format as the &quot;foreground&quot; attribute.
+    cell. same format as the "foreground" attribute.
 
-  [&quot;background-column&quot;, &lt;column-name&gt;],
+  ["background-column", &lt;column-name&gt;],
     optional, the column containing the background color of
     each row in the same format as described in the
-    &quot;foreground&quot; attribute.
+    "foreground" attribute.
 
 
 properties: match typename
-  &quot;text&quot;: [
+  "text": [
     common,
 
-    [&quot;foreground&quot;, &lt;color-string&gt;],
+    ["foreground", &lt;color-string&gt;],
       optional, statically specify the foreground text
       color. Any string understood by pango_parse_color is
       understood here. That includes css color names, and hex
       strings in various formats.
 
-    [&quot;foreground-column&quot;, &lt;column-name&gt;],
+    ["foreground-column", &lt;column-name&gt;],
       optional, the column containing the foreground color of
-      each row, same format as for the &quot;foreground&quot; attribute.
+      each row, same format as for the "foreground" attribute.
   ]
   
-  &quot;toggle&quot;: [
+  "toggle": [
     common,
 
-    [&quot;radio&quot;, (true | false)],
+    ["radio", (true | false)],
       optional, whether to render the toggle as a check button
       or a radio button.
 
@@ -350,118 +382,118 @@ properties: match typename
       whether or not the toggle in each row is a radio or a
       check button.
 
-    [&quot;radio-column&quot;, &lt;column-name&gt;]
-      optional, the column containing the &quot;radio&quot; property for
+    ["radio-column", &lt;column-name&gt;]
+      optional, the column containing the "radio" property for
       each row
   ]
 
-  &quot;image&quot;: [
+  "image": [
     common,
   ]
 
-  &quot;combo&quot;: [
+  "combo": [
     common,
 
-    [&quot;choices&quot;, [&lt;choice&gt;, ...]],
+    ["choices", [&lt;choice&gt;, ...]],
       The available choices globally for the entire
       column. One of choices or choices-column must be
       specified
 
-    [&quot;choices-column&quot;, &lt;column-name&gt;]
-      The column containing the &quot;choices&quot; attribute
+    ["choices-column", &lt;column-name&gt;]
+      The column containing the "choices" attribute
       for each row. One of choices, or choices-column must be
       specified.
 
-    [&quot;has-entry&quot;, (true | false)],
+    ["has-entry", (true | false)],
       optional. Should the column have an entry in addition to
       the combo box menu? If true the user will be able to
       enter any text they want, even if it isn't a valid
       choice. If false only valid choices may be entered.
 
-    [&quot;has-entry-column&quot;, &lt;column-name&gt;]
+    ["has-entry-column", &lt;column-name&gt;]
       optional, the column containing the has-entry attribute for each row.
   ]
 
-  &quot;spin&quot;: [
+  "spin": [
      common,
 
-     [&quot;min&quot;, &lt;n&gt;],
+     ["min", &lt;n&gt;],
        optional, if not specified 0 is assumed.
 
-     [&quot;min-column&quot;, &lt;column-name&gt;]
+     ["min-column", &lt;column-name&gt;]
        optional, the column containing the min attribute for each row
 
-     [&quot;max&quot;, &lt;n&gt;],
+     ["max", &lt;n&gt;],
        optional, if not specified 1 is assumed.
 
-     [&quot;max-column&quot;, &lt;column-name&gt;]
+     ["max-column", &lt;column-name&gt;]
        optonal, the column containing the max attribute for each row
 
-     [&quot;increment&quot;, &lt;n&gt;],
+     ["increment", &lt;n&gt;],
        optional, the amount the value changes with each spin button press
 
-     [&quot;increment-column&quot;, &lt;column-name&gt;],
+     ["increment-column", &lt;column-name&gt;],
        optional, the column containg the increment property
 
-     [&quot;page-increment&quot;, &lt;n&gt;]
+     ["page-increment", &lt;n&gt;]
        optional, the amount the value changes on a page increment
 
-     [&quot;page-increment-column&quot;, &lt;column-name&gt;],
+     ["page-increment-column", &lt;column-name&gt;],
        optional, the column containg the page-increment property
 
-     [&quot;climb-rate&quot;, &lt;n&gt;],
+     ["climb-rate", &lt;n&gt;],
        optional. How fast the value should change if the user
        holds the + or - button down.
 
-     [&quot;climb-rate-column&quot;, &lt;column-name&gt;]
+     ["climb-rate-column", &lt;column-name&gt;]
        optional, the column specifying the climb-rate attribute for each row
 
-     [&quot;digits&quot;, &lt;n&gt;],
+     ["digits", &lt;n&gt;],
        optional. The number of decimal places to display.
 
-     [&quot;digits-column&quot;, &lt;column-name&gt;]
+     ["digits-column", &lt;column-name&gt;]
        optional. The column specifying the digits attribute for each row.
   ]
 
-  &quot;progress&quot;: [
+  "progress": [
     common,
       
-    [&quot;activity-mode&quot;, (true | false)],
+    ["activity-mode", (true | false)],
       optional, default false. Operate the progressbar in
       activity mode (see the ProgressBar widget).
 
-    [&quot;activity-mode-column&quot;, &lt;column-name&gt;]
+    ["activity-mode-column", &lt;column-name&gt;]
       optional, the column specifying the activity mode for each row.
 
-    [&quot;text&quot;, &lt;text&gt;],
+    ["text", &lt;text&gt;],
       optional, display static text near the progress bar
 
-    [&quot;text-column&quot;, &lt;column-name&gt;],
+    ["text-column", &lt;column-name&gt;],
       optional, display text from &lt;column-name&gt; near the
       progress bar.
 
-    [&quot;text-xalign&quot;, &lt;n&gt;],
+    ["text-xalign", &lt;n&gt;],
       optional, set the horizontal alignment of the displayed
       text. 0 is full left, 1 is full right.
 
-    [&quot;text-xalign-column&quot;, &lt;column-name&gt;]
+    ["text-xalign-column", &lt;column-name&gt;]
       optional, the column specifying the text-xalign property for each row
 
-    [&quot;text-yalign&quot;, &lt;n&gt;],
+    ["text-yalign", &lt;n&gt;],
       optional, set the vertical alignment of the displayed
       text. 0 is top, 1 is bottom.
 
-    [&quot;text-yalign-column&quot;, &lt;column-name&gt;]
+    ["text-yalign-column", &lt;column-name&gt;]
       optonal, the column specifying the text-yalign property for each row
 
-    [&quot;inverted&quot;, (true | false)],
+    ["inverted", (true | false)],
       optional, invert the meaning of the source data
 
-    [&quot;inverted-column&quot;, &lt;column-name&gt;]
+    ["inverted-column", &lt;column-name&gt;]
       optional, the column specifying the inverted property for each row
  ]
 
- &quot;hidden&quot;:
+ "hidden":
    hidden is a special column type that has no properties. It
    is used to hide data columns that other visible columns
    depend on (so they must appear in the model), but that you
@@ -479,17 +511,17 @@ it's underlying column is filtered out.</p>
 column, if both ways are specified then the column will override the
 static specification. If the column data is missing or invalid for a
 given row, then the static specification will be used. e.g. if I
-specify both <code>[&quot;text-yalign&quot;, 1]</code> and <code>[&quot;text-yalign-column&quot;, &quot;foo&quot;]</code>,
+specify both <code>["text-yalign", 1]</code> and <code>["text-yalign-column", "foo"]</code>,
 then 1 will be used if the data from foo is missing, otherwise foo
 will be used.</p>
 <p>Examples,</p>
 <pre><code>
 [
-  [&quot;images&quot;, &quot;image&quot;, [[&quot;source&quot;, &quot;000&quot;]]],
-  [&quot;checkboxes&quot;, &quot;toggle&quot;, [[&quot;source&quot;, &quot;001&quot;]]],
-  [&quot;combos&quot;, &quot;combo&quot;, [[&quot;source&quot;, &quot;002&quot;], [&quot;choices-column&quot;, &quot;003&quot;]]],
-  [&quot;004&quot;, &quot;hidden&quot;, []],
-  [&quot;005&quot;, &quot;hidden&quot;, []]
+  ["images", "image", [["source", "000"]]],
+  ["checkboxes", "toggle", [["source", "001"]]],
+  ["combos", "combo", [["source", "002"], ["choices-column", "003"]]],
+  ["004", "hidden", []],
+  ["005", "hidden", []]
 ]
 </code></pre>
 <p><img src="./widget-table-advanced.png" alt="Advanced" /></p>
@@ -500,7 +532,7 @@ underlying table via the <code>source</code> attribute, and in the combos column
 the choices also come from an underlying column.</p>
 <p>Meanwhile we hide some of the underying columns. In a real application
 we might use these features to create a view of a dataset that is very
-different from what the underying table looks like &quot;raw&quot;.</p>
+different from what the underying table looks like "raw".</p>
 <h2 id="row-filter"><a class="header" href="#row-filter">Row filter</a></h2>
 <p>The row filter has the same format as the column filter, except it
 operates on the rows of the table.</p>
@@ -533,7 +565,7 @@ clicked.</p>
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../browser/image.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../browser/image.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -547,7 +579,7 @@ clicked.</p>
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../browser/image.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../browser/image.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -573,5 +605,6 @@ clicked.</p>
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

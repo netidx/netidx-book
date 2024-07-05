@@ -1,17 +1,17 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Introduction to Netidx</title>
-        <meta name="robots" content="noindex" />
+        <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
         
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -32,7 +32,8 @@
         <!-- Custom theme stylesheets -->
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
@@ -61,40 +62,71 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="administration/authorization.html"><strong aria-hidden="true">4.2.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="administration/startup.html"><strong aria-hidden="true">4.3.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="administration/listener_check.html"><strong aria-hidden="true">4.4.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="administration/subscription_flow.html"><strong aria-hidden="true">4.5.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="administration/fault_tolerance.html"><strong aria-hidden="true">4.6.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="browser/table.html"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="administration/tls.html"><strong aria-hidden="true">4.2.</strong> Managing TLS</a></li><li class="chapter-item expanded "><a href="administration/authorization.html"><strong aria-hidden="true">4.3.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="administration/startup.html"><strong aria-hidden="true">4.4.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="administration/listener_check.html"><strong aria-hidden="true">4.5.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="administration/subscription_flow.html"><strong aria-hidden="true">4.6.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="administration/fault_tolerance.html"><strong aria-hidden="true">4.7.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="browser/table.html"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
                                 <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -151,6 +183,8 @@ publishers, subscribers, and tools without much setup.</p>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure cargo is in your and then run,</p>
 <p><code>cargo install netidx-tools</code></p>
+<p>if you are on Max OS you must use,</p>
+<p><code>cargo install --no-default-features netidx-tools</code></p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools</p>
@@ -161,45 +195,46 @@ server, as well as the publisher/subscriber command line tools</p>
 </ul>
 <h2 id="resolver-server-configuration"><a class="header" href="#resolver-server-configuration">Resolver Server Configuration</a></h2>
 <pre><code class="language-json">{
-  &quot;parent&quot;: null,
-  &quot;children&quot;: [],
-  &quot;member_servers&quot;: [
+  "parent": null,
+  "children": [],
+  "member_servers": [
     {
-      &quot;pid_file&quot;: &quot;&quot;,
-      &quot;addr&quot;: &quot;127.0.0.1:4564&quot;,
-      &quot;max_connections&quot;: 768,
-      &quot;hello_timeout&quot;: 10,
-      &quot;reader_ttl&quot;: 60,
-      &quot;writer_ttl&quot;: 120,
-      &quot;auth&quot;: {
-        &quot;Local&quot;: &quot;/tmp/netidx-auth&quot;
+      "pid_file": "",
+      "addr": "127.0.0.1:4564",
+      "max_connections": 768,
+      "hello_timeout": 10,
+      "reader_ttl": 60,
+      "writer_ttl": 120,
+      "auth": {
+        "Local": "/tmp/netidx-auth"
       }
     }
   ],
-  &quot;perms&quot;: {
-    &quot;/&quot;: {
-      &quot;wheel&quot;: &quot;swlpd&quot;,
-      &quot;adm&quot;: &quot;swlpd&quot;,
-      &quot;domain users&quot;: &quot;sl&quot;
+  "perms": {
+    "/": {
+      "wheel": "swlpd",
+      "adm": "swlpd",
+      "domain users": "sl"
     }
   }
 }
 </code></pre>
 <p>Install the above config in
-<code>~/.config/netidx/netidx-resolver.json</code>. This is the config for the
+<code>~/.config/netidx/resolver.json</code>. This is the config for the
 local resolver on your machine. Make sure port 4564 is free, or change
 it to a free port of your choosing. If necessary you can change the
 local auth socket to one of your choosing.</p>
-<p>run <code>netidx resolver-server -c ~/.config/netidx/netidx-resolver.json</code>. This command will return
+<p>run <code>netidx resolver-server -c ~/.config/netidx/resolver.json</code>. This command will return
 immediatly, and the resolver server will daemonize. Check that it's
 running using <code>ps auxwww | grep netidx</code>.</p>
+<p>NOTE, the resolver server does not currently support Windows.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
-<p>If desired you can start the resolver server automatically with systemd. </p>
+<p>If desired you can start the resolver server automatically with systemd.</p>
 <pre><code>[Unit]
 Description=Netidx Activation
 
 [Service]
-ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/netidx-resolver.json -f
+ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/resolver.json -f
 
 [Install]
 WantedBy=default.target
@@ -211,11 +246,11 @@ install it in <code>~/.config/systemd/user/netidx.service</code>. Then you can r
 <p><code>systemctl --user start netidx</code></p>
 <h2 id="client-configuration"><a class="header" href="#client-configuration">Client Configuration</a></h2>
 <pre><code class="language-json">{
-    &quot;addrs&quot;:
+    "addrs":
     [
-        [&quot;127.0.0.1:4564&quot;, {&quot;Local&quot;: &quot;/tmp/netidx-auth&quot;}]
+        ["127.0.0.1:4564", {"Local": "/tmp/netidx-auth"}]
     ],
-    &quot;base&quot;: &quot;/&quot;
+    "base": "/"
 }
 </code></pre>
 <p>Install the above config in <code>~/.config/netidx/client.json</code>. This is
@@ -243,7 +278,7 @@ environment variable <code>RUST_LOG=debug</code> and running the stress publishe
 and the subscriber again.</p>
 <h2 id="optional-netidx-browser"><a class="header" href="#optional-netidx-browser">Optional Netidx Browser</a></h2>
 <p>The browser is an optional gui browser for the netidx tree, you need
-gtk development files installed to build it, on debian/ubuntu add those with </p>
+gtk development files installed to build it, on debian/ubuntu add those with</p>
 <p><code>sudo apt install libgtk-3-dev</code></p>
 <p>and then</p>
 <p><code>cargo install netidx-browser</code></p>
@@ -349,11 +384,14 @@ building block for sending other encoded data efficiently.</p>
 (like a TCP stream)</li>
 </ul>
 <h2 id="security"><a class="header" href="#security">Security</a></h2>
-<p>Netidx currently supports two authentication mechanisms, Kerberos v5,
-and Local. Local applies only on the same machine (and isn't supported
+<p>Netidx currently supports three authentication mechanisms, Kerberos v5,
+Local, and Tls. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
 deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
-Directory Server, or one of the many other compatible solutions.</p>
+Directory Server, or one of the many other compatible solutions. Tls
+requires each participant in netidx (resolver server, subscriber, publisher)
+to have a certificate issued by a certificate authority that the others
+it wants to interact with trust.</p>
 <p>Security is optional in netidx, it's possible to deploy a netidx
 system with no security at all, or it's possible to deploy a mixed
 system where only some publishers require security, with some
@@ -364,7 +402,8 @@ publishers that aren't.</li>
 <li>If a publisher is configured with security, then it won't talk to a
 subscriber that isn't.</li>
 </ul>
-<p>When security is enabled you get the following guarantees,</p>
+<p>When security is enabled, regardless of which of the three mechanisms
+you get the following guarantees,</p>
 <ul>
 <li>
 <p><strong>Mutual Authentication</strong>, the publisher knows the subscriber is who
@@ -373,8 +412,9 @@ claim to be. This applies for the resolver &lt;-&gt; subscriber, and
 resolver &lt;-&gt; publisher as well.</p>
 </li>
 <li>
-<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted,
-and data cannot be altered undetected by a man in the middle.</p>
+<p><strong>Confidentiality</strong> and Tamper detection, all messages are encrypted
+if they will leave the local machine, and data cannot be altered
+undetected by a man in the middle.</p>
 </li>
 <li>
 <p><strong>Authorization</strong>, The user subscribing to a given data value is
@@ -403,7 +443,7 @@ publishers syncronize with each other.</p>
 venerable vmstat tool to netidx.</p>
 <pre><code class="language-bash">#! /bin/bash
 
-BASE=&quot;/sys/vmstat/$HOSTNAME&quot;
+BASE="/sys/vmstat/$HOSTNAME"
 
 vmstat -n 1 | \
     while read running \
@@ -424,23 +464,23 @@ vmstat -n 1 | \
                waitio \
                stolen
     do
-        echo &quot;${BASE}/running|z32|${running}&quot;
-        echo &quot;${BASE}/blocked|z32|${blocked}&quot;
-        echo &quot;${BASE}/swapped|z32|${swapped}&quot;
-        echo &quot;${BASE}/free|u64|${free}&quot;
-        echo &quot;${BASE}/buf|u64|${buf}&quot;
-        echo &quot;${BASE}/cache|u64|${cache}&quot;
-        echo &quot;${BASE}/swap_in|z32|${swap_in}&quot;
-        echo &quot;${BASE}/swap_out|z32|${swap_out}&quot;
-        echo &quot;${BASE}/blocks_in|z32|${blocks_in}&quot;
-        echo &quot;${BASE}/blocks_out|z32|${blocks_out}&quot;
-        echo &quot;${BASE}/interrupts|z32|${interrupts}&quot;
-        echo &quot;${BASE}/context_switches|z32|${context_switches}&quot;
-        echo &quot;${BASE}/user|z32|${user}&quot;
-        echo &quot;${BASE}/system|z32|${system}&quot;
-        echo &quot;${BASE}/idle|z32|${idle}&quot;
-        echo &quot;${BASE}/waitio|z32|${waitio}&quot;
-        echo &quot;${BASE}/stolen|z32|${stolen}&quot;
+        echo "${BASE}/running|z32|${running}"
+        echo "${BASE}/blocked|z32|${blocked}"
+        echo "${BASE}/swapped|z32|${swapped}"
+        echo "${BASE}/free|u64|${free}"
+        echo "${BASE}/buf|u64|${buf}"
+        echo "${BASE}/cache|u64|${cache}"
+        echo "${BASE}/swap_in|z32|${swap_in}"
+        echo "${BASE}/swap_out|z32|${swap_out}"
+        echo "${BASE}/blocks_in|z32|${blocks_in}"
+        echo "${BASE}/blocks_out|z32|${blocks_out}"
+        echo "${BASE}/interrupts|z32|${interrupts}"
+        echo "${BASE}/context_switches|z32|${context_switches}"
+        echo "${BASE}/user|z32|${user}"
+        echo "${BASE}/system|z32|${system}"
+        echo "${BASE}/idle|z32|${idle}"
+        echo "${BASE}/waitio|z32|${waitio}"
+        echo "${BASE}/stolen|z32|${stolen}"
     done | \
     netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
 </code></pre>
@@ -487,7 +527,7 @@ triple for each field. e.g. if we don't run the final pipe to <code>netidx publi
 </code></pre>
 <p>No surprise that this is the exact format <code>netidx publisher</code> requires
 to publish a value, so the final command in the pipeline is just
-<code>netidx publisher</code> consuming the output of the while loop. </p>
+<code>netidx publisher</code> consuming the output of the while loop.</p>
 <p>Running this on two of my systems results in a table viewable in the
 browser with two rows,</p>
 <p><img src="examples/vmstat-browser-table.png" alt="vmstat" /></p>
@@ -508,8 +548,8 @@ BASE='/sys/vmstat'
 declare -A TOTALS
 declare -A HOSTS
 
-netidx resolver list -w &quot;${BASE}/**&quot; | \
-    grep -v --line-buffered &quot;${BASE}/total/&quot; | \
+netidx resolver list -w "${BASE}/**" | \
+    grep -v --line-buffered "${BASE}/total/" | \
     sed -u -e 's/^/ADD|/' | \
     netidx subscriber | \
     while IFS='|' read -a input
@@ -517,20 +557,20 @@ netidx resolver list -w &quot;${BASE}/**&quot; | \
         IFS='/' path=(${input[0]})
         host=${path[-2]}
         field=${path[-1]}
-        if ! test -z &quot;$host&quot; -o -z &quot;$field&quot;; then
-            HOSTS[$host]=&quot;$host&quot;
-            TOTALS[&quot;$host/$field&quot;]=${input[2]}
+        if ! test -z "$host" -o -z "$field"; then
+            HOSTS[$host]="$host"
+            TOTALS["$host/$field"]=${input[2]}
             T=0
             for h in ${HOSTS[@]}
             do
-                ((T+=TOTALS[&quot;$h/$field&quot;]))
+                ((T+=TOTALS["$h/$field"]))
             done
-            echo &quot;${BASE}/total/$field|${input[1]}|$T&quot;
+            echo "${BASE}/total/$field|${input[1]}|$T"
         fi
     done | netidx publisher --spn publish/${HOSTNAME}@RYU-OH.ORG --bind 192.168.0.0/24
 </code></pre>
 <p>Lets dissect this script,</p>
-<pre><code>netidx resolve list -w &quot;${BASE}/**&quot;
+<pre><code>netidx resolve list -w "${BASE}/**"
 </code></pre>
 <p>This lists everything under <code>/sys/vmstat</code> recursively, and instead of
 exiting after doing that, it keeps polling every second, and if a new
@@ -655,62 +695,62 @@ the middle of a three level hierarchy. Above it is the root server, it
 is responsible for the /app subtree, and it delegates /app/huge0 and
 /app/huge1 to child servers.</p>
 <pre><code class="language-json">{
-  &quot;parent&quot;: {
-    &quot;path&quot;: &quot;/app&quot;,
-    &quot;ttl&quot;: 3600,
-    &quot;addrs&quot;: [
+  "parent": {
+    "path": "/app",
+    "ttl": 3600,
+    "addrs": [
       [
-        &quot;192.168.0.1:4654&quot;,
+        "192.168.0.1:4654",
         {
-          &quot;Krb5&quot;: &quot;root/server@YOUR-DOMAIN&quot;
+          "Krb5": "root/server@YOUR-DOMAIN"
         }
       ]
     ]
   },
-  &quot;children&quot;: [
+  "children": [
     {
-      &quot;path&quot;: &quot;/app/huge0&quot;,
-      &quot;ttl&quot;: 3600,
-      &quot;addrs&quot;: [
+      "path": "/app/huge0",
+      "ttl": 3600,
+      "addrs": [
         [
-          &quot;192.168.0.2:4654&quot;,
+          "192.168.0.2:4654",
           {
-            &quot;Krb5&quot;: &quot;huge0/server@YOUR-DOMAIN&quot;
+            "Krb5": "huge0/server@YOUR-DOMAIN"
           }
         ]
       ]
     },
     {
-      &quot;path&quot;: &quot;/app/huge1&quot;,
-      &quot;ttl&quot;: 3600,
-      &quot;addrs&quot;: [
+      "path": "/app/huge1",
+      "ttl": 3600,
+      "addrs": [
         [
-          &quot;192.168.0.3:4654&quot;,
+          "192.168.0.3:4654",
           {
-            &quot;Krb5&quot;: &quot;huge1/server@YOUR-DOMAIN&quot;
+            "Krb5": "huge1/server@YOUR-DOMAIN"
           }
         ]
       ]
     }
   ],
-  &quot;member_servers&quot;: [
+  "member_servers": [
     {
-      &quot;pid_file&quot;: &quot;/var/run/netidx&quot;,
-      &quot;addr&quot;: &quot;192.168.0.4:4564&quot;,
-      &quot;max_connections&quot;: 768,
-      &quot;hello_timeout&quot;: 10,
-      &quot;reader_ttl&quot;: 60,
-      &quot;writer_ttl&quot;: 120,
-      &quot;auth&quot;: {
-        &quot;Krb5&quot;: &quot;app/server@YOUR-DOMAIN&quot;
+      "pid_file": "/var/run/netidx",
+      "addr": "192.168.0.4:4564",
+      "max_connections": 768,
+      "hello_timeout": 10,
+      "reader_ttl": 60,
+      "writer_ttl": 120,
+      "auth": {
+        "Krb5": "app/server@YOUR-DOMAIN"
       }
     }
   ],
-  &quot;perms&quot;: {
-    &quot;/app&quot;: {
-      &quot;wheel&quot;: &quot;swlpd&quot;,
-      &quot;adm&quot;: &quot;swlpd&quot;,
-      &quot;domain users&quot;: &quot;sl&quot;
+  "perms": {
+    "/app": {
+      "wheel": "swlpd",
+      "adm": "swlpd",
+      "domain users": "sl"
     }
   }
 }
@@ -752,6 +792,16 @@ path will be referred to the child.</p>
 on each server are,</p>
 <ul>
 <li>
+<p>id_map_command: Optional. The path to the command the server should run
+in order to map a user name to a user and a set of groups that user is
+a member of. Default is <code>/usr/bin/id</code>. If a custom command is specified
+then it's output MUST be in the same format as the <code>/usr/bin/id</code> command.
+This command will be passed the name of the user as a single argument.
+Depending on the auth mechanism this "name" could be e.g. <code>eric@RYU-OH.ORG</code> for
+kerberos, just <code>eric</code> for local auth, or <code>eric.users.architect.com</code> for
+tls auth (it will pass the common name of the users' certificate)</p>
+</li>
+<li>
 <p>pid_file: the path to the pid file you want the server to write. The
 server id folowed by .pid will be appended to whatever is in this
 field. So server 0 in the above example will write it's pid to
@@ -788,9 +838,21 @@ publisher will remain in the resolver.</p>
 </li>
 <li>
 <p>auth: The authentication mechanism used by this server. One of
-Anonymous, Local, or Krb5. Local must include the path to the local
+Anonymous, Local, Krb5, or Tls. Local must include the path to the local
 auth socket file that will be used to verify the identity of
-clients. Krb5 must include the server's spn.</p>
+clients. Krb5 must include the server's spn. Tls must include the
+domain name of the server, the path to the trusted certificates,
+the server's certificate (it's CN must match the domain name),
+and the path to the server's private key. For example,</p>
+<pre><code class="language-json">"Tls": {
+    "name": "resolver.architect.com",
+    "trusted": "trusted.pem",
+    "certificate": "cert.pem",
+    "private_key": "private.key"
+}
+</code></pre>
+<p>The certificate <code>CN</code> must be <code>resolver.architect.com</code>. The
+may not be encrypted.</p>
 </li>
 </ul>
 <h3 id="perms"><a class="header" href="#perms">perms</a></h3>
@@ -821,11 +883,11 @@ configuration files from the following places in order.</p>
 configurable by OS specific means.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
 <pre><code class="language-json">{
-    &quot;addrs&quot;:
+    "addrs":
     [
-        [&quot;192.168.0.1:4654&quot;, {&quot;Krb5&quot;: &quot;root/server@YOUR-DOMAIN&quot;}]
+        ["192.168.0.1:4654", {"Krb5": "root/server@YOUR-DOMAIN"}]
     ],
-    &quot;base&quot;: &quot;/&quot;
+    "base": "/"
 }
 </code></pre>
 <h4 id="addrs"><a class="header" href="#addrs">addrs</a></h4>
@@ -834,18 +896,129 @@ cluster. Local should include the path to the local authentication
 socket file. Krb5 should include the server's spn.</p>
 <h4 id="base"><a class="header" href="#base">base</a></h4>
 <p>The base path of this server cluster in the tree. This should
-correspond to the server cluster's parent, or &quot;/&quot; if it's parent is
+correspond to the server cluster's parent, or "/" if it's parent is
 null.</p>
+<h4 id="default_auth"><a class="header" href="#default_auth">default_auth</a></h4>
+<p>Optional. Specify the default authentication mechanism. May be one of
+<code>Anonymous</code>, <code>Local</code>, <code>Krb5</code>, or <code>Tls</code></p>
+<h4 id="tls"><a class="header" href="#tls">tls</a></h4>
+<p>This is required only if using tls. Because netidx is a
+distributed system, when in tls mode a subscriber may need to interact
+with different organizations that don't necessarially trust each other enough
+to share a certificate authority. That is why subscribers may be configured
+with multiple identities. When connecting to another netidx entity a
+subscriber will pick the identity that most closely matches the domain
+of that entity. For example, in the below config, when connecting to
+<code>resolver.footraders.com</code> the client will use the <code>footraders.com</code> identity.
+When connecting to <code>core.architect.com</code> it will choose the <code>architect.com</code>
+identity. When connecting to <code>a-feed.marketdata.architect.com</code> it would
+choose the <code>marketdata.architect.com</code> identity.</p>
+<p>When publishing, the default identity is used unless another identity is
+specified to the publisher.</p>
+<pre><code class="language-json">"tls": {
+    "default_identity": "footraders.com",
+    "identities": {
+        "footraders.com": {
+            "trusted": "/home/joe/.config/netidx/footradersca.pem",
+            "certificate": "/home/joe/.config/netidx/footraders.crt",
+            "private_key": "/home/joe/.config/netidx/footraders.key"
+        },
+        "architect.com": {
+            "trusted": "/home/joe/.config/netidx/architectca.pem",
+            "certificate": "/home/joe/.config/netidx/architect.crt",
+            "private_key": "/home/joe/.config/netidx/architect.key"
+        },
+        "marketdata.architect.com": {
+            "trusted": "/home/joe/.config/netidx/architectca.pem",
+            "certificate": "/home/joe/.config/netidx/architectmd.crt",
+            "private_key": "/home/joe/.config/netidx/architectmd.key"
+        }
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="managing-tls"><a class="header" href="#managing-tls">Managing TLS</a></h1>
+<p>Tls authentication requires a bit more care than even Kerberos. Here we'll go over
+a quick configuration using the openssl command line tool. I'll be using,</p>
+<pre><code>$ openssl version
+OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)
+</code></pre>
+<h2 id="setting-up-a-local-certificate-authority"><a class="header" href="#setting-up-a-local-certificate-authority">Setting Up a Local Certificate Authority</a></h2>
+<p>Unless you already have a corporate certificate authority, or you actually want to buy
+certificates for your netidx resolvers, publishers, and users from a commercial CA then
+you need to set up a certificate authority. This sounds like a big deal, but it's actually
+not. A CA is really just a certificate and accompanying private key that serves as the root
+of trust. That means that it is self signed, and people in your organization choose to trust
+it. It will then sign certificates for your users, publishers, and resolver servers, and they
+will be configured to trust certificates that it has signed.</p>
+<pre><code>openssl genrsa -aes256 -out ca.key 4096
+</code></pre>
+<p>This will generate the private key we will use for the local ca. This is the most important
+thing to keep secret. Use a strong password on it, and ideally keep it somewhere safe.</p>
+<pre><code>openssl req -new -key ./ca.key -x509 -sha512 -out ca.crt -days 7300 \
+  -subj "/CN=mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization" \
+  -addext "basicConstraints=critical, CA:TRUE" \
+  -addext "subjectKeyIdentifier=hash" \
+  -addext "authorityKeyIdentifier=keyid:always, issuer:always" \
+  -addext "keyUsage=critical, cRLSign, digitalSignature, keyCertSign" \
+  -addext "subjectAltName=DNS:mycompany.com"
+</code></pre>
+<p>This will generate a certificate for the certificate authority and sign it with the private key.
+The <code>-addext</code> flags add x509v3 attributes. Once this is complete we can view the certificate with</p>
+<pre><code>openssl x509 -text -in ca.crt
+</code></pre>
+<h2 id="generating-user-resolver-and-publisher-certificates"><a class="header" href="#generating-user-resolver-and-publisher-certificates">Generating User, Resolver, and Publisher Certificates</a></h2>
+<p>Now we can create certificates for various parts of the netidx system. Lets make one for the resolver
+server.</p>
+<pre><code># generate the resolver server key. It must not be encrypted.
+openssl genrsa -out resolver.key 4096
+
+# generate a certificate signing request that will be signed our CA
+openssl req -new -key ./resolver.key -sha512 -out resolver.req \
+  -subj "/CN=resolver.mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization"
+
+# sign the certificate request with the CA key and add restrictions to it using x509v3 extentions
+openssl x509 -req -in ./resolver.req -CA ca.crt -CAkey ca.key \
+  -CAcreateserial -out resolver.crt -days 730 -extfile &lt;(cat &lt;&lt;EOF
+basicConstraints=critical, CA:FALSE
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always, issuer:always
+keyUsage=nonRepudiation,digitalSignature,keyEncipherment
+subjectAltName=DNS:resolver.mycompany.com
+EOF
+)
+
+ # check it
+openssl verify -trusted ca.crt resolver.crt
+</code></pre>
+<p>This has one extra step, the generation of the request to be signed. If we were using a commercial
+certificate authority we would send this request to them and they would return the signed certificate
+to us. In this case it's just an extra file we can delete once we've signed the request.</p>
+<p>The resolver server private key must not be encrypted, this is because it probably doesn't have any
+way to ask for a password on startup, since it's likely running on a headless server somewhere.
+So it's extra important to keep this certificate safe.</p>
+<p>Generating user and publisher certificates is exactly the same as the above, except that they are
+permitted to have password protected private keys. However if you do this, make sure there is an
+<code>askpass</code> command configured, and that your system level keychain service is running and unlocked.
+Once the password has been entered once, it will be added to the keychain and should not need to
+be entered again.</p>
+<p>It's possible to use the same certificate for multiple services, however it's probably not a great
+idea unless it's for multiple components of the same system (e.g. lots of publishers in a cluster),
+or if a user is testing a new publisher it can probably just use their certificate.</p>
+<h2 id="distributing-certificates"><a class="header" href="#distributing-certificates">Distributing Certificates</a></h2>
+<p>With the configuration above you only need to distribute the CA certificate. Every netidx component
+that will participate needs to have a copy of it, and it needs to be configured as trusted in the client
+config, and the resolver server config.</p>
+<p>Other components only need to have their own certificate, as well as their private key.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="authorization"><a class="header" href="#authorization">Authorization</a></h1>
-<p>When using the Kerberos or Local auth mechanisms we also need to
+<p>When using the Kerberos, Local, or Tls auth mechanisms we also need to
 specify permissions in the cluster config file, e.g.</p>
 <pre><code class="language-json">...
-&quot;perms&quot;: {
-    &quot;/&quot;: {
-        &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+"perms": {
+    "/": {
+        "eric@RYU-OH.ORG": "swlpd"
     },
-    &quot;/solar&quot;: {
-	    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+    "/solar": {
+	    "svc_solar@RYU-OH.ORG": "pd"
     }
 }
 </code></pre>
@@ -867,50 +1040,50 @@ character of the permission string.</li>
 <p>For example if I was subscribing to
 <code>/solar/stats/battery_sense_voltage</code> we would walk down the path from
 left to right and hit this permission first,</p>
-<pre><code class="language-json">&quot;/&quot;: {
-    &quot;eric@RYU-OH.ORG&quot;: &quot;swlpd&quot;
+<pre><code class="language-json">"/": {
+    "eric@RYU-OH.ORG": "swlpd"
 },
 </code></pre>
-<p>This applies to a Kerberos principal &quot;eric@RYU-OH.ORG&quot;, the resolver
+<p>This applies to a Kerberos principal "eric@RYU-OH.ORG", the resolver
 server will check the user principal name of the user making the
 request, and it will check all the groups that user is a member of,
-and if any of those are &quot;eric@RYU-OH.ORG&quot; then it will <code>or</code> the
-current permission set with &quot;swlpd&quot;. In this case this gives me
+and if any of those are "eric@RYU-OH.ORG" then it will <code>or</code> the
+current permission set with "swlpd". In this case this gives me
 permission to do anything I want in the whole tree (unless it is later
 denied). Next we would hit,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;
+<pre><code class="language-json">"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd"
 }
 </code></pre>
 <p>Which doesn't apply to me, and so would be ignored, and since there
 are no more permissions entries my effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> are &quot;swlpd&quot;, and so I would be
+<code>/solar/stats/battery_sense_voltage</code> are "swlpd", and so I would be
 allowed to subscribe.</p>
 <p>Suppose however I changed the above entry,</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;eric@RYU-OH.ORG&quot;: &quot;!swl&quot;,
+<pre><code class="language-json">"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "eric@RYU-OH.ORG": "!swl",
 }
 </code></pre>
 <p>Now, in our walk, when we arrived at <code>/solar</code>, we would find an entry
 that matches me, and we would remove the permission bits s, w, and l,
 leaving our effective permissions at
-<code>/solar/stats/battery_sense_voltage</code> as &quot;pd&quot;. Since that doesn't give
+<code>/solar/stats/battery_sense_voltage</code> as "pd". Since that doesn't give
 me the right to subscribe my request would be denied. We could also do
 this by group.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
+<pre><code class="language-json">"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "RYU-OH\domain admins": "!swl",
 }
 </code></pre>
 <p>As you would expect, this deny permission will still apply to me
 because I am a member of the domain admins group. If I am a member of
 two groups, and both groups have different bits denied, then all of
 them would be removed. e.g.</p>
-<pre><code class="language-json">&quot;/solar&quot;: {
-    &quot;svc_solar@RYU-OH.ORG&quot;: &quot;pd&quot;,
-    &quot;RYU-OH\domain admins&quot;: &quot;!swl&quot;,
-    &quot;RYU-OH\enterprise admins&quot;: &quot;!pd&quot;,
+<pre><code class="language-json">"/solar": {
+    "svc_solar@RYU-OH.ORG": "pd",
+    "RYU-OH\domain admins": "!swl",
+    "RYU-OH\enterprise admins": "!pd",
 }
 </code></pre>
 <p>Now my effective permissions under <code>/solar</code> are empty, I can do
@@ -927,9 +1100,9 @@ limitations. There is no encryption. There is no tamper
 protection. There is no publisher -&gt; subscriber
 authentication. Anonymous users can't subscribe to non anonymous
 publishers. Non anonymous users can't subscribe to anonymous
-publishers. You name anonymous &quot;&quot; in the permissions file, e.g.</p>
-<pre><code class="language-json">&quot;/tmp&quot;: {
-    &quot;&quot;: &quot;swlpd&quot;
+publishers. You name anonymous "" in the permissions file, e.g.</p>
+<pre><code class="language-json">"/tmp": {
+    "": "swlpd"
 }
 </code></pre>
 <p>Now <code>/tmp</code> is an anonymous free for all. If you have Kerberos
@@ -953,7 +1126,7 @@ of groups every user who might use netidx is in.</p>
 resolver servers, because that's the only place group resolution
 happens in netidx. You're other client and server machines can be as
 screwed up and inconsistent as you want, as long as the resolver
-server machine agrees that I'm a member of &quot;RYU-OH\domain admins&quot; then
+server machine agrees that I'm a member of "RYU-OH\domain admins" then
 whatever permissions assigned to that group in the permission file
 will apply to me.</p>
 <p>All the non resolver server machines need to be able to do is get
@@ -999,17 +1172,16 @@ resolver server with</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="listener-check"><a class="header" href="#listener-check">Listener Check</a></h1>
 <p>The listener check is an extra security measure that is intended to
 prevent an authenticated user from denying service to another
-publisher by overwriting it's gssapi session. When a client connects
-to the resolver server for write, and kerberos is enabled, then after
-authentication the resolver server encrypts a challenge using the
-newly created gssapi session. It then connects to the write address
+publisher by overwriting it's session. When a client connects
+to the resolver server for write, and kerberos, tls, or local auth
+is enabled, then after authentication the resolver server encrypts
+a challenge using the newly created session. It then connects to the write address
 proposed by this new publisher and presents the challenge, which the
 publisher must answer correctly, otherwise the old session will be
 kept, and the new client will be disconnected. So in order to publish
 at a given address you must,</p>
 <ul>
-<li>Be a valid kerberos user with a valid service ticket for the
-resolver server.</li>
+<li>Be a valid user</li>
 <li>Actually be listening on the write address you propose to use for
 publishing. And the write address must be routable from the resolver
 server's position on the network.</li>
@@ -1017,21 +1189,13 @@ server's position on the network.</li>
 </ul>
 <h2 id="why-is-the-listener-check-important"><a class="header" href="#why-is-the-listener-check-important">Why is the listener check important?</a></h2>
 <p>Since connecting to the resolver as a publisher can be done by any
-kerberos user who can get a service ticket for the resolver,
-essentially anyone on your network, and since the address and port a
+user who can authenticate to the resolver, and since the address and port a
 publisher is going to insert into the resolver server as their address
 is just part of the hello message, without some kind of check anyone
 on your network could figure out the address of an important
 publisher, then connect to the resolver server and say they <em>are</em> that
-publisher address. Even if they don't have permission to actually
-publish paths where that publisher is publishing, the gssapi sessions
-are tied to the write ip/port in the resolver server. If the gssapi
-session of an existing publisher is replaced without it's knowledge,
-then it would no longer be able to validate authorization tokens from
-the resolver server, and all subscriptions to it would fail. So
-essentially the listener check exists to prevent an unauthorized
-elevation of privledges leading to a denial of service. There are
-several other implications,</p>
+publisher address, even if they don't have permission to publish. There
+are several implications.</p>
 <ul>
 <li>publishers on different network segments that might share ip
 addresses can't use the same resolver server.</li>
@@ -1124,7 +1288,7 @@ publishing that path, it constructs a SHA512 hash value of,</p>
 <li>The secret it shared with the resolver cluster when it initially
 published the path.</li>
 <li>The path the subscriber is requesting</li>
-<li>The permissions the subscriber claims to have </li>
+<li>The permissions the subscriber claims to have</li>
 </ul>
 <p>It then checks that it's constructed auth token matches the one the
 subscriber presented. Since the subscriber does not know the secret
@@ -1143,11 +1307,17 @@ the GSSAPI session, and over the same TCP session that was
 established earlier).</p>
 </li>
 </ol>
-<p>In the case netidx is not configured to use kerberos the KDC is not
-involved, and none of the authentication or authorization tokens are
-established/sent, it's just a simple matter of look up the address
-from the resolver, and then subscribe to the publisher. In that case
-all data goes in the clear.</p>
+<h3 id="other-authentication-methods"><a class="header" href="#other-authentication-methods">Other Authentication Methods</a></h3>
+<p>In the case of Tls and Local authentication, the subscription flow is similar,
+it just doesn't involve the KDC. Under local authentication, the resolver server
+is listening on a unix domain socket at an agreed upon path. The client connects
+to the socket, and the server is able to determine the local user on the other end.
+It then sends the client a token that it can use to make requests. From step 2 on local
+auth is more or less the same as kerberos.</p>
+<p>Tls is very similar as well, except instead of a kdc, it's doing a TLS handshake. If the
+certificates check out, then from step 2 on, it's pretty much identical to kerberos.</p>
+<p>In the case of anonymous authentication it's just a simple matter of look up the address
+from the resolver, and then subscribe to the publisher. All the data goes in the clear.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="fault-tolerance"><a class="header" href="#fault-tolerance">Fault Tolerance</a></h1>
 <p>As a system netidx depends on fault tolerant strategies in the
 subscriber, publisher, and resolver server in order to minimize
@@ -1180,6 +1350,7 @@ causes it not to work. e.g.
 <li>Resolver server addresses that are routeable by some clients and not others</li>
 <li>Wrong Kerberos SPNs</li>
 <li>Misconfigured Kerberos</li>
+<li>Bad tls certificates</li>
 </ul>
 </li>
 </ul>
@@ -1236,7 +1407,7 @@ time between 1 and 12 seconds, and then go through the whole
 connection process again. That roughly entails taking the list of
 all servers, permuting it, and then connecting to each server in
 the list until one of them answers, says a proper hello, and
-successfully authenticates (if kerberos is on). For each batch a
+successfully authenticates (if authentication is on). For each batch a
 resolver client will do this abandon and reconnect dance 3 times,
 and then it will give up and return an error for that
 batch. Subsuquent batches will start over from the beginning. In a
@@ -1267,7 +1438,7 @@ clients,
 </ul>
 <p>One important consequence of the write client behavior is that in the
 event all the resolver servers crash, when they come back up
-publishers will republishing everything after a maximum of 1/2
+publishers will republish everything after a maximum of 1/2
 <code>writer_ttl</code> has elapsed.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-tools"><a class="header" href="#command-line-tools">Command Line Tools</a></h1>
 <p>You don't need to program to use netidx, it comes with a set of useful
@@ -1347,6 +1518,7 @@ must set the environment variable
 resolver server as a prinicpal other than the logged in user then
 you can specify that principal here. You must have a TGT for the
 specified principal.</li>
+<li><code>--identity</code>: optional, the tls identity to use for publishing.</li>
 <li><code>--timeout &lt;seconds&gt;</code>: optional, if specified requires subscribers
 to consume published values within the specified number of seconds
 or be disconnected. By default the publisher will wait forever for a
@@ -1654,6 +1826,7 @@ the network interface to bind to. See
 <li><code>-a, --auth</code>: the authentication mechanism, anonymous, local, or krb5.</li>
 <li><code>--spn &lt;service-principal&gt;</code>: optional, required for kerberos, the
 service princial to publish as.</li>
+<li><code>--identity &lt;name&gt;</code>: optional, the tls identity to use for publishing</li>
 <li><code>--max-sessions &lt;n&gt;</code>: optional, How many total client sessions to allow at
 any given time. When a session is no longer used, it will be
 garbage collected. default 256.</li>
@@ -1691,9 +1864,9 @@ published some new things there,</p>
 <p>If we want to pass some arguments to the rpc so our session will be
 setup how we like by default we can do that as well, e.g.</p>
 <pre><code>netidx subscriber &lt;&lt;EOF
-CALL|/solar/archive/session|start=&quot;-3d&quot;,speed=2
+CALL|/solar/archive/session|start="-3d",speed=2
 EOF
-CALLED|/archive/session|&quot;ef93a9dce21f40c49f5888e64964f93f&quot;
+CALLED|/archive/session|"ef93a9dce21f40c49f5888e64964f93f"
 </code></pre>
 <p>Now our new session would be setup to start 3 days ago, and playback
 at 2x speed.</p>
@@ -1783,12 +1956,12 @@ column to the left. rel(1) goes 1 column to the right. rel(-1, 0) gets
 the path to the cell in the same column but 1 row up.</p>
 <p>Because bscript is an incremental language it automatically recomputes
 the value of a formula when something it depends on changes. Using the
-helpers to create &quot;sheets&quot; you can create something a lot like a
+helpers to create "sheets" you can create something a lot like a
 google sheet or cloud excel sheet, multiple users can edit and view it
 concurrently while keeping a consistent view. With a little browser
 bscript you can even make it look like a spreadsheet.</p>
 <p>Probably more interesting than replicating a cloud sheet is that you
-aren't limited to &quot;spreadsheet like things&quot;, you can use bscript
+aren't limited to "spreadsheet like things", you can use bscript
 formulas to e.g. select and project data from elsewhere in netidx,
 combine it with local data and compute interesting things. However the
 most important difference of all is that unlike a spreadsheet the
@@ -1811,8 +1984,8 @@ network, just like anything else in netidx.</p>
 </ul>
 <h3 id="a-note-about-memory-use"><a class="header" href="#a-note-about-memory-use">A Note About Memory Use</a></h3>
 <p>There were some lies in the introduction. If you're a seasoned
-sysadmin or DBA you might have cringed when you read &quot;reads and
-publishes all the data in it's database&quot;. From the point of view of
+sysadmin or DBA you might have cringed when you read "reads and
+publishes all the data in it's database". From the point of view of
 the casual user that is what happens, but the reality is more complex,
 and a lot more efficient. The container does scan the database at
 startup, but it doesn't immediately publish anything except
@@ -1846,8 +2019,8 @@ existing root. It is not an error to add a new root above existing
 roots, but for tidiness you should probably remove the child roots
 after adding the parent.</p>
 <p>e.g.</p>
-<pre><code>add-root(&quot;/solar/gui&quot;);
-add-root(&quot;/tmp&quot;);
+<pre><code>add-root("/solar/gui");
+add-root("/tmp");
 </code></pre>
 <p>would make the container responsible for /tmp, and /solar/gui</p>
 <h3 id="remove-root"><a class="header" href="#remove-root">remove-root</a></h3>
@@ -1951,7 +2124,7 @@ administrators.</p>
 <h3 id="create-sheet"><a class="header" href="#create-sheet">create-sheet</a></h3>
 <pre><code>create-sheet(path, rows, columns, max-rows, max-columns, lock)
 </code></pre>
-<p>This is a helper function to create a &quot;spreadsheet like sheet&quot; at the
+<p>This is a helper function to create a "spreadsheet like sheet" at the
 specified path. It will create a tree structure that will render as a
 table in the browser with numbered rows and columns,
 e.g. /tmp/sheet/001/01 for row 1 column 1. rows is the initial number
@@ -2011,8 +2184,8 @@ column(s). row and column must be specified one or more times.</p>
     column=string:implemented
 )
 </code></pre>
-<p>will create a table with two columns &quot;widget&quot; and &quot;implemented&quot; and
-three rows &quot;01&quot;, &quot;02&quot;, and &quot;03&quot;.</p>
+<p>will create a table with two columns "widget" and "implemented" and
+three rows "01", "02", and "03".</p>
 <h3 id="add-table-rows"><a class="header" href="#add-table-rows">add-table-rows</a></h3>
 <pre><code>add-table-rows(path, row)
 </code></pre>
@@ -2036,7 +2209,7 @@ at configured trigger paths, and then start a process whenever someone
 tries to subscribe to anything under the trigger path. Publishers for
 many kinds of services can thus be started on demand, and can shut
 down when no one is using them. This can save resources, and it can
-also simplify starting up all the &quot;moving parts&quot; of a complex service.</p>
+also simplify starting up all the "moving parts" of a complex service.</p>
 <p>In fact a convenient way to run netidx on both a server or a
 workstation is to configure all your netidx applications, including
 the resolver server, as activation units, and then start the
@@ -2052,18 +2225,18 @@ prescidence if it exists.</p>
 <p>Here is an example activation unit triggered on access to any path
 under <code>/local/music</code></p>
 <pre><code class="language-json">{
-  &quot;trigger&quot;: {
-    &quot;OnAccess&quot;: [
-      &quot;/local/music&quot;
+  "trigger": {
+    "OnAccess": [
+      "/local/music"
     ]
   },
-  &quot;process&quot;: {
-    &quot;exe&quot;: &quot;/home/eric/.cargo/bin/demoscene&quot;,
-    &quot;args&quot;: [
-      &quot;--base&quot;,
-      &quot;/local/music&quot;,
-      &quot;--library&quot;,
-      &quot;/home/eric/mus&quot;
+  "process": {
+    "exe": "/home/eric/.cargo/bin/demoscene",
+    "args": [
+      "--base",
+      "/local/music",
+      "--library",
+      "/home/eric/mus"
     ]
   }
 }
@@ -2108,7 +2281,7 @@ the activation server.</li>
 <li><code>gid</code>: The numeric group id to run the process as. default the gid
 of the activation server.</li>
 <li><code>restart</code>: Yes, No, or RateLimited with an f64 number of seconds
-delay. Default <code>&quot;RateLimited&quot;: 1.</code>.</li>
+delay. Default <code>"RateLimited": 1.</code>.</li>
 <li><code>stdin</code>: The path to the file, pipe, etc that
 will be set as the processes stdin. default, inherited from the
 activation server.</li>
@@ -2119,9 +2292,9 @@ processes stderr. default, inherited from the activation server.</li>
 <li><code>environment</code>: either Inherit followed by a list of environment
 mappings to be overridden or replace followed by the full list of
 environment mappings. e.g.
-<pre><code class="language-json">&quot;Inherit&quot;: {
-  &quot;PATH&quot;: &quot;/bin:/usr/bin&quot;,
-  &quot;TERM&quot;: &quot;xterm&quot;,
+<pre><code class="language-json">"Inherit": {
+  "PATH": "/bin:/usr/bin",
+  "TERM": "xterm",
   ...
 }
 </code></pre>
@@ -2212,12 +2385,12 @@ impl HwPub {
         // our network was large and complex we might need to make
         // this a passed in configuration option, but lets assume it's
         // simple.
-        let publisher = Publisher::new(cfg, auth, &quot;192.168.0.0/24&quot;.parse()?).await?;
+        let publisher = Publisher::new(cfg, auth, "192.168.0.0/24".parse()?).await?;
 
         // We're publishing stats about hardware here, so lets put it
         // in /hw/hostname/cpu-temp, that way we keep everything nice
         // and organized.
-        let path = Path::from(format!(&quot;/hw/{}/cpu-temp&quot;, host));
+        let path = Path::from(format!("/hw/{}/cpu-temp", host));
         let cpu_temp = publisher.publish(path, Value::F64(current))?;
 
         // Wait for the publish operation to be sent to the resolver
@@ -2255,7 +2428,7 @@ netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-te
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
-        echo &quot;host: ${pparts[2]} cpu tmp is too high: ${temp}&quot;
+        echo "host: ${pparts[2]} cpu tmp is too high: ${temp}"
     fi
 done
 </code></pre>
@@ -2270,8 +2443,8 @@ netidx subscriber -a anonymous $(netidx resolver -a anonymous list '/hw/*/cpu-te
 while IFS='|' read path typ temp; do
     IFS='/' pparts=($path)
     if ((temp &gt; 75)); then
-        echo &quot;/hw/${pparts[2]}/overtemp-ts|string|$(date)&quot;
-        echo &quot;/hw/${pparts[2]}/overtemp|f64|$temp&quot;
+        echo "/hw/${pparts[2]}/overtemp-ts|string|$(date)"
+        echo "/hw/${pparts[2]}/overtemp|f64|$temp"
     fi
 done | \
 netidx publisher -a anonymous --bind 192.168.0.0/24
@@ -2316,16 +2489,16 @@ netidx resolver -a anonymous list -w '/hw/*/cpu-temp' | \
     while IFS='|' read path typ temp
     do
         IFS='/' pparts=($path)
-        temp=$(sed -e 's/\.[0-9]*//' &lt;&lt;&lt; &quot;$temp&quot;) # strip the fractional part, if any
+        temp=$(sed -e 's/\.[0-9]*//' &lt;&lt;&lt; "$temp") # strip the fractional part, if any
         host=${pparts[2]}
         if ((temp &gt; 75)); then
             HOSTS[$host]=$host
-            echo &quot;/hw/${host}/overtemp-ts|string|$(date)&quot;
-            echo &quot;/hw/${host}/overtemp|f64|$temp&quot;
-        elif test -z &quot;${HOSTS[$host]}&quot;; then
+            echo "/hw/${host}/overtemp-ts|string|$(date)"
+            echo "/hw/${host}/overtemp|f64|$temp"
+        elif test -z "${HOSTS[$host]}"; then
             HOSTS[$host]=$host
-            echo &quot;/hw/${host}/overtemp-ts|null&quot;
-            echo &quot;/hw/${host}/overtemp|null&quot;
+            echo "/hw/${host}/overtemp-ts|null"
+            echo "/hw/${host}/overtemp|null"
         fi
     done | netidx publisher -a anonymous --bind 192.168.0.0/24
 </code></pre>
@@ -2402,8 +2575,8 @@ async fn watch_hosts(
     // we will list everything in that subtree that matches the glob
     // /hw/*/cpu-temp.
     let resolver = subscriber.resolver();
-    let mut ct = ChangeTracker::new(Path::from(&quot;/hw&quot;));
-    let pat = GlobSet::new(true, iter::once(Glob::new(Chars::from(&quot;/hw/*/cpu-temp&quot;))?))?;
+    let mut ct = ChangeTracker::new(Path::from("/hw"));
+    let pat = GlobSet::new(true, iter::once(Glob::new(Chars::from("/hw/*/cpu-temp"))?))?;
     loop {
         if resolver.check_changed(&amp;mut ct).await? {
             let mut batches = resolver.list_matching(&amp;pat).await?;
@@ -2424,11 +2597,11 @@ async fn watch_hosts(
                             // publish the overtemp records, both with
                             // initial values of Null
                             let timestamp = publisher.publish(
-                                Path::from(format!(&quot;/hw/{}/overtemp-ts&quot;, host)),
+                                Path::from(format!("/hw/{}/overtemp-ts", host)),
                                 Value::Null,
                             )?;
                             let temperature = publisher.publish(
-                                Path::from(format!(&quot;/hw/{}/overtemp&quot;, host)),
+                                Path::from(format!("/hw/{}/overtemp", host)),
                                 Value::Null,
                             )?;
                             // record that we've seen the host, and
@@ -2456,10 +2629,10 @@ async fn watch_hosts(
 pub async fn main() -&gt; Result&lt;()&gt; {
     // load the default netidx config
     let config = Config::load_default()?;
-    let auth = DesiredAuth::Krb5 {upn: None, spn: Some(&quot;publish/blackbird.ryu-oh.org@RYU-OH.ORG&quot;.into())};
+    let auth = DesiredAuth::Krb5 {upn: None, spn: Some("publish/blackbird.ryu-oh.org@RYU-OH.ORG".into())};
     // setup subscriber and publisher
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
-    let publisher = Publisher::new(config, auth, &quot;192.168.0.0/24&quot;.parse()?).await?;
+    let publisher = Publisher::new(config, auth, "192.168.0.0/24".parse()?).await?;
     let (tx_current, mut rx_current) = channel(3);
     // this is where we'll store our published overtemp record for each host
     let temps: Arc&lt;Mutex&lt;HashMap&lt;SubId, Temp&gt;&gt;&gt; = Arc::new(Mutex::new(HashMap::new()));
@@ -2614,11 +2787,11 @@ the container. If you're familiar with the model view controller gui
 paradigm, browser script is the controller layer. Because of it's
 purpose it works differently from most scripting languages, in that it
 is a 'reactive' or 'incremental' language. Instead of describing
-&quot;steps the computer performs when I click the button&quot; like most other
+"steps the computer performs when I click the button" like most other
 languages, browser script describes where events go, and what
 transformations happen to them.</p>
 <p>For example the event handler for a button might look like so,</p>
-<pre><code>store(&quot;[base]/app/do_action&quot;, event())
+<pre><code>store("[base]/app/do_action", event())
 </code></pre>
 <p>Store is a function that takes two event sources as arguments. The
 first is expected to describe where in netidx to write, and the second
@@ -2627,7 +2800,7 @@ as building an event pipeline that looks something like this,</p>
 <pre><code>get(base) ------------1-&gt; concat_string ---------
                                 ^                |
                                 |                |
-&quot;/app/do_action&quot; -------------2-                 1
+"/app/do_action" -------------2-                 1
                                                  v
 event() -----------------------------------2-&gt; store
 </code></pre>
@@ -2655,20 +2828,20 @@ write an expression that just immediatly does something, then whatever
 it does will happen when the view is loaded. That holds true no matter
 where you put it, e.g. say we put the following as the <code>enabled</code>
 expression of a toggle.</p>
-<p><code>any(true, store(&quot;/foo/bar&quot;, 42))</code></p>
+<p><code>any(true, store("/foo/bar", 42))</code></p>
 <p>Since <code>any</code> always returns the left most event it receives, it will
 evaluate to true, making the toggle enabled, however every time the
 view containing this expression is loaded <code>42</code> will also be stored at
 <code>/foo/bar</code>.</p>
 <p>It's important to understand these semantics if you want to write more
 complex applications using BScript. The bscript widget is an invisible
-widget specifically meant for setting up these &quot;background&quot; event
+widget specifically meant for setting up these "background" event
 graphs. For example, we might want to have a variable called <code>base</code>
 that contains the base relative to which our view will operate. We can
 easily reference this variable in all our widgets, and the correct way
 to set it's value would be to put it's initialization expression in a
 bscript widget. e.g.</p>
-<pre><code>base &lt;- load(&quot;/where&quot;)
+<pre><code>base &lt;- load("/where")
 </code></pre>
 <h1 id="scope"><a class="header" href="#scope">Scope</a></h1>
 <p>Bscipt variables are lexically scoped, both in terms of their lexical
@@ -2761,7 +2934,7 @@ accepted.</p>
 expr is a regular bscript expression. In the case that any of the
 expressions defining an array update, the entire array will be
 regenerated with the new value substituting for the old one.</p>
-<pre><code>[ load(&quot;/foo&quot;), load(&quot;/bar&quot;) ]
+<pre><code>[ load("/foo"), load("/bar") ]
 </code></pre>
 <p>Will generate a new pair whenever either foo or bar update.</p>
 <h1 id="expression-interpolation"><a class="header" href="#expression-interpolation">Expression Interpolation</a></h1>
@@ -2773,18 +2946,18 @@ interpolation (including another interpolation). Non string valued
 expressions will be cast to strings, and any expression that cannot be
 cast to a string will be replaced with the empty string.</p>
 <p>e.g.</p>
-<pre><code>&quot;[base]/some/path&quot; =&gt; string_concat(get(&quot;base&quot;), &quot;/some/path&quot;)
+<pre><code>"[base]/some/path" =&gt; string_concat(get("base"), "/some/path")
 </code></pre>
-<pre><code>&quot;[base]/bar/[if(load(&quot;[base]/enabled&quot;),&quot;enabled&quot;,&quot;disabled&quot;)]/thing&quot; =&gt; 
+<pre><code>"[base]/bar/[if(load("[base]/enabled"),"enabled","disabled")]/thing" =&gt; 
 string_concat(
-    get(&quot;base&quot;),
-    &quot;/bar/&quot;,
+    get("base"),
+    "/bar/",
     if(
-        load(string_concat(get(&quot;base&quot;), &quot;/enabled&quot;)),
-        &quot;enabled&quot;,
-        &quot;disabled&quot;
+        load(string_concat(get("base"), "/enabled")),
+        "enabled",
+        "disabled"
     ),
-    &quot;/thing&quot;
+    "/thing"
 )
 </code></pre>
 <h1 id="the-expression-inspector"><a class="header" href="#the-expression-inspector">The Expression Inspector</a></h1>
@@ -2793,7 +2966,7 @@ expression in it's first column, and the current value of the
 corresponding expression in it's second.</p>
 <p><img src="browser/./expression-inspector.png" alt="Expression Inspector" /></p>
 <p>In this case the expression being inspected is,</p>
-<pre><code>base &lt;- &quot;[archive_base]/[sessionid]/data&quot;
+<pre><code>base &lt;- "[archive_base]/[sessionid]/data"
 </code></pre>
 <p>You can access the expression inspector by pressing the toggle button
 to the right of the expression box.</p>
@@ -2947,7 +3120,7 @@ on the publisher side, or disabled entirely. Sort mode has the form,</p>
 
 external: [false, [spec, ...]]
 
-spec: [&lt;column&gt;, (&quot;ascending&quot; | &quot;descending&quot;)]
+spec: [&lt;column&gt;, ("ascending" | "descending")]
 </code></pre>
 <ul>
 <li>
@@ -2966,7 +3139,7 @@ desired action. See, On Header Click.</p>
 as specified by the indicator spec. Use this if you implement
 sorting in the publisher, but want to give the user feedback about
 what is sorted. Example,</p>
-<p><code>[false, [[&quot;artist&quot;, &quot;descending&quot;], [&quot;album&quot;, &quot;descending&quot;]]]</code></p>
+<p><code>[false, [["artist", "descending"], ["album", "descending"]]]</code></p>
 <p>Indicates that sorting is happening on the publisher side, and the
 indicators should be show on the artist and album columns.</p>
 </li>
@@ -2975,23 +3148,23 @@ indicators should be show on the artist and album columns.</p>
 order. Sorting is processed within the browser and is under the
 user's control. Click events will also be generated when the user
 clicks on the header button, see On Header Click. Example,</p>
-<p><code>&quot;artist&quot;</code></p>
+<p><code>"artist"</code></p>
 <p>sort by the artist column descending</p>
 </li>
 <li>
 <p>spec: Same as column, except the sort direction is explicitly
 specified. Example,</p>
-<p><code>[&quot;artist&quot;, &quot;ascending&quot;]</code></p>
+<p><code>["artist", "ascending"]</code></p>
 <p>sort by the artist column ascending</p>
 </li>
 </ul>
 <h2 id="selection-mode"><a class="header" href="#selection-mode">Selection Mode</a></h2>
-<p>This controls user selection it can be &quot;single&quot;, &quot;multi&quot;, or &quot;none&quot;</p>
+<p>This controls user selection it can be "single", "multi", or "none"</p>
 <ul>
-<li>&quot;single&quot;: The user can only select 1 cell at a time</li>
-<li>&quot;multi&quot;: The user can select multiple cells by holding shift while
+<li>"single": The user can only select 1 cell at a time</li>
+<li>"multi": The user can select multiple cells by holding shift while
 clicking or arrowing.</li>
-<li>&quot;none&quot;: The user can't select cells</li>
+<li>"none": The user can't select cells</li>
 </ul>
 <h2 id="column-filter"><a class="header" href="#column-filter">Column Filter</a></h2>
 <p>The column filter allows you to remove columns from the table, and
@@ -3001,11 +3174,11 @@ also control their ordering. It has the form,</p>
 
 list: [list-mode, (&lt;col&gt; | [&lt;col&gt;, ...])]
 
-range: [range-mode, [(&lt;n&gt; | &quot;start&quot;), (&lt;m&gt; | &quot;end&quot;)]]
+range: [range-mode, [(&lt;n&gt; | "start"), (&lt;m&gt; | "end")]]
 
-list-mode: (&quot;include&quot; | &quot;exclude&quot; | &quot;include_match&quot; | &quot;exclude_match&quot;)
+list-mode: ("include" | "exclude" | "include_match" | "exclude_match")
 
-range-mode: (&quot;keep&quot; | &quot;drop&quot;)
+range-mode: ("keep" | "drop")
 </code></pre>
 <ul>
 <li>null: all columns are included</li>
@@ -3014,23 +3187,23 @@ range-mode: (&quot;keep&quot; | &quot;drop&quot;)
 <li>list: Specify a list of columns or column regexes to include or
 exclude.
 <ul>
-<li>&quot;include&quot;: col/cols is a list of columns to show. The order of
+<li>"include": col/cols is a list of columns to show. The order of
 the columns in the list controls the order of the columns that
 are displayed.</li>
-<li>&quot;exclude&quot;: col/cols is a list of columns to hide</li>
-<li>&quot;include_match&quot;: col/cols is a list of regex patterns of columns
+<li>"exclude": col/cols is a list of columns to hide</li>
+<li>"include_match": col/cols is a list of regex patterns of columns
 to show</li>
-<li>&quot;exclude_match&quot;: col/cols is a list of regex patterns of columns
+<li>"exclude_match": col/cols is a list of regex patterns of columns
 to hide</li>
 </ul>
 </li>
 <li>range: Specify columns to keep or drop by numeric ranges. Range
 patterns apply to the positions of columns in the sorted set.
 <ul>
-<li>&quot;keep&quot;: keep the columns specified by the range, drop any
+<li>"keep": keep the columns specified by the range, drop any
 others. If the range specifies more columns than exist all
 columns will be kept. Matched items will be &gt;= start and &lt; end.</li>
-<li>&quot;drop&quot;: drop the columns specified by the range, keeping the
+<li>"drop": drop the columns specified by the range, keeping the
 rest. If the range specifies more columns than exist all the
 columns will be dropped. Matched items will be &lt; start or &gt;=
 end.</li>
@@ -3038,15 +3211,15 @@ end.</li>
 </li>
 </ul>
 <p>Examples,</p>
-<p><code>[&quot;include&quot;, [&quot;col0&quot;, &quot;col1&quot;, &quot;col2&quot;]]</code></p>
+<p><code>["include", ["col0", "col1", "col2"]]</code></p>
 <p>include only col0, col1, and col2 in that order</p>
-<p><code>[&quot;exclude&quot;, [&quot;col0&quot;]]</code></p>
+<p><code>["exclude", ["col0"]]</code></p>
 <p>include every column except col0.</p>
-<p><code>[&quot;include_match&quot;, &quot;\[0-9\]+$&quot;]</code></p>
+<p><code>["include_match", "\[0-9\]+$"]</code></p>
 <p>include all columns that end in a number</p>
-<p><code>[&quot;drop&quot;, [10, &quot;end&quot;]]</code></p>
+<p><code>["drop", [10, "end"]]</code></p>
 <p>drop all columns after column 9.</p>
-<p>It is important to note that only &quot;include&quot; allows you to control the
+<p>It is important to note that only "include" allows you to control the
 column order, in all other cases the columns will be sorted
 lexicographically.</p>
 <h2 id="column-editable"><a class="header" href="#column-editable">Column Editable</a></h2>
@@ -3057,7 +3230,7 @@ edited (the user can always try ctrl+w to write).</p>
 bscript event handler. So this filter is really determining which
 columns can trigger that event handler.</p>
 <h2 id="column-widths"><a class="header" href="#column-widths">Column Widths</a></h2>
-<p>This expression allows you to control the default widths of columns. </p>
+<p>This expression allows you to control the default widths of columns.</p>
 <pre><code>
 (null | widths)
 
@@ -3069,7 +3242,7 @@ widths: [[&lt;name&gt;, &lt;w&gt;], ...]
 corresponding column.</li>
 </ul>
 <p>Example,</p>
-<p><code>[[&quot;col0&quot;, 300], [&quot;col1&quot;, 200], [&quot;col2&quot;, 50]]</code></p>
+<p><code>[["col0", 300], ["col1", 200], ["col2", 50]]</code></p>
 <h2 id="columns-resizable"><a class="header" href="#columns-resizable">Columns Resizable</a></h2>
 <p>if true then the user can resize columns, if false they cannot.</p>
 <h2 id="column-types"><a class="header" href="#column-types">Column Types</a></h2>
@@ -3086,43 +3259,43 @@ displays all the columns in the filtered model as text.
 
 column_types: [[&lt;name&gt;, typename, properties], ...]
 
-typename: (&quot;text&quot; | &quot;toggle&quot; | &quot;image&quot; | &quot;combo&quot; | &quot;spin&quot; | &quot;progress&quot; | &quot;hidden&quot;)
+typename: ("text" | "toggle" | "image" | "combo" | "spin" | "progress" | "hidden")
 
 common: common properties shared by many columns
-  [&quot;source&quot;, &lt;column-name&gt;],
+  ["source", &lt;column-name&gt;],
     optional, the source column that contains the data for
     each row. If not specified the default is this column
     (&lt;name&gt;).
 
-  [&quot;background&quot;, &lt;color-string&gt;],
+  ["background", &lt;color-string&gt;],
     optional, statically specify the background color of the
-    cell. same format as the &quot;foreground&quot; attribute.
+    cell. same format as the "foreground" attribute.
 
-  [&quot;background-column&quot;, &lt;column-name&gt;],
+  ["background-column", &lt;column-name&gt;],
     optional, the column containing the background color of
     each row in the same format as described in the
-    &quot;foreground&quot; attribute.
+    "foreground" attribute.
 
 
 properties: match typename
-  &quot;text&quot;: [
+  "text": [
     common,
 
-    [&quot;foreground&quot;, &lt;color-string&gt;],
+    ["foreground", &lt;color-string&gt;],
       optional, statically specify the foreground text
       color. Any string understood by pango_parse_color is
       understood here. That includes css color names, and hex
       strings in various formats.
 
-    [&quot;foreground-column&quot;, &lt;column-name&gt;],
+    ["foreground-column", &lt;column-name&gt;],
       optional, the column containing the foreground color of
-      each row, same format as for the &quot;foreground&quot; attribute.
+      each row, same format as for the "foreground" attribute.
   ]
   
-  &quot;toggle&quot;: [
+  "toggle": [
     common,
 
-    [&quot;radio&quot;, (true | false)],
+    ["radio", (true | false)],
       optional, whether to render the toggle as a check button
       or a radio button.
 
@@ -3136,118 +3309,118 @@ properties: match typename
       whether or not the toggle in each row is a radio or a
       check button.
 
-    [&quot;radio-column&quot;, &lt;column-name&gt;]
-      optional, the column containing the &quot;radio&quot; property for
+    ["radio-column", &lt;column-name&gt;]
+      optional, the column containing the "radio" property for
       each row
   ]
 
-  &quot;image&quot;: [
+  "image": [
     common,
   ]
 
-  &quot;combo&quot;: [
+  "combo": [
     common,
 
-    [&quot;choices&quot;, [&lt;choice&gt;, ...]],
+    ["choices", [&lt;choice&gt;, ...]],
       The available choices globally for the entire
       column. One of choices or choices-column must be
       specified
 
-    [&quot;choices-column&quot;, &lt;column-name&gt;]
-      The column containing the &quot;choices&quot; attribute
+    ["choices-column", &lt;column-name&gt;]
+      The column containing the "choices" attribute
       for each row. One of choices, or choices-column must be
       specified.
 
-    [&quot;has-entry&quot;, (true | false)],
+    ["has-entry", (true | false)],
       optional. Should the column have an entry in addition to
       the combo box menu? If true the user will be able to
       enter any text they want, even if it isn't a valid
       choice. If false only valid choices may be entered.
 
-    [&quot;has-entry-column&quot;, &lt;column-name&gt;]
+    ["has-entry-column", &lt;column-name&gt;]
       optional, the column containing the has-entry attribute for each row.
   ]
 
-  &quot;spin&quot;: [
+  "spin": [
      common,
 
-     [&quot;min&quot;, &lt;n&gt;],
+     ["min", &lt;n&gt;],
        optional, if not specified 0 is assumed.
 
-     [&quot;min-column&quot;, &lt;column-name&gt;]
+     ["min-column", &lt;column-name&gt;]
        optional, the column containing the min attribute for each row
 
-     [&quot;max&quot;, &lt;n&gt;],
+     ["max", &lt;n&gt;],
        optional, if not specified 1 is assumed.
 
-     [&quot;max-column&quot;, &lt;column-name&gt;]
+     ["max-column", &lt;column-name&gt;]
        optonal, the column containing the max attribute for each row
 
-     [&quot;increment&quot;, &lt;n&gt;],
+     ["increment", &lt;n&gt;],
        optional, the amount the value changes with each spin button press
 
-     [&quot;increment-column&quot;, &lt;column-name&gt;],
+     ["increment-column", &lt;column-name&gt;],
        optional, the column containg the increment property
 
-     [&quot;page-increment&quot;, &lt;n&gt;]
+     ["page-increment", &lt;n&gt;]
        optional, the amount the value changes on a page increment
 
-     [&quot;page-increment-column&quot;, &lt;column-name&gt;],
+     ["page-increment-column", &lt;column-name&gt;],
        optional, the column containg the page-increment property
 
-     [&quot;climb-rate&quot;, &lt;n&gt;],
+     ["climb-rate", &lt;n&gt;],
        optional. How fast the value should change if the user
        holds the + or - button down.
 
-     [&quot;climb-rate-column&quot;, &lt;column-name&gt;]
+     ["climb-rate-column", &lt;column-name&gt;]
        optional, the column specifying the climb-rate attribute for each row
 
-     [&quot;digits&quot;, &lt;n&gt;],
+     ["digits", &lt;n&gt;],
        optional. The number of decimal places to display.
 
-     [&quot;digits-column&quot;, &lt;column-name&gt;]
+     ["digits-column", &lt;column-name&gt;]
        optional. The column specifying the digits attribute for each row.
   ]
 
-  &quot;progress&quot;: [
+  "progress": [
     common,
       
-    [&quot;activity-mode&quot;, (true | false)],
+    ["activity-mode", (true | false)],
       optional, default false. Operate the progressbar in
       activity mode (see the ProgressBar widget).
 
-    [&quot;activity-mode-column&quot;, &lt;column-name&gt;]
+    ["activity-mode-column", &lt;column-name&gt;]
       optional, the column specifying the activity mode for each row.
 
-    [&quot;text&quot;, &lt;text&gt;],
+    ["text", &lt;text&gt;],
       optional, display static text near the progress bar
 
-    [&quot;text-column&quot;, &lt;column-name&gt;],
+    ["text-column", &lt;column-name&gt;],
       optional, display text from &lt;column-name&gt; near the
       progress bar.
 
-    [&quot;text-xalign&quot;, &lt;n&gt;],
+    ["text-xalign", &lt;n&gt;],
       optional, set the horizontal alignment of the displayed
       text. 0 is full left, 1 is full right.
 
-    [&quot;text-xalign-column&quot;, &lt;column-name&gt;]
+    ["text-xalign-column", &lt;column-name&gt;]
       optional, the column specifying the text-xalign property for each row
 
-    [&quot;text-yalign&quot;, &lt;n&gt;],
+    ["text-yalign", &lt;n&gt;],
       optional, set the vertical alignment of the displayed
       text. 0 is top, 1 is bottom.
 
-    [&quot;text-yalign-column&quot;, &lt;column-name&gt;]
+    ["text-yalign-column", &lt;column-name&gt;]
       optonal, the column specifying the text-yalign property for each row
 
-    [&quot;inverted&quot;, (true | false)],
+    ["inverted", (true | false)],
       optional, invert the meaning of the source data
 
-    [&quot;inverted-column&quot;, &lt;column-name&gt;]
+    ["inverted-column", &lt;column-name&gt;]
       optional, the column specifying the inverted property for each row
  ]
 
- &quot;hidden&quot;:
+ "hidden":
    hidden is a special column type that has no properties. It
    is used to hide data columns that other visible columns
    depend on (so they must appear in the model), but that you
@@ -3265,17 +3438,17 @@ it's underlying column is filtered out.</p>
 column, if both ways are specified then the column will override the
 static specification. If the column data is missing or invalid for a
 given row, then the static specification will be used. e.g. if I
-specify both <code>[&quot;text-yalign&quot;, 1]</code> and <code>[&quot;text-yalign-column&quot;, &quot;foo&quot;]</code>,
+specify both <code>["text-yalign", 1]</code> and <code>["text-yalign-column", "foo"]</code>,
 then 1 will be used if the data from foo is missing, otherwise foo
 will be used.</p>
 <p>Examples,</p>
 <pre><code>
 [
-  [&quot;images&quot;, &quot;image&quot;, [[&quot;source&quot;, &quot;000&quot;]]],
-  [&quot;checkboxes&quot;, &quot;toggle&quot;, [[&quot;source&quot;, &quot;001&quot;]]],
-  [&quot;combos&quot;, &quot;combo&quot;, [[&quot;source&quot;, &quot;002&quot;], [&quot;choices-column&quot;, &quot;003&quot;]]],
-  [&quot;004&quot;, &quot;hidden&quot;, []],
-  [&quot;005&quot;, &quot;hidden&quot;, []]
+  ["images", "image", [["source", "000"]]],
+  ["checkboxes", "toggle", [["source", "001"]]],
+  ["combos", "combo", [["source", "002"], ["choices-column", "003"]]],
+  ["004", "hidden", []],
+  ["005", "hidden", []]
 ]
 </code></pre>
 <p><img src="browser/./widget-table-advanced.png" alt="Advanced" /></p>
@@ -3286,7 +3459,7 @@ underlying table via the <code>source</code> attribute, and in the combos column
 the choices also come from an underlying column.</p>
 <p>Meanwhile we hide some of the underying columns. In a real application
 we might use these features to create a view of a dataset that is very
-different from what the underying table looks like &quot;raw&quot;.</p>
+different from what the underying table looks like "raw".</p>
 <h2 id="row-filter"><a class="header" href="#row-filter">Row filter</a></h2>
 <p>The row filter has the same format as the column filter, except it
 operates on the rows of the table.</p>
@@ -3320,31 +3493,31 @@ has two bscript properties.</p>
 
 icon-spec: [&lt;icon-name&gt;, icon-size]
 
-icon-size: (&quot;menu&quot; | &quot;small-toolbar&quot; | &quot;large-toolbar&quot; | &quot;dnd&quot; | &quot;dialog&quot;)
+icon-size: ("menu" | "small-toolbar" | "large-toolbar" | "dnd" | "dialog")
 
 image-spec: [
-   [&quot;image&quot;, &lt;image-bytes&gt;],
+   ["image", &lt;image-bytes&gt;],
      required, the image bytes.
 
-   [&quot;width&quot;, &lt;desired-width&gt;],
+   ["width", &lt;desired-width&gt;],
      optional, if specified the image will be scaled to the
      specified width. If keep-aspect is true then the height
      will also be scaled to keep the image's aspect ratio even
      if height is not specified.
 
-   [&quot;height&quot;, &lt;desired-height&gt;],
+   ["height", &lt;desired-height&gt;],
      optional, if specifed the image will be scaled to the
      specified height. If keep-aspect is true then the width
      will also be scaled to keep the image's aspect ratio even
      if width is not specified.
 
-   [&quot;keep-aspect&quot;, (true | false)]
+   ["keep-aspect", (true | false)]
      optional, keep the aspect ratio of the image.
 ]
 </code></pre>
 <ul>
 <li><icon-name>: A string naming the stock icon from the current theme
-that should be displayed. The default size is &quot;small-toolbar&quot;.</li>
+that should be displayed. The default size is "small-toolbar".</li>
 <li>icon-spec: A pair specifying the icon name and the icon size.</li>
 <li>icon-size: The size of the icon</li>
 <li><code>&lt;image-bytes&gt;</code>: A bytes value containing the image in any format
@@ -3353,7 +3526,7 @@ supported by gdk_pixbuf.</li>
 supported by gdk_pixbuf and some metadata.</li>
 </ul>
 <p>Examples,</p>
-<p><code>&quot;media-floppy-symbolic&quot;</code></p>
+<p><code>"media-floppy-symbolic"</code></p>
 <p>Display the icon from the standard icon set.</p>
 <p><code>&lt;binary-png-data&gt;</code></p>
 <p>Display the png data, literally the raw bytes copied into netidx
@@ -3371,16 +3544,16 @@ properties,</p>
 will be converted to one.</li>
 <li>Min Width: The minimum desired width in characters. The widget will
 force the window to be at least this wide.</li>
-<li>Ellipsize Mode: one of &quot;none&quot;, &quot;start&quot;, &quot;middle&quot;, or &quot;end&quot;. This
+<li>Ellipsize Mode: one of "none", "start", "middle", or "end". This
 property defines what happens if the text is too large to fit in the
 widget.
 <ul>
-<li>&quot;none&quot;: the window will be forced to grow until the text fits</li>
-<li>&quot;start&quot;: the text will be truncated and replaced with ... at the
+<li>"none": the window will be forced to grow until the text fits</li>
+<li>"start": the text will be truncated and replaced with ... at the
 start.</li>
-<li>&quot;middle&quot;: the text will be truncated and replaced with ... in the
+<li>"middle": the text will be truncated and replaced with ... in the
 middle.</li>
-<li>&quot;end&quot;: the text will be truncated and replaced with ... at the
+<li>"end": the text will be truncated and replaced with ... at the
 end.</li>
 </ul>
 </li>
@@ -3427,7 +3600,7 @@ a file uri should open the specified location in the file
 manager. etc. Any uri the system knows how to handle should work.</p>
 <p>Example</p>
 <pre><code>any(
-  confirm(&quot;navigate to: &quot;, event()), 
+  confirm("navigate to: ", event()), 
   sample(event(), true)
 )
 </code></pre>
@@ -3482,8 +3655,8 @@ first element of each pair is the string that will be sent by the
 <code>event()</code> function when the user selects the choice, and the second
 is the text that will be shown to the user.</p>
 <p>Example</p>
-<p><code>[[&quot;1&quot;, &quot;One&quot;], [&quot;2&quot;, &quot;Two&quot;]]</code></p>
-<p>The combo box will have allowed choices &quot;One&quot; and &quot;Two&quot;.</p>
+<p><code>[["1", "One"], ["2", "Two"]]</code></p>
+<p>The combo box will have allowed choices "One" and "Two".</p>
 </li>
 <li>
 <p>Selected: This expression should resolve to one of the allowed
@@ -3570,13 +3743,13 @@ easy to hit exactly.</p>
 
 mark: [&lt;pos&gt;, position-spec, (null | &lt;text&gt;)]
 
-position-spec: (&quot;left&quot; | &quot;right&quot; | &quot;top&quot; | &quot;bottom&quot;)
+position-spec: ("left" | "right" | "top" | "bottom")
 </code></pre>
 <p>Example</p>
 <pre><code>[
-  [0.25, &quot;bottom&quot;, &quot;0.25&quot;], 
-  [0.5, &quot;bottom&quot;, &quot;0.5&quot;], 
-  [0.75, &quot;bottom&quot;, &quot;0.75&quot;]
+  [0.25, "bottom", "0.25"], 
+  [0.5, "bottom", "0.5"], 
+  [0.75, "bottom", "0.75"]
 ]
 </code></pre>
 <p>Will draw marks at 1/4, 1/2, and 3/4 along the axis on the bottom
@@ -3603,13 +3776,13 @@ that you need to keep the user informed about it lest they get bored,
 or think the application is stuck. It has several properties,</p>
 <ul>
 <li>Ellipsize: If the text is too large for the window it will be
-ellipsized according to this property. Possible values are, &quot;none&quot;,
-&quot;start&quot;, &quot;middle&quot;, &quot;end&quot;, which specify where the text will be
+ellipsized according to this property. Possible values are, "none",
+"start", "middle", "end", which specify where the text will be
 truncated and replaced with ...</li>
 <li>Fraction: How far along the task is, expressed as a float between 0
 and 1.</li>
 <li>Pulse: If you don't know how long a task will take, but you still
-want to tell the user &quot;stuff is happening&quot;, then you can set pulse
+want to tell the user "stuff is happening", then you can set pulse
 to an expression that updates periodically. Each update will cause
 the progress bar to move. You can mix pulse and fraction, e.g. you
 can pulse for a while, and then set fraction, and then pulse for a
@@ -3673,7 +3846,7 @@ primary means of communication and control.</p>
 <p>The system we're going to look at is the control program of an off the
 grid solar generator. The system uses a Prostar MPPT controller, which
 has a serial port over which it talks modbus. Connected to this port
-is raspberry pi 3, called &quot;solar&quot;, which is connected to wifi and
+is raspberry pi 3, called "solar", which is connected to wifi and
 joined to samba ADS.</p>
 <p>The control program is a simple translation layer between the modbus
 interface of the Prostar and netidx. Full source code
@@ -3756,9 +3929,9 @@ both read and write. Here is the full code of the control section,</p>
 impl PublishedControl {
     fn new(publisher: &amp;Publisher, base: &amp;Path) -&gt; Result&lt;Self&gt; {
         Ok(PublishedControl {
-            charging: publisher.publish(base.append(&quot;charging&quot;), Value::Null)?,
-            load: publisher.publish(base.append(&quot;load&quot;), Value::Null)?,
-            reset: publisher.publish(base.append(&quot;reset&quot;), Value::Null)?,
+            charging: publisher.publish(base.append("charging"), Value::Null)?,
+            load: publisher.publish(base.append("load"), Value::Null)?,
+            reset: publisher.publish(base.append("reset"), Value::Null)?,
         })
     }
 
@@ -3805,8 +3978,8 @@ impl PublishedControl {
                 } else if r.id == self.reset.id() {
                     Some(FromClient::ResetController)
                 } else {
-                    let m = format!(&quot;control id {:?} not recognized&quot;, r.id);
-                    warn!(&quot;{}&quot;, &amp;m);
+                    let m = format!("control id {:?} not recognized", r.id);
+                    warn!("{}", &amp;m);
                     if let Some(reply) = r.send_result {
                         reply.send(Value::Error(Chars::from(m)));
                     }
@@ -3860,8 +4033,8 @@ easy, and that's really the point of the whole thing.</p>
 <p>Netidx is meant to be a building block out of which more complex
 things can be constructed.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
-<p>At the library level RPCs in netidix are just like any other untyped
-RPC. The procedure name is the netidx path, the arguments are an array
+<p>At the library level RPCs in netidix are just like any other RPC.
+The procedure name is the netidx path, the arguments are an array
 of netidx values. Below the library layer, mapping the RPC model into
 netidx is quite simple. e.g.</p>
 <pre><code>/app/rpcs/do_thing                            &lt;- the procedure
@@ -3994,7 +4167,7 @@ forwards that request to all the other shards. Once a session is
 created each shard publishes the control interface. Whenever one
 receives a command, it forwards that command to the other shards,
 ensuring that every shard stays in sync with the user's requests. In
-this example, the concept of &quot;primary&quot; is not used, as all the shards
+this example, the concept of "primary" is not used, as all the shards
 are equal.</p>
 <div style="break-before: page; page-break-before: always;"></div><p>Browser specific bscript functions. These are only defined in the
 browser.</p>
@@ -4005,9 +4178,9 @@ browser.</p>
 second argument, otherwise does not produce anything.</p>
 <p>e.g.</p>
 <pre><code>store(
-  &quot;[base]/volume&quot;, 
+  "[base]/volume", 
   confirm(
-    &quot;are you sure you want to change the volume to &quot;, 
+    "are you sure you want to change the volume to ", 
     volume
   )
 )
@@ -4022,7 +4195,7 @@ value), or nothing if the view is being loaded from a file. This is
 useful if you have an application that the view needs to interact
 with, and you want to make the view independent of where the
 application is published in netidx.</p>
-<pre><code>store(&quot;[current_path()]/play&quot;, event())
+<pre><code>store("[current_path()]/play", event())
 </code></pre>
 <p>When the user clicks the play button, store <code>null</code> in <code>play</code> relative
 to wherever the application lives in netidx.</p>
@@ -4038,7 +4211,7 @@ of the entry when the user presses the Enter key. When attached to the
 <code>on_click</code> handler of a button, it produces Null every time the button
 is clicked.</p>
 <p>e.g.</p>
-<pre><code>store(&quot;/text&quot;, event())
+<pre><code>store("/text", event())
 </code></pre>
 <p>When attached to the <code>on_change</code> event of an entry would write the
 text to <code>/text</code> every time the user changes it.</p>
@@ -4046,14 +4219,14 @@ text to <code>/text</code> every time the user changes it.</p>
 <pre><code>navigate(Expr)
 </code></pre>
 <p>Navigate the browser to the location specified by it's first
-argument. The syntax of a location is one of, </p>
+argument. The syntax of a location is one of,</p>
 <ul>
 <li>a valid absolute netidx path, e.g. /foo/bar/baz</li>
 <li>a view file e.g. file:/path/to/view/file</li>
 <li>a netidx: prefixed netidx path, e.g. netidx:/foo/bar/baz</li>
 </ul>
 <p>e.g.</p>
-<pre><code>navigate(confirm(&quot;go to &quot;, &quot;file:[next_view]&quot;))
+<pre><code>navigate(confirm("go to ", "file:[next_view]"))
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>Container server specific bscript functions. These are only definied in the container.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="event-1"><a class="header" href="#event-1">event</a></h1>
@@ -4073,7 +4246,7 @@ non numeric value.</p>
 <p>This is equivelent to <code>load(path)</code>, however it is vastly more
 efficient. It only works for paths published by the same container
 server as is running the formula containg <code>ref</code>.</p>
-<pre><code>ref(&quot;/container/sheet0/0000/001&quot;)
+<pre><code>ref("/container/sheet0/0000/001")
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rel"><a class="header" href="#rel">rel</a></h1>
 <pre><code>rel()
@@ -4101,7 +4274,7 @@ updates with the value produced by <code>val</code>. If <code>val</code> updates
 before the timer expires, then the timer is reset. The timer is a
 number of seconds, fractional seconds are accepted, as well as
 durations.</p>
-<pre><code>store(&quot;/foo&quot;, after_idle(0.8, event()))
+<pre><code>store("/foo", after_idle(0.8, event()))
 </code></pre>
 <p>E.G, do the store only after the user has stopped typing for 800ms.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="all"><a class="header" href="#all">all</a></h1>
@@ -4109,7 +4282,7 @@ durations.</p>
 </code></pre>
 <p>All produces the value of it's first argument if the values of all
 it's arguments are equal.</p>
-<pre><code>all(11, load(&quot;/volume&quot;))
+<pre><code>all(11, load("/volume"))
 </code></pre>
 <p>Will produce 11 only when <code>/volume</code> is 11.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="and"><a class="header" href="#and">and</a></h1>
@@ -4117,18 +4290,18 @@ it's arguments are equal.</p>
 </code></pre>
 <p>Produces true if all of it's arguments are true, otherwise false.</p>
 <p>e.g.</p>
-<pre><code>and(load(&quot;/cake&quot;), load(&quot;/diet&quot;))
+<pre><code>and(load("/cake"), load("/diet"))
 </code></pre>
 <p>Would produce false.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="any"><a class="header" href="#any">any</a></h1>
 <pre><code>any(Expr, ..., Expr)
 </code></pre>
 <p>Any produces an event every time any of it's arguments produce an event.</p>
-<pre><code>any(42, load(&quot;/foo/bar&quot;), load(&quot;/foo/baz&quot;))
+<pre><code>any(42, load("/foo/bar"), load("/foo/baz"))
 </code></pre>
 <p>Will produce 42, and then all the updates to <code>/foo/bar</code> and <code>/foo/baz</code>
 in whatever order they arrive.</p>
-<pre><code>mean(any(load(&quot;/bench/0/0&quot;), load(&quot;/bench/0/1&quot;)))
+<pre><code>mean(any(load("/bench/0/0"), load("/bench/0/1")))
 
 </code></pre>
 <p>Will produce the average of the values of <code>/bench/0/0</code> and
@@ -4140,9 +4313,9 @@ in whatever order they arrive.</p>
 <p>Construct an array from the values of the specified expressions. If
 any of the expressions update, a new array will be constructed with
 the updated values and the array function will update.</p>
-<pre><code>[ load(&quot;/foo&quot;), load(&quot;/bar&quot;) ]
+<pre><code>[ load("/foo"), load("/bar") ]
 </code></pre>
-<p>Construct a pair from the values of &quot;/foo&quot; and &quot;/bar&quot;, update the pair
+<p>Construct a pair from the values of "/foo" and "/bar", update the pair
 whenever either of those values changes.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="basename"><a class="header" href="#basename">basename</a></h1>
 <pre><code>basename(path: Expr)
@@ -4150,8 +4323,8 @@ whenever either of those values changes.</p>
 <p>Return the base name, or file name, of the specified path as a
 string. If the argument is not a string return an error. If the path
 has no basename, or the string is not a path return <code>null</code></p>
-<pre><code>basename(&quot;/foo/bar&quot;) =&gt; &quot;bar&quot;
-basename(&quot;/solar/stats/battery_sense_voltage&quot;) =&gt; &quot;battery_sense_voltage&quot;
+<pre><code>basename("/foo/bar") =&gt; "bar"
+basename("/solar/stats/battery_sense_voltage") =&gt; "battery_sense_voltage"
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="call"><a class="header" href="#call">call</a></h1>
 <pre><code>call(trigger: Expr, rpc: Expr, Expr, ..., Expr)
@@ -4165,10 +4338,10 @@ one time after all the args are resolved.</p>
 <p>e.g.</p>
 <pre><code>let sessionid &lt;- call(
   null,
-  &quot;/solar/archive/session&quot;, 
-  &quot;start&quot;, &quot;-10d&quot;, 
-  &quot;speed&quot;, &quot;unlimited&quot;, 
-  &quot;play_after&quot;, &quot;2s&quot;
+  "/solar/archive/session", 
+  "start", "-10d", 
+  "speed", "unlimited", 
+  "play_after", "2s"
 )
 </code></pre>
 <p>call <code>/solar/archive/session</code> one time with arguments to replay the
@@ -4181,7 +4354,7 @@ speed, and store the resulting session id in the variable <code>sessionid</code>
 first. Produce a value of the specified type, or an error if the cast
 is not possible.</p>
 <p>e.g.</p>
-<pre><code>cast(&quot;f32&quot;, load(&quot;/volume&quot;))
+<pre><code>cast("f32", load("/volume"))
 </code></pre>
 <p>Changes volume into a single precision float if possible.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="cmp"><a class="header" href="#cmp">cmp</a></h1>
@@ -4198,7 +4371,7 @@ encoded as strings, and are called,</p>
 <li>gte: true if the first argument is greater than or equal to the second one</li>
 </ul>
 <p>e.g.</p>
-<pre><code>cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11)
+<pre><code>cmp("lt", load("/volume"), 11)
 </code></pre>
 <p>is true if the volume is less than 11, false otherwise.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="contains"><a class="header" href="#contains">contains</a></h1>
@@ -4207,7 +4380,7 @@ encoded as strings, and are called,</p>
 <p>contains is true if it's arguments are both strings, and it's first
 argument is a substring of it's second argument.</p>
 <p>e.g</p>
-<pre><code>contains(&quot;bar&quot;, &quot;foobarbaz&quot;)
+<pre><code>contains("bar", "foobarbaz")
 </code></pre>
 <p>is true</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="count"><a class="header" href="#count">count</a></h1>
@@ -4216,17 +4389,17 @@ argument is a substring of it's second argument.</p>
 <p>Produces the count of events produced by expr since we started
 execution of the pipeline.</p>
 <p>e.g.</p>
-<pre><code>count(load(&quot;/volume&quot;))
+<pre><code>count(load("/volume"))
 </code></pre>
 <p>will increment every time volume changes.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="divide"><a class="header" href="#divide">divide</a></h1>
 <pre><code>divide(Expr, Expr, ..., Expr)
 </code></pre>
 <p>Divides it's first argument by it's subsuquent arguments.</p>
-<pre><code>divide(load(&quot;/volume&quot;), 2, load(&quot;/additional_divisor&quot;))
+<pre><code>divide(load("/volume"), 2, load("/additional_divisor"))
 </code></pre>
-<p>First divides <code>&quot;/volume&quot;</code> by 2 and then divides it by
-&quot;/additional_divisor&quot;.</p>
+<p>First divides <code>"/volume"</code> by 2 and then divides it by
+"/additional_divisor".</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="do"><a class="header" href="#do">do</a></h1>
 <pre><code>do(Expr, ..., Expr)
 { Expr; ...; Expr }
@@ -4237,21 +4410,21 @@ one introduces a new lexical scope, let variables defined in such a
 scope are not visible outside it.</p>
 <p>e.g.</p>
 <pre><code>{
-    let foo &lt;- &quot;Hello world!&quot;;
-    store(&quot;/tmp/foo&quot;, foo);
+    let foo &lt;- "Hello world!";
+    store("/tmp/foo", foo);
     foo
 }
 </code></pre>
-<p>evaluates to &quot;Hello world!&quot;, but also sets the variable &quot;foo&quot;, and
-stores it's value to &quot;/tmp/foo&quot;.</p>
+<p>evaluates to "Hello world!", but also sets the variable "foo", and
+stores it's value to "/tmp/foo".</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ends_with"><a class="header" href="#ends_with">ends_with</a></h1>
 <pre><code>ends_with(Expr, Expr)
 </code></pre>
 <p>ends_with is true if both it's arguments are strings, and the second
 argument ends with the first argument.</p>
 <p>e.g.</p>
-<pre><code>ends_with(&quot;foo&quot;, &quot;metasyntacticfoo&quot;)
-ends_with(&quot;hello&quot;, &quot;hello world&quot;)
+<pre><code>ends_with("foo", "metasyntacticfoo")
+ends_with("hello", "hello world")
 </code></pre>
 <p>The first ends_with is true, and the second one is false</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eval"><a class="header" href="#eval">eval</a></h1>
@@ -4265,7 +4438,7 @@ evaluated. As such, once eval is successful for a specific program,
 that program will not be semantically distinguisible from bscript that
 is part of a view definition or in a container cell.</p>
 <p>e.g.</p>
-<pre><code>eval(load(&quot;[base]/program&quot;))
+<pre><code>eval(load("[base]/program"))
 </code></pre>
 <p>Load and execute browser script from <code>[base]/program</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="filter_err"><a class="header" href="#filter_err">filter_err</a></h1>
@@ -4273,7 +4446,7 @@ is part of a view definition or in a container cell.</p>
 </code></pre>
 <p>Filters out errors in expr. This is equivelent to
 <code>filter(not(is_error(expr)), expr)</code>, but is more concise.</p>
-<pre><code>filter_err(load(&quot;/foo&quot;))
+<pre><code>filter_err(load("/foo"))
 </code></pre>
 <p>get the non error values of <code>/foo</code></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="filter"><a class="header" href="#filter">filter</a></h1>
@@ -4285,16 +4458,16 @@ the predicate transitions from false to true then filter will
 immediatly evaluate to the last value of it's second argument that it
 saw.</p>
 <p>e.g.</p>
-<pre><code>filter(load(&quot;[enabled]&quot;), load(&quot;[thing]&quot;))
+<pre><code>filter(load("[enabled]"), load("[thing]"))
 </code></pre>
-<p>Passes on updates to &quot;[thing]&quot; only if &quot;[enabled]&quot; is true</p>
+<p>Passes on updates to "[thing]" only if "[enabled]" is true</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="get"><a class="header" href="#get">get</a></h1>
 <pre><code>get(var: Expr)
 var
 </code></pre>
 <p>Produce the value of the variable specified by var, or an error if var
 is not a valid variable name. The second form is syntactic sugar that
-translates into <code>get(&quot;var&quot;)</code>.</p>
+translates into <code>get("var")</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="if"><a class="header" href="#if">if</a></h1>
 <pre><code>if(Expr, Expr, [Expr])
 </code></pre>
@@ -4303,17 +4476,17 @@ true, otherwise produces the value of it's third argument, or nothing
 if it has no third argument.</p>
 <p>e.g.</p>
 <pre><code>if(
-    cmp(&quot;lt&quot;, load(&quot;/volume&quot;), 11),
-    load(&quot;/normal_amp&quot;),
-    load(&quot;/this_one_goes_to_11&quot;)
+    cmp("lt", load("/volume"), 11),
+    load("/normal_amp"),
+    load("/this_one_goes_to_11")
 )
 </code></pre>
-<p>If &quot;/volume&quot; is less than 11 then the value is <code>&quot;/normal_amp&quot;</code>,
-otherwise the value is <code>&quot;/this_one_goes_to_11&quot;</code>.</p>
+<p>If "/volume" is less than 11 then the value is <code>"/normal_amp"</code>,
+otherwise the value is <code>"/this_one_goes_to_11"</code>.</p>
 <p>e.g.</p>
-<pre><code>if(cmp(&quot;eq&quot;, 11, load(&quot;/volume&quot;)), &quot;huzzah!&quot;)
+<pre><code>if(cmp("eq", 11, load("/volume")), "huzzah!")
 </code></pre>
-<p>Produces <code>&quot;huzzah!&quot;</code> if <code>/volume</code> is <code>11</code>, otherwise nothing.</p>
+<p>Produces <code>"huzzah!"</code> if <code>/volume</code> is <code>11</code>, otherwise nothing.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="index"><a class="header" href="#index">index</a></h1>
 <pre><code>index(array: Expr, index: Expr)
 </code></pre>
@@ -4328,7 +4501,7 @@ the index is out of bounds.</p>
 <p>Produce true if the 2nd argument is the type named by the first
 argument, false otherwise.</p>
 <p>e.g.</p>
-<pre><code>isa(&quot;f32&quot;, 10)
+<pre><code>isa("f32", 10)
 </code></pre>
 <p>would produce false.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="is_error"><a class="header" href="#is_error">is_error</a></h1>
@@ -4337,36 +4510,36 @@ argument, false otherwise.</p>
 <p>is_error evaluates to true if it's argument evaluates to an error.</p>
 <p>e.g.</p>
 <pre><code>do(
-    set(&quot;val&quot;, load(&quot;/tmp/thing&quot;)),
-    if(is_error(val), &quot;#REF&quot;, val)
+    set("val", load("/tmp/thing")),
+    if(is_error(val), "#REF", val)
 )
 </code></pre>
-<p>if load(&quot;/tmp/thing&quot;) fails then evaluate to &quot;#REF&quot; otherwise to the
-value of load(&quot;/tmp/thing&quot;).</p>
+<p>if load("/tmp/thing") fails then evaluate to "#REF" otherwise to the
+value of load("/tmp/thing").</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="load"><a class="header" href="#load">load</a></h1>
 <pre><code>load(Expr)
 </code></pre>
 <p>Subscribes to the netidx path specified by it's argument, which must
 evaluate to a string.</p>
 <p>e.g.</p>
-<pre><code>load(&quot;/some/path/in/netidx&quot;)
-load(&quot;[base]/thing&quot;)
+<pre><code>load("/some/path/in/netidx")
+load("[base]/thing")
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="max-1"><a class="header" href="#max-1">max</a></h1>
 <pre><code>max(Expr, ..., Expr)
 </code></pre>
 <p>Produces the largest value of any of it's arguments.</p>
 <p>e.g.</p>
-<pre><code>max(5, load(&quot;/volume&quot;))
+<pre><code>max(5, load("/volume"))
 </code></pre>
-<p>produces the value of &quot;/volume&quot; if it is greater than 5, otherwise it
+<p>produces the value of "/volume" if it is greater than 5, otherwise it
 produces 5.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mean"><a class="header" href="#mean">mean</a></h1>
 <pre><code>mean(Expr)
 </code></pre>
 <p>Computes the average of it's argument over time.</p>
 <p>e.g.</p>
-<pre><code>mean(load(&quot;/volume&quot;))
+<pre><code>mean(load("/volume"))
 </code></pre>
 <p>Produce the average volume over the observed time period.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="min-1"><a class="header" href="#min-1">min</a></h1>
@@ -4374,9 +4547,9 @@ produces 5.</p>
 </code></pre>
 <p>Produces the smallest value of any of it's arguments.</p>
 <p>e.g.</p>
-<pre><code>min(42, load(&quot;/volume&quot;))
+<pre><code>min(42, load("/volume"))
 </code></pre>
-<p>produces the value of <code>&quot;/volume&quot;</code> if it is less than 42, otherwise it
+<p>produces the value of <code>"/volume"</code> if it is less than 42, otherwise it
 produces 42.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="not"><a class="header" href="#not">not</a></h1>
 <pre><code>not(Expr)
@@ -4384,14 +4557,14 @@ produces 42.</p>
 <p>Produces the opposite of it's argument, e.g. true if it's argument is
 false, false otherwise.</p>
 <p>e.g.</p>
-<pre><code>not(load(&quot;/solar/control/charging&quot;))
+<pre><code>not(load("/solar/control/charging"))
 </code></pre>
 <p>true if the battery is not charging.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="once"><a class="header" href="#once">once</a></h1>
 <pre><code>once(Expr)
 </code></pre>
 <p>Returns the value of expr one time. Ignores subsuquent updates.</p>
-<pre><code>let foo &lt;- once(filter_err(load(&quot;/foo&quot;)))
+<pre><code>let foo &lt;- once(filter_err(load("/foo")))
 </code></pre>
 <p>Save a snapshot of the first non error value of <code>/foo</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="or"><a class="header" href="#or">or</a></h1>
@@ -4399,14 +4572,14 @@ false, false otherwise.</p>
 </code></pre>
 <p>Produces true if any of it's arguments is true, otherwise false.</p>
 <p>e.g.</p>
-<pre><code>or(load(&quot;/cake&quot;), load(&quot;/death&quot;))
+<pre><code>or(load("/cake"), load("/death"))
 </code></pre>
 <p>Would produce true.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="product"><a class="header" href="#product">product</a></h1>
 <pre><code>product(Expr, ..., Expr)
 </code></pre>
 <p>Produces the product of it's arguments.</p>
-<p>e.g. </p>
+<p>e.g.</p>
 <pre><code>product(2, 2)
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="replace"><a class="header" href="#replace">replace</a></h1>
@@ -4415,16 +4588,16 @@ false, false otherwise.</p>
 <p>assuming all it's arguments are strings then replace evaluates to val
 with all instances of pat replaced with replacement.</p>
 <p>e.g.</p>
-<pre><code>replace(&quot;foo&quot;, &quot;bar&quot;, &quot;foobarbaz&quot;)
+<pre><code>replace("foo", "bar", "foobarbaz")
 </code></pre>
-<p>evaluates to &quot;barbarbaz&quot;</p>
+<p>evaluates to "barbarbaz"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sample"><a class="header" href="#sample">sample</a></h1>
 <pre><code>sample(Expr, Expr)
 </code></pre>
 <p>Produces the value of it's second argument when it's first argument
 updates.</p>
 <p>e.g.</p>
-<pre><code>sample(load(&quot;[base]/timestamp&quot;), load(&quot;[base]/voltage&quot;))
+<pre><code>sample(load("[base]/timestamp"), load("[base]/voltage"))
 </code></pre>
 <p>Produces <code>[base]/voltage</code> whenever <code>[base]/timestamp</code> updates.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="set"><a class="header" href="#set">set</a></h1>
@@ -4439,7 +4612,7 @@ scope. The second form is a more consise syntax for the first, however
 it is less powerful, as name must be a literal name and may not be an
 expression.</p>
 <p>e.g.</p>
-<pre><code>set(&quot;volume&quot;, cast(&quot;f32&quot;, event()))
+<pre><code>set("volume", cast("f32", event()))
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="starts_with"><a class="header" href="#starts_with">starts_with</a></h1>
 <pre><code>starts_with(pat: Expr, val: Expr)
@@ -4447,7 +4620,7 @@ expression.</p>
 <p>evaluates to true if both it's arguments are strings, and the second
 argument starts with the first.</p>
 <p>e.g.</p>
-<pre><code>starts_with(&quot;Hello&quot;, &quot;Hello World!&quot;)
+<pre><code>starts_with("Hello", "Hello World!")
 </code></pre>
 <p>evaluates to true</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="store"><a class="header" href="#store">store</a></h1>
@@ -4460,7 +4633,7 @@ result of the store).</p>
 changes. For example, if the path changes to a new valid path, then
 the most recent val will be written immediatly to that new path.</p>
 <p>e.g.</p>
-<pre><code>store(&quot;/tmp/thing&quot;, 42)
+<pre><code>store("/tmp/thing", 42)
 </code></pre>
 <p>write 42 to /tmp/thing</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="let"><a class="header" href="#let">let</a></h1>
@@ -4487,9 +4660,9 @@ current scope and it's children.</p>
 </code></pre>
 <p>Concatinate all arguments.</p>
 <p>e.g.</p>
-<pre><code>string_concat(load(&quot;/foo&quot;), load(&quot;/bar&quot;), &quot;baz&quot;)
+<pre><code>string_concat(load("/foo"), load("/bar"), "baz")
 </code></pre>
-<p>is the same as writing <code>&quot;[load(&quot;/foo&quot;)][load(&quot;/bar&quot;)]baz&quot;</code>. And in
+<p>is the same as writing <code>"[load("/foo")][load("/bar")]baz"</code>. And in
 fact string interpolations are just syntactic sugar for this function.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="string_join"><a class="header" href="#string_join">string_join</a></h1>
 <pre><code>string_join(sep: Expr, ..., Expr)
@@ -4497,33 +4670,33 @@ fact string interpolations are just syntactic sugar for this function.</p>
 <p>Concatinate all arguments from 2 ... n using the first argument as a
 separator.</p>
 <p>e.g.</p>
-<pre><code>string_join(&quot;/&quot;, base, &quot;foo&quot;, &quot;bar&quot;)
+<pre><code>string_join("/", base, "foo", "bar")
 </code></pre>
-<p>is the same a writing <code>&quot;[base]/foo/bar&quot;</code></p>
+<p>is the same a writing <code>"[base]/foo/bar"</code></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="strip_prefix"><a class="header" href="#strip_prefix">strip_prefix</a></h1>
 <pre><code>strip_prefix(pfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_prefix evaluates
 to val with pfx removed from the beginning.</p>
 <p>e.g.</p>
-<pre><code>strip_prefix(&quot;Hello &quot;, &quot;Hello World!&quot;)
+<pre><code>strip_prefix("Hello ", "Hello World!")
 </code></pre>
-<p>evaluates to &quot;World!&quot;</p>
+<p>evaluates to "World!"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="strip_suffix"><a class="header" href="#strip_suffix">strip_suffix</a></h1>
 <pre><code>strip_suffix(sfx: Expr, val: Expr)
 </code></pre>
 <p>assuming both it's arguments are strings, then strip_suffix evaluates
 to val with sfx removed from the end.</p>
 <p>e.g.</p>
-<pre><code>strip_suffix(&quot; World!&quot;, &quot;Hello World!&quot;)
+<pre><code>strip_suffix(" World!", "Hello World!")
 </code></pre>
-<p>evaluates to &quot;Hello&quot;</p>
+<p>evaluates to "Hello"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sum"><a class="header" href="#sum">sum</a></h1>
 <pre><code>sum(Expr, ..., Expr)
 </code></pre>
 <p>Produces the sum of it's arguments.</p>
 <p>e.g.</p>
-<pre><code>sum(load(&quot;/offset&quot;), load(&quot;/random&quot;))
+<pre><code>sum(load("/offset"), load("/random"))
 </code></pre>
 <p>sums <code>/offset</code> and <code>/random</code></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="timer"><a class="header" href="#timer">timer</a></h1>
@@ -4534,7 +4707,7 @@ elapsed. If repeat is true, the timer will continue to update every
 <code>duration</code> seconds forever. If repeat is a number <code>n</code>, then the timer
 will repeat <code>n</code> times. If repeat is <code>false</code>, then the timer will
 update just once.</p>
-<pre><code>store(&quot;/foo/bar&quot;, sample(timer(0.5, true), v))
+<pre><code>store("/foo/bar", sample(timer(0.5, true), v))
 </code></pre>
 <p>Store the value of v to <code>/foo/bar</code> twice per second even if it didn't
 change.</p>
@@ -4544,34 +4717,34 @@ change.</p>
 <p>if it's argument is a string, then trim_end evaluates to it's argument
 with trailing whitespace removed.</p>
 <p>e.g</p>
-<pre><code>trim_end(&quot;123456   &quot;)
+<pre><code>trim_end("123456   ")
 </code></pre>
-<p>evaluates to &quot;123456&quot;</p>
+<p>evaluates to "123456"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="trim"><a class="header" href="#trim">trim</a></h1>
 <pre><code>trim(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim evalutes to it's argument with
 both leading and trailing whitespace removed.</p>
 <p>e.g.</p>
-<pre><code>trim(&quot; aaaaaaaaahhhg  &quot;)
+<pre><code>trim(" aaaaaaaaahhhg  ")
 </code></pre>
-<p>evaluates to &quot;aaaaaaaaahhhg&quot;</p>
+<p>evaluates to "aaaaaaaaahhhg"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="trim_start"><a class="header" href="#trim_start">trim_start</a></h1>
 <pre><code>trim_start(Expr)
 </code></pre>
 <p>if it's argument is a string, then trim_start evaluates to it's argument
 with leading whitespace removed.</p>
 <p>e.g</p>
-<pre><code>trim_start(&quot;   123456&quot;)
+<pre><code>trim_start("   123456")
 </code></pre>
-<p>evaluates to &quot;123456&quot;</p>
+<p>evaluates to "123456"</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="uniq"><a class="header" href="#uniq">uniq</a></h1>
 <pre><code>uniq(Expr)
 </code></pre>
 <p>Produces the value of it's argument only if that value is different
 from the previous one.</p>
 <p>e.g.</p>
-<pre><code>uniq(load(&quot;[stock_base]/ibm/last&quot;))
+<pre><code>uniq(load("[stock_base]/ibm/last"))
 </code></pre>
 <p>Would produce an event only when the last trade price of IBM changes.</p>
 
@@ -4616,5 +4789,6 @@ from the previous one.</p>
         });
         </script>
 
+    </div>
     </body>
 </html>

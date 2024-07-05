@@ -1,1 +1,0 @@
-# BScript Std Reference

@@ -5,6 +5,7 @@
 - [Example Publishing vmstat](./examples/vmstat.md)
 - [Administration](./administration/overview.md)
   - [Configuration](./administration/configuration.md)
+  - [Managing TLS](./administration/tls.md)
   - [Authorization](./administration/authorization.md)
   - [Running the Resolver Server](./administration/startup.md)
   - [Listener Check](./administration/listener_check.md)
