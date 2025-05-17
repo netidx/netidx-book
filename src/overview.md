@@ -87,8 +87,8 @@ mostly primitive types, consisting of numbers, strings, durations,
 timestamps, packed byte arrays, and arrays of values. Arrays of values
 can be nested.
 
-Byte arrays and strings are zero copy decoded, so they can be a
-building block for sending other encoded data efficiently.
+Bytes values are zero copy decoded, so they can be a building block
+for sending other encoded data efficiently.
 
 Published values have some other properties as well,
 

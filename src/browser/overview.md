@@ -1,5 +1,8 @@
 # Browser
 
+NOTE: The gtk browser, and it's version of bscript, is deprecated. A
+new browser is being implemented that will replace it.
+
 The browser is a graphical tool that visualizes the contents of
 netidx, it allows users to navigate to places of interest, view data
 in tabular or vector form, and construct applications with custom

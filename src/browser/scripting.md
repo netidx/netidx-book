@@ -1,5 +1,7 @@
 # Language Overview
 
+NOTE: The version of bscript used by the browser is deprecated
+
 The browser scripting language exists to glue the widgets in your gui
 to the inputs and outputs in netidx, and to compute your formulas in
 the container. If you're familiar with the model view controller gui

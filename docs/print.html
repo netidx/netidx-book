@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -25,26 +25,29 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
-        <!-- Provide site root to javascript -->
-        <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
 
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -58,24 +61,22 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -83,45 +84,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">2.</strong> Overview</a></li><li class="chapter-item expanded "><a href="examples/vmstat.html"><strong aria-hidden="true">3.</strong> Example Publishing vmstat</a></li><li class="chapter-item expanded "><a href="administration/overview.html"><strong aria-hidden="true">4.</strong> Administration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="administration/configuration.html"><strong aria-hidden="true">4.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="administration/tls.html"><strong aria-hidden="true">4.2.</strong> Managing TLS</a></li><li class="chapter-item expanded "><a href="administration/authorization.html"><strong aria-hidden="true">4.3.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="administration/startup.html"><strong aria-hidden="true">4.4.</strong> Running the Resolver Server</a></li><li class="chapter-item expanded "><a href="administration/listener_check.html"><strong aria-hidden="true">4.5.</strong> Listener Check</a></li><li class="chapter-item expanded "><a href="administration/subscription_flow.html"><strong aria-hidden="true">4.6.</strong> Subscription Flow</a></li><li class="chapter-item expanded "><a href="administration/fault_tolerance.html"><strong aria-hidden="true">4.7.</strong> Fault Tolerance</a></li></ol></li><li class="chapter-item expanded "><a href="tools/overview.html"><strong aria-hidden="true">5.</strong> Command Line Tools</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tools/publisher.html"><strong aria-hidden="true">5.1.</strong> publisher</a></li><li class="chapter-item expanded "><a href="tools/subscriber.html"><strong aria-hidden="true">5.2.</strong> subscriber</a></li><li class="chapter-item expanded "><a href="tools/resolver.html"><strong aria-hidden="true">5.3.</strong> resolver</a></li><li class="chapter-item expanded "><a href="tools/recorder.html"><strong aria-hidden="true">5.4.</strong> recorder</a></li><li class="chapter-item expanded "><a href="tools/container.html"><strong aria-hidden="true">5.5.</strong> container</a></li><li class="chapter-item expanded "><a href="tools/activation.html"><strong aria-hidden="true">5.6.</strong> activation</a></li><li class="chapter-item expanded "><a href="tools/stress.html"><strong aria-hidden="true">5.7.</strong> stress</a></li></ol></li><li class="chapter-item expanded "><a href="examples/integration.html"><strong aria-hidden="true">6.</strong> Example Publishing from Rust</a></li><li class="chapter-item expanded "><a href="browser/overview.html"><strong aria-hidden="true">7.</strong> Browser</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/views.html"><strong aria-hidden="true">7.1.</strong> GUI Builder</a></li><li class="chapter-item expanded "><a href="browser/scripting.html"><strong aria-hidden="true">7.2.</strong> BScript</a></li><li class="chapter-item expanded "><a href="browser/widgets.html"><strong aria-hidden="true">7.3.</strong> Widgets</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="browser/frame.html"><strong aria-hidden="true">7.3.1.</strong> Frame</a></li><li class="chapter-item expanded "><a href="browser/box.html"><strong aria-hidden="true">7.3.2.</strong> Box</a></li><li class="chapter-item expanded "><a href="browser/grid.html"><strong aria-hidden="true">7.3.3.</strong> Grid</a></li><li class="chapter-item expanded "><a href="browser/paned.html"><strong aria-hidden="true">7.3.4.</strong> Paned</a></li><li class="chapter-item expanded "><a href="browser/notebook.html"><strong aria-hidden="true">7.3.5.</strong> Notebook</a></li><li class="chapter-item expanded "><a href="browser/table.html"><strong aria-hidden="true">7.3.6.</strong> Table</a></li><li class="chapter-item expanded "><a href="browser/image.html"><strong aria-hidden="true">7.3.7.</strong> Image</a></li><li class="chapter-item expanded "><a href="browser/label.html"><strong aria-hidden="true">7.3.8.</strong> Label</a></li><li class="chapter-item expanded "><a href="browser/button.html"><strong aria-hidden="true">7.3.9.</strong> Button</a></li><li class="chapter-item expanded "><a href="browser/link_button.html"><strong aria-hidden="true">7.3.10.</strong> Link Button</a></li><li class="chapter-item expanded "><a href="browser/switch.html"><strong aria-hidden="true">7.3.11.</strong> Switch</a></li><li class="chapter-item expanded "><a href="browser/toggle_button.html"><strong aria-hidden="true">7.3.12.</strong> Toggle Button</a></li><li class="chapter-item expanded "><a href="browser/combo_box.html"><strong aria-hidden="true">7.3.13.</strong> Combo Box</a></li><li class="chapter-item expanded "><a href="browser/radio_button.html"><strong aria-hidden="true">7.3.14.</strong> Radio Button</a></li><li class="chapter-item expanded "><a href="browser/entry.html"><strong aria-hidden="true">7.3.15.</strong> Entry</a></li><li class="chapter-item expanded "><a href="browser/search_entry.html"><strong aria-hidden="true">7.3.16.</strong> Search Entry</a></li><li class="chapter-item expanded "><a href="browser/scale.html"><strong aria-hidden="true">7.3.17.</strong> Scale</a></li><li class="chapter-item expanded "><a href="browser/progress_bar.html"><strong aria-hidden="true">7.3.18.</strong> Progress Bar</a></li><li class="chapter-item expanded "><a href="browser/line_plot.html"><strong aria-hidden="true">7.3.19.</strong> Line Plot</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="examples/complete_system.html"><strong aria-hidden="true">8.</strong> Example Off Grid Solar Control</a></li><li class="chapter-item expanded "><a href="protocols/overview.html"><strong aria-hidden="true">9.</strong> Protocols Built on Netidx</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="protocols/rpc.html"><strong aria-hidden="true">9.1.</strong> Remote Procedure Call</a></li><li class="chapter-item expanded "><a href="protocols/clustering.html"><strong aria-hidden="true">9.2.</strong> Clustering</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">BScript Reference</li><li class="chapter-item expanded "><a href="bscript/browser.html"><strong aria-hidden="true">10.</strong> Browser Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/browser/confirm.html"><strong aria-hidden="true">10.1.</strong> confirm</a></li><li class="chapter-item expanded "><a href="bscript/browser/current_path.html"><strong aria-hidden="true">10.2.</strong> current_path</a></li><li class="chapter-item expanded "><a href="bscript/browser/event.html"><strong aria-hidden="true">10.3.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/browser/navigate.html"><strong aria-hidden="true">10.4.</strong> navigate</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/container.html"><strong aria-hidden="true">11.</strong> Container Specific Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/container/event.html"><strong aria-hidden="true">11.1.</strong> event</a></li><li class="chapter-item expanded "><a href="bscript/container/ref.html"><strong aria-hidden="true">11.2.</strong> ref</a></li><li class="chapter-item expanded "><a href="bscript/container/rel.html"><strong aria-hidden="true">11.3.</strong> rel</a></li></ol></li><li class="chapter-item expanded "><a href="bscript/stdfn.html"><strong aria-hidden="true">12.</strong> Standard Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="bscript/stdfn/after_idle.html"><strong aria-hidden="true">12.1.</strong> after_idle</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/all.html"><strong aria-hidden="true">12.2.</strong> all</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/and.html"><strong aria-hidden="true">12.3.</strong> and</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/any.html"><strong aria-hidden="true">12.4.</strong> any</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/array.html"><strong aria-hidden="true">12.5.</strong> array</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/basename.html"><strong aria-hidden="true">12.6.</strong> basename</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/call.html"><strong aria-hidden="true">12.7.</strong> call</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cast.html"><strong aria-hidden="true">12.8.</strong> cast</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/cmp.html"><strong aria-hidden="true">12.9.</strong> cmp</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/contains.html"><strong aria-hidden="true">12.10.</strong> contains</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/count.html"><strong aria-hidden="true">12.11.</strong> count</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/divide.html"><strong aria-hidden="true">12.12.</strong> divide</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/do.html"><strong aria-hidden="true">12.13.</strong> do</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/ends_with.html"><strong aria-hidden="true">12.14.</strong> ends_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/eval.html"><strong aria-hidden="true">12.15.</strong> eval</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter_err.html"><strong aria-hidden="true">12.16.</strong> filter_err</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/filter.html"><strong aria-hidden="true">12.17.</strong> filter</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/get.html"><strong aria-hidden="true">12.18.</strong> get</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/if.html"><strong aria-hidden="true">12.19.</strong> if</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/index.html"><strong aria-hidden="true">12.20.</strong> index</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/isa.html"><strong aria-hidden="true">12.21.</strong> isa</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/is_error.html"><strong aria-hidden="true">12.22.</strong> is_error</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/load.html"><strong aria-hidden="true">12.23.</strong> load</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/max.html"><strong aria-hidden="true">12.24.</strong> max</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/mean.html"><strong aria-hidden="true">12.25.</strong> mean</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/min.html"><strong aria-hidden="true">12.26.</strong> min</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/not.html"><strong aria-hidden="true">12.27.</strong> not</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/once.html"><strong aria-hidden="true">12.28.</strong> once</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/or.html"><strong aria-hidden="true">12.29.</strong> or</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/product.html"><strong aria-hidden="true">12.30.</strong> product</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/replace.html"><strong aria-hidden="true">12.31.</strong> replace</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sample.html"><strong aria-hidden="true">12.32.</strong> sample</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/set.html"><strong aria-hidden="true">12.33.</strong> set</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/starts_with.html"><strong aria-hidden="true">12.34.</strong> starts_with</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/store.html"><strong aria-hidden="true">12.35.</strong> store</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/let.html"><strong aria-hidden="true">12.36.</strong> let</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_concat.html"><strong aria-hidden="true">12.37.</strong> string_concat</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/string_join.html"><strong aria-hidden="true">12.38.</strong> string_join</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_prefix.html"><strong aria-hidden="true">12.39.</strong> strip_prefix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/strip_suffix.html"><strong aria-hidden="true">12.40.</strong> strip_suffix</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/sum.html"><strong aria-hidden="true">12.41.</strong> sum</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/timer.html"><strong aria-hidden="true">12.42.</strong> timer</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_end.html"><strong aria-hidden="true">12.43.</strong> trim_end</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim.html"><strong aria-hidden="true">12.44.</strong> trim</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/trim_start.html"><strong aria-hidden="true">12.45.</strong> trim_start</a></li><li class="chapter-item expanded "><a href="bscript/stdfn/uniq.html"><strong aria-hidden="true">12.46.</strong> uniq</a></li></ol></li></ol>
-            </div>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
-
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -131,6 +112,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -183,12 +165,10 @@ publishers, subscribers, and tools without much setup.</p>
 <p>Install <a href="https://www.rust-lang.org/tools/install">rust</a> via rustup if
 you haven't already. Ensure cargo is in your and then run,</p>
 <p><code>cargo install netidx-tools</code></p>
-<p>if you are on Max OS you must use,</p>
-<p><code>cargo install --no-default-features netidx-tools</code></p>
 <p>This will build and install the <code>netidx</code> command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools</p>
-<p>You will need some build dependencies,</p>
+<p>On Linux you will need some build dependencies,</p>
 <ul>
 <li>libclang, necessary for bindgen, on debian/ubuntu <code>sudo apt install libclang-dev</code></li>
 <li>gssapi, necessary for kerberos support, on debian/ubuntu <code>sudo apt install libkrb5-dev</code></li>
@@ -227,7 +207,9 @@ local auth socket to one of your choosing.</p>
 <p>run <code>netidx resolver-server -c ~/.config/netidx/resolver.json</code>. This command will return
 immediatly, and the resolver server will daemonize. Check that it's
 running using <code>ps auxwww | grep netidx</code>.</p>
-<p>NOTE, the resolver server does not currently support Windows.</p>
+<p>NOTE, the resolver server does not support local authentication on
+Windows, if you want to run a resolver server on windows you can use
+tls or kerberos authentication instead.</p>
 <h3 id="systemd"><a class="header" href="#systemd">Systemd</a></h3>
 <p>If desired you can start the resolver server automatically with systemd.</p>
 <pre><code>[Unit]
@@ -277,9 +259,12 @@ set up on your local machine. If it didn't work, try setting the
 environment variable <code>RUST_LOG=debug</code> and running the stress publisher
 and the subscriber again.</p>
 <h2 id="optional-netidx-browser"><a class="header" href="#optional-netidx-browser">Optional Netidx Browser</a></h2>
+<p>NOTE: the gtk based browser is deprecated, a new browser is in
+development and will eventually replace it.</p>
 <p>The browser is an optional gui browser for the netidx tree, you need
 gtk development files installed to build it, on debian/ubuntu add those with</p>
-<p><code>sudo apt install libgtk-3-dev</code></p>
+<p><code>sudo apt install libgtk-3-dev</code>
+<code>sudo apt install libgtksourceview-4-dev</code></p>
 <p>and then</p>
 <p><code>cargo install netidx-browser</code></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-netidx"><a class="header" href="#what-is-netidx">What is Netidx</a></h1>
@@ -373,8 +358,8 @@ of centralized infrastructure.</p>
 mostly primitive types, consisting of numbers, strings, durations,
 timestamps, packed byte arrays, and arrays of values. Arrays of values
 can be nested.</p>
-<p>Byte arrays and strings are zero copy decoded, so they can be a
-building block for sending other encoded data efficiently.</p>
+<p>Bytes values are zero copy decoded, so they can be a building block
+for sending other encoded data efficiently.</p>
 <p>Published values have some other properties as well,</p>
 <ul>
 <li>Every non structural name points to a value</li>
@@ -2773,7 +2758,340 @@ same name. In the example we have</p>
 each $host, and a column for each child of $host. In our case, the
 data is perfectly regular, and so we end up with a fully populated
 table with 3 columns, and a row for each host.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="a-clean-slate-design-using-netidx"><a class="header" href="#a-clean-slate-design-using-netidx">A Clean Slate Design Using Netidx</a></h1>
+<p>In the last example we added netidx publishing of one data point, and
+then explored what we could do with the data. In this example we're
+going to look at a system designed from scratch to use netidx as it's
+primary means of communication and control.</p>
+<p>The system we're going to look at is the control program of an off the
+grid solar generator. The system uses a Prostar MPPT controller, which
+has a serial port over which it talks modbus. Connected to this port
+is raspberry pi 3, called "solar", which is connected to wifi and
+joined to samba ADS.</p>
+<p>The control program is a simple translation layer between the modbus
+interface of the Prostar and netidx. Full source code
+<a href="https://github.com/estokes/solar">here</a>.</p>
+<p>The main loop takes commands from either the local command socket, or
+the netidx publisher, and sends them via modbus to the charge
+controller, e.g.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>    loop {
+        ...
+        match msg {
+            ToMainLoop::FromClient(msg, mut reply) =&gt; match msg {
+                FromClient::SetCharging(b) =&gt; {
+                    send_reply(mb.write_coil(ps::Coil::ChargeDisconnect, !b).await, reply)
+                        .await
+                }
+                FromClient::SetLoad(b) =&gt; {
+                    send_reply(mb.write_coil(ps::Coil::LoadDisconnect, !b).await, reply)
+                        .await
+                }
+                FromClient::ResetController =&gt; {
+                    send_reply(mb.write_coil(ps::Coil::ResetControl, true).await, reply)
+                        .await
+                }
+                ...
+<span class="boring">}</span></code></pre></pre>
+<p>A message is either a timer Tick, on which we send out (and log)
+updated stats, or an actual command, which we handle individually. The
+publisher module is fed a new stats record read from modbus on each
+timer tick. e.g.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>    fn update(&amp;self, st: &amp;Stats) {
+        use chrono::prelude::*;
+        self.timestamp
+            .update_changed(Value::DateTime(DateTime::&lt;Utc&gt;::from(st.timestamp)));
+        self.software_version.update_changed(Value::V32(st.software_version as u32));
+        self.battery_voltage_settings_multiplier
+            .update(Value::V32(st.battery_voltage_settings_multiplier as u32));
+        self.supply_3v3.update_changed(Value::F32(st.supply_3v3.get::&lt;volt&gt;()));
+        self.supply_12v.update_changed(Value::F32(st.supply_12v.get::&lt;volt&gt;()));
+        self.supply_5v.update_changed(Value::F32(st.supply_5v.get::&lt;volt&gt;()));
+        self.gate_drive_voltage
+            .update_changed(Value::F32(st.gate_drive_voltage.get::&lt;volt&gt;()));
+        self.battery_terminal_voltage
+            .update_changed(Value::F32(st.battery_terminal_voltage.get::&lt;volt&gt;()));
+    ...
+<span class="boring">}</span></code></pre></pre>
+<p>These are all published under <code>/solar/stats</code>, there are a lot of them,
+so I won't show them all here, you can read the full source if you're
+curious. Essentially it's an infinite loop of read stats from modbus,
+update netidx, flush netidx, loop.</p>
+<h2 id="what-about-control"><a class="header" href="#what-about-control">What About Control</a></h2>
+<p>The above handles distributing the stats perfectly well, but for
+control we need some way to send commands from the subscriber back to
+the publisher, and that's where writes come in. If you've read the api
+documentation you might have noticed,</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn write(&amp;self, v: Value)
+<span class="boring">}</span></code></pre></pre>
+<p>Continuing with the metaphor of exporting variables to a cross machine
+global namespace, it fits perfectly well to imagine that we can write
+to those variables as well as read from them, publisher willing.</p>
+<p>Our program is going to publish three values for control,
+<code>/solar/control/charging</code> (to control whether we are charging the
+batteries), <code>/solar/control/load</code> (to control whether the inverter is on
+or off), and <code>/solar/control/reset</code> (to trigger a controller
+reset). These values will all be boolean, and they will be valid for
+both read and write. Here is the full code of the control section,</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct PublishedControl {
+    charging: Val,
+    load: Val,
+    reset: Val,
+}
+
+impl PublishedControl {
+    fn new(publisher: &amp;Publisher, base: &amp;Path) -&gt; Result&lt;Self&gt; {
+        Ok(PublishedControl {
+            charging: publisher.publish(base.append("charging"), Value::Null)?,
+            load: publisher.publish(base.append("load"), Value::Null)?,
+            reset: publisher.publish(base.append("reset"), Value::Null)?,
+        })
+    }
+
+    fn update(&amp;self, st: &amp;Stats) {
+        self.charging.update_changed(match st.charge_state {
+            ChargeState::Disconnect | ChargeState::Fault =&gt; Value::False,
+            ChargeState::UnknownState(_)
+            | ChargeState::Absorption
+            | ChargeState::BulkMPPT
+            | ChargeState::Equalize
+            | ChargeState::Fixed
+            | ChargeState::Float
+            | ChargeState::Night
+            | ChargeState::NightCheck
+            | ChargeState::Start
+            | ChargeState::Slave =&gt; Value::True,
+        });
+        self.load.update_changed(match st.load_state {
+            LoadState::Disconnect | LoadState::Fault | LoadState::LVD =&gt; Value::False,
+            LoadState::LVDWarning
+            | LoadState::Normal
+            | LoadState::NormalOff
+            | LoadState::NotUsed
+            | LoadState::Override
+            | LoadState::Start
+            | LoadState::Unknown(_) =&gt; Value::True,
+        });
+    }
+
+    fn register_writable(&amp;self, channel: fmpsc::Sender&lt;Pooled&lt;Vec&lt;WriteRequest&gt;&gt;&gt;) {
+        self.charging.writes(channel.clone());
+        self.load.writes(channel.clone());
+        self.reset.writes(channel.clone());
+    }
+
+    fn process_writes(&amp;self, mut batch: Pooled&lt;Vec&lt;WriteRequest&gt;&gt;) -&gt; Vec&lt;FromClient&gt; {
+        batch
+            .drain(..)
+            .filter_map(|r| {
+                if r.id == self.charging.id() {
+                    Some(FromClient::SetCharging(bool!(r)))
+                } else if r.id == self.load.id() {
+                    Some(FromClient::SetLoad(bool!(r)))
+                } else if r.id == self.reset.id() {
+                    Some(FromClient::ResetController)
+                } else {
+                    let m = format!("control id {:?} not recognized", r.id);
+                    warn!("{}", &amp;m);
+                    if let Some(reply) = r.send_result {
+                        reply.send(Value::Error(Chars::from(m)));
+                    }
+                    None
+                }
+            })
+            .collect()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In process_writes we translate each WriteRequest that is targeted at
+one of the published controls into a FromClient message that the main
+loop will act on. So from the main loop's perspective it doesn't
+matter if a command came from netidx or the local control socket.</p>
+<p>Note that it isn't necessary to do any authorization here, the
+publisher library has already checked that the resolver server granted
+the user making these writes permission to do them, and of course we
+can control who is authorized to write in the resolver server
+permissions.</p>
+<p>For the basic day to day use case, that's all we need on the server
+side. The entire daemon uses 6.5 MB of ram, and almost no cpu, it
+could certainly run on a smaller device, though we depend on tokio,
+which means we at least need a unix like OS under us.</p>
+<p>The kerberos configuration for this service is also quite simple,
+there is a service principal called svc_solar in samba ADS, and solar
+has a keytab installed for it, as well as a cron job that renews it's
+TGT every couple of hours.</p>
+<h2 id="building-a-custom-gui-with-views"><a class="header" href="#building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
+<p>What we have is fine as far as it goes, we can view our stats in the
+browser, and we can write to the controls using the command line
+subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
+<p><img src="examples/solar-gui.png" alt="Solar GUI" /></p>
+<p>This can be built using design mode in the browser, the view can then
+be saved to a file or written directly to a netidx path.</p>
+<p><img src="examples/browser-design-mode.png" alt="Browser Design Mode" /></p>
+<p>See the GUI Builder chapter for more information.</p>
+<h2 id="wrapping-up"><a class="header" href="#wrapping-up">Wrapping Up</a></h2>
+<p>In this example we saw how an application can be designed more or less
+from the start to communicate with the outside world using netidx. We
+didn't cover the opportunities for scripting our solar installation
+now that we can control it using netidx, but we certainly could do any
+of the nice things we did in the last chapter. We did show an example
+gui, and I want to point out that having a gui in no way alters our
+ability to script and manipulate the system programatically. It's
+important to recognize that building a bespoke system with a gui as
+complex as the one we built AND making it scriptable over the network
+in a discoverable, secure, and performant way is not an easy task.
+Usually it just isn't worth doing, however by using netidx it was
+easy, and that's really the point of the whole thing.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="higher-level-protocols-built-on-netidx"><a class="header" href="#higher-level-protocols-built-on-netidx">Higher Level Protocols Built on Netidx</a></h1>
+<p>Netidx is meant to be a building block out of which more complex
+things can be constructed.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
+<p>At the library level RPCs in netidix are just like any other RPC.
+The procedure name is the netidx path, the arguments are an array
+of netidx values. Below the library layer, mapping the RPC model into
+netidx is quite simple. e.g.</p>
+<pre><code>/app/rpcs/do_thing                            &lt;- the procedure
+/app/rpcs/do_thing/doc                        &lt;- procedure doc string
+/app/rpcs/do_thing/arg0/val                   &lt;- arguments are all named, this is 'arg0'
+/app/rpcs/do_thing/arg0/doc                   &lt;- doc string for arg0
+/app/rpcs/do_thing/arg1/val                   &lt;- 'arg1'
+/app/rpcs/do_thing/arg1/doc                   &lt;- arg1 doc string
+...
+/app/rpcs/do_thing/args-can-have-any-name/val &lt;- args can be called anything
+/app/rpcs/do_thing/args-can-have-any-name/doc &lt;- doc string
+</code></pre>
+<p>We set arguments by writing to <code>.../arg-name/val</code>, and we call the
+procedure by writing <code>null</code> to the procedure. The return value of the
+procedure is sent back to the caller in one of two ways. If the caller
+used <code>write_with_recipt</code>, then the return will be sent as the reply to
+that write request. If the caller did a normal write, then the
+procedure value will be updated with the return value, but only for
+the calling client, other clients won't receive this update.</p>
+<p>Since there can be time in between setting argument values and
+triggering the procedure the rpc module keeps track of the set
+argument values on a per client basis. This way, multiple clients may
+make independent calls to the same procedure concurrently without
+interfering with each other. If arguments are set, but a call is not
+triggered within 60 seconds then the arguments may be garbage
+collected if the rpc server is busy.</p>
+<p>Because the protocol is so simple, it's perfectly possible to call a
+netidx rpc directly from the browser using <code>ctrl+w</code>, from the command
+line subscriber, or even manually in a program (though the library is
+more convenient).</p>
+<h2 id="concurrent-rpc-publishers"><a class="header" href="#concurrent-rpc-publishers">Concurrent RPC Publishers</a></h2>
+<p>Because of the way netidx works it's entirely possible and supported
+for multiple programs on multiple machines to publish the same RPC. As
+long as each one publishes the same arguments clients will just pick
+one of them at random when initially subscribing, and will use that
+one from then on (unless it's forced to resubscribe for watever
+reason).</p>
+<p>You might wonder, since the procedure and the arguments are different
+netidx paths, how it's possible to make sure that a client sends all
+it's arguments to the same procedure. Normally in netidx subscriber
+picks a random publisher from the set of all publishers publishing the
+path it is subscribing to. However the resolver server supports
+storing flags for each path, and one of the flags is called
+<code>USE_EXISTING</code>, which causes any subscriber to always use an existing
+publisher connection (if one exists) instead of picking a random
+publisher. Since the RPC library sets this flag on the procedure, and
+all the arguments it publishes, subscribers will choose a random
+publisher of the RPC when they subscribe to the first path of the rpc,
+and thereafter they will always use that publisher (if it fails then
+subscriber will pick a new random rpc publisher).</p>
+<p>Depending on what your RPC actually does you may need more or less
+coordination between publishers, and the cluster protocol can help you
+there, but in many cases load balancing is as simple as starting more
+publishers to handle additional traffic.</p>
+<h2 id="overhead"><a class="header" href="#overhead">Overhead</a></h2>
+<p>Once subscribed, the network overhead of calling a netidx rpc is quite
+low. For example, consider a procedure with 3 double precision
+floating point arguments that also returns a double precision
+float. Then the overhead of making a call to this procedure once
+subscribed is,</p>
+<pre><code># set float arg
+tag:       1 byte, 
+id:        1 byte, 
+value:
+  val_tag: 1 byte,
+  double:  8 bytes
+recipt:    1 byte
+
+# call procedure
+tag:    1 byte,
+id:     1 byte,
+value:  1 byte,
+recipt: 1 byte
+</code></pre>
+<p>So to call a three argument procedure takes 12x3 + 4, or 40 bytes on
+the wire, and 24 bytes of that are the actual argument data. The
+return value is,</p>
+<pre><code>tag:       1 byte,
+id:        1 byte,
+value:
+  val_tag: 1 byte,
+  double:  8 bytes
+</code></pre>
+<p>11 bytes for the return, 8 of which are the actual return value
+data. Clearly data size on the wire should be no impedement to using
+netidx rpc in high performance applications. Aside from data size on
+the wire netidx has some additional beneficial characteristics, for
+example, because of the way subscriber and publisher are designed it
+is possible for a single client to concurrently issue many rpc calls
+to the same publisher, and in that case the messages will
+automatically batch allowing processing overhead to be amortized on
+both sides. e.g.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>futures::join_all(vec![
+    proc.call(args1), 
+    proc.call(args2), 
+    proc.call(args3)
+]).await
+<span class="boring">}</span></code></pre></pre>
+<p>This will cause only one batch containing all the data needed to make
+all three calls to be sent to the publisher. It isn't clear whether
+the results will also be sent as a batch, simply because each call may
+take a different amount of time to produce a result.</p>
+<p>Depending on how the handler for this rpc is written, all three calls
+may be evaluated in parallel on the publisher side.  In fact the
+default behavior is for concurrent calls to the same procedure to run
+in parallel, in order to degrade this one would need to e.g. depend on
+a shared locked data structure.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="clustering"><a class="header" href="#clustering">Clustering</a></h1>
+<p>The cluster protocol uses the resolver server to ease building
+distributed services. A cluster is rooted at a particular path. Each
+member of the cluster will publish it's uuid under that path, and will
+poll for other members. The api provides methods to broadcast to all
+members, as well as determine who is the primary (based on uuid sort
+order). A cluster with two members might look like, e.g.</p>
+<pre><code>/app/cluster/2d66247f02344b5d958039a337b7e218
+/app/cluster/bc60c115971e4e1b96c94a3a17f51a86
+</code></pre>
+<p>Calling the <code>send_to_others</code> method in either member would write a
+message to the other. Also, both members would agree that
+<code>2d66247f02344b5d958039a337b7e218</code> is the primary, though what meaning
+that has depends on the application.</p>
+<p>An example application using the cluster protocol is the
+recorder. Each recorder shard has access to part of the whole data
+set, so in order to replay data accurately, they must coordinate
+creating sessions, as well as their position, rate, start, end,
+etc. When a shard receives an rpc call asking for a new session, it
+forwards that request to all the other shards. Once a session is
+created each shard publishes the control interface. Whenever one
+receives a command, it forwards that command to the other shards,
+ensuring that every shard stays in sync with the user's requests. In
+this example, the concept of "primary" is not used, as all the shards
+are equal.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="browser"><a class="header" href="#browser">Browser</a></h1>
+<p>NOTE: The gtk browser, and it's version of bscript, is deprecated. A
+new browser is being implemented that will replace it.</p>
 <p>The browser is a graphical tool that visualizes the contents of
 netidx, it allows users to navigate to places of interest, view data
 in tabular or vector form, and construct applications with custom
@@ -2851,6 +3169,7 @@ should live in the publisher. However some logic specific to the user
 interface may be needed, and for this there is bscript, which will be
 covered in the next section.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="language-overview"><a class="header" href="#language-overview">Language Overview</a></h1>
+<p>NOTE: The version of bscript used by the browser is deprecated</p>
 <p>The browser scripting language exists to glue the widgets in your gui
 to the inputs and outputs in netidx, and to compute your formulas in
 the container. If you're familiar with the model view controller gui
@@ -3908,337 +4227,6 @@ to add/remove series from a plot.</p>
 <p>This will animate the plot of <code>y = x ^ 2</code> 2 points per second out to
 <code>x = 1024</code>.</p>
 <p><img src="browser/./editor-lineplot.png" alt="Editor" /></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="a-clean-slate-design-using-netidx"><a class="header" href="#a-clean-slate-design-using-netidx">A Clean Slate Design Using Netidx</a></h1>
-<p>In the last example we added netidx publishing of one data point, and
-then explored what we could do with the data. In this example we're
-going to look at a system designed from scratch to use netidx as it's
-primary means of communication and control.</p>
-<p>The system we're going to look at is the control program of an off the
-grid solar generator. The system uses a Prostar MPPT controller, which
-has a serial port over which it talks modbus. Connected to this port
-is raspberry pi 3, called "solar", which is connected to wifi and
-joined to samba ADS.</p>
-<p>The control program is a simple translation layer between the modbus
-interface of the Prostar and netidx. Full source code
-<a href="https://github.com/estokes/solar">here</a>.</p>
-<p>The main loop takes commands from either the local command socket, or
-the netidx publisher, and sends them via modbus to the charge
-controller, e.g.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>    loop {
-        ...
-        match msg {
-            ToMainLoop::FromClient(msg, mut reply) =&gt; match msg {
-                FromClient::SetCharging(b) =&gt; {
-                    send_reply(mb.write_coil(ps::Coil::ChargeDisconnect, !b).await, reply)
-                        .await
-                }
-                FromClient::SetLoad(b) =&gt; {
-                    send_reply(mb.write_coil(ps::Coil::LoadDisconnect, !b).await, reply)
-                        .await
-                }
-                FromClient::ResetController =&gt; {
-                    send_reply(mb.write_coil(ps::Coil::ResetControl, true).await, reply)
-                        .await
-                }
-                ...
-<span class="boring">}</span></code></pre></pre>
-<p>A message is either a timer Tick, on which we send out (and log)
-updated stats, or an actual command, which we handle individually. The
-publisher module is fed a new stats record read from modbus on each
-timer tick. e.g.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>    fn update(&amp;self, st: &amp;Stats) {
-        use chrono::prelude::*;
-        self.timestamp
-            .update_changed(Value::DateTime(DateTime::&lt;Utc&gt;::from(st.timestamp)));
-        self.software_version.update_changed(Value::V32(st.software_version as u32));
-        self.battery_voltage_settings_multiplier
-            .update(Value::V32(st.battery_voltage_settings_multiplier as u32));
-        self.supply_3v3.update_changed(Value::F32(st.supply_3v3.get::&lt;volt&gt;()));
-        self.supply_12v.update_changed(Value::F32(st.supply_12v.get::&lt;volt&gt;()));
-        self.supply_5v.update_changed(Value::F32(st.supply_5v.get::&lt;volt&gt;()));
-        self.gate_drive_voltage
-            .update_changed(Value::F32(st.gate_drive_voltage.get::&lt;volt&gt;()));
-        self.battery_terminal_voltage
-            .update_changed(Value::F32(st.battery_terminal_voltage.get::&lt;volt&gt;()));
-    ...
-<span class="boring">}</span></code></pre></pre>
-<p>These are all published under <code>/solar/stats</code>, there are a lot of them,
-so I won't show them all here, you can read the full source if you're
-curious. Essentially it's an infinite loop of read stats from modbus,
-update netidx, flush netidx, loop.</p>
-<h2 id="what-about-control"><a class="header" href="#what-about-control">What About Control</a></h2>
-<p>The above handles distributing the stats perfectly well, but for
-control we need some way to send commands from the subscriber back to
-the publisher, and that's where writes come in. If you've read the api
-documentation you might have noticed,</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub fn write(&amp;self, v: Value)
-<span class="boring">}</span></code></pre></pre>
-<p>Continuing with the metaphor of exporting variables to a cross machine
-global namespace, it fits perfectly well to imagine that we can write
-to those variables as well as read from them, publisher willing.</p>
-<p>Our program is going to publish three values for control,
-<code>/solar/control/charging</code> (to control whether we are charging the
-batteries), <code>/solar/control/load</code> (to control whether the inverter is on
-or off), and <code>/solar/control/reset</code> (to trigger a controller
-reset). These values will all be boolean, and they will be valid for
-both read and write. Here is the full code of the control section,</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct PublishedControl {
-    charging: Val,
-    load: Val,
-    reset: Val,
-}
-
-impl PublishedControl {
-    fn new(publisher: &amp;Publisher, base: &amp;Path) -&gt; Result&lt;Self&gt; {
-        Ok(PublishedControl {
-            charging: publisher.publish(base.append("charging"), Value::Null)?,
-            load: publisher.publish(base.append("load"), Value::Null)?,
-            reset: publisher.publish(base.append("reset"), Value::Null)?,
-        })
-    }
-
-    fn update(&amp;self, st: &amp;Stats) {
-        self.charging.update_changed(match st.charge_state {
-            ChargeState::Disconnect | ChargeState::Fault =&gt; Value::False,
-            ChargeState::UnknownState(_)
-            | ChargeState::Absorption
-            | ChargeState::BulkMPPT
-            | ChargeState::Equalize
-            | ChargeState::Fixed
-            | ChargeState::Float
-            | ChargeState::Night
-            | ChargeState::NightCheck
-            | ChargeState::Start
-            | ChargeState::Slave =&gt; Value::True,
-        });
-        self.load.update_changed(match st.load_state {
-            LoadState::Disconnect | LoadState::Fault | LoadState::LVD =&gt; Value::False,
-            LoadState::LVDWarning
-            | LoadState::Normal
-            | LoadState::NormalOff
-            | LoadState::NotUsed
-            | LoadState::Override
-            | LoadState::Start
-            | LoadState::Unknown(_) =&gt; Value::True,
-        });
-    }
-
-    fn register_writable(&amp;self, channel: fmpsc::Sender&lt;Pooled&lt;Vec&lt;WriteRequest&gt;&gt;&gt;) {
-        self.charging.writes(channel.clone());
-        self.load.writes(channel.clone());
-        self.reset.writes(channel.clone());
-    }
-
-    fn process_writes(&amp;self, mut batch: Pooled&lt;Vec&lt;WriteRequest&gt;&gt;) -&gt; Vec&lt;FromClient&gt; {
-        batch
-            .drain(..)
-            .filter_map(|r| {
-                if r.id == self.charging.id() {
-                    Some(FromClient::SetCharging(bool!(r)))
-                } else if r.id == self.load.id() {
-                    Some(FromClient::SetLoad(bool!(r)))
-                } else if r.id == self.reset.id() {
-                    Some(FromClient::ResetController)
-                } else {
-                    let m = format!("control id {:?} not recognized", r.id);
-                    warn!("{}", &amp;m);
-                    if let Some(reply) = r.send_result {
-                        reply.send(Value::Error(Chars::from(m)));
-                    }
-                    None
-                }
-            })
-            .collect()
-    }
-}
-<span class="boring">}</span></code></pre></pre>
-<p>In process_writes we translate each WriteRequest that is targeted at
-one of the published controls into a FromClient message that the main
-loop will act on. So from the main loop's perspective it doesn't
-matter if a command came from netidx or the local control socket.</p>
-<p>Note that it isn't necessary to do any authorization here, the
-publisher library has already checked that the resolver server granted
-the user making these writes permission to do them, and of course we
-can control who is authorized to write in the resolver server
-permissions.</p>
-<p>For the basic day to day use case, that's all we need on the server
-side. The entire daemon uses 6.5 MB of ram, and almost no cpu, it
-could certainly run on a smaller device, though we depend on tokio,
-which means we at least need a unix like OS under us.</p>
-<p>The kerberos configuration for this service is also quite simple,
-there is a service principal called svc_solar in samba ADS, and solar
-has a keytab installed for it, as well as a cron job that renews it's
-TGT every couple of hours.</p>
-<h2 id="building-a-custom-gui-with-views"><a class="header" href="#building-a-custom-gui-with-views">Building a Custom GUI With Views</a></h2>
-<p>What we have is fine as far as it goes, we can view our stats in the
-browser, and we can write to the controls using the command line
-subscriber. It's fine for scripting, but I'd also like a gui. e.g.</p>
-<p><img src="examples/solar-gui.png" alt="Solar GUI" /></p>
-<p>This can be built using design mode in the browser, the view can then
-be saved to a file or written directly to a netidx path.</p>
-<p><img src="examples/browser-design-mode.png" alt="Browser Design Mode" /></p>
-<p>See the GUI Builder chapter for more information.</p>
-<h2 id="wrapping-up"><a class="header" href="#wrapping-up">Wrapping Up</a></h2>
-<p>In this example we saw how an application can be designed more or less
-from the start to communicate with the outside world using netidx. We
-didn't cover the opportunities for scripting our solar installation
-now that we can control it using netidx, but we certainly could do any
-of the nice things we did in the last chapter. We did show an example
-gui, and I want to point out that having a gui in no way alters our
-ability to script and manipulate the system programatically. It's
-important to recognize that building a bespoke system with a gui as
-complex as the one we built AND making it scriptable over the network
-in a discoverable, secure, and performant way is not an easy task.
-Usually it just isn't worth doing, however by using netidx it was
-easy, and that's really the point of the whole thing.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="higher-level-protocols-built-on-netidx"><a class="header" href="#higher-level-protocols-built-on-netidx">Higher Level Protocols Built on Netidx</a></h1>
-<p>Netidx is meant to be a building block out of which more complex
-things can be constructed.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="remote-procedure-call"><a class="header" href="#remote-procedure-call">Remote Procedure Call</a></h1>
-<p>At the library level RPCs in netidix are just like any other RPC.
-The procedure name is the netidx path, the arguments are an array
-of netidx values. Below the library layer, mapping the RPC model into
-netidx is quite simple. e.g.</p>
-<pre><code>/app/rpcs/do_thing                            &lt;- the procedure
-/app/rpcs/do_thing/doc                        &lt;- procedure doc string
-/app/rpcs/do_thing/arg0/val                   &lt;- arguments are all named, this is 'arg0'
-/app/rpcs/do_thing/arg0/doc                   &lt;- doc string for arg0
-/app/rpcs/do_thing/arg1/val                   &lt;- 'arg1'
-/app/rpcs/do_thing/arg1/doc                   &lt;- arg1 doc string
-...
-/app/rpcs/do_thing/args-can-have-any-name/val &lt;- args can be called anything
-/app/rpcs/do_thing/args-can-have-any-name/doc &lt;- doc string
-</code></pre>
-<p>We set arguments by writing to <code>.../arg-name/val</code>, and we call the
-procedure by writing <code>null</code> to the procedure. The return value of the
-procedure is sent back to the caller in one of two ways. If the caller
-used <code>write_with_recipt</code>, then the return will be sent as the reply to
-that write request. If the caller did a normal write, then the
-procedure value will be updated with the return value, but only for
-the calling client, other clients won't receive this update.</p>
-<p>Since there can be time in between setting argument values and
-triggering the procedure the rpc module keeps track of the set
-argument values on a per client basis. This way, multiple clients may
-make independent calls to the same procedure concurrently without
-interfering with each other. If arguments are set, but a call is not
-triggered within 60 seconds then the arguments may be garbage
-collected if the rpc server is busy.</p>
-<p>Because the protocol is so simple, it's perfectly possible to call a
-netidx rpc directly from the browser using <code>ctrl+w</code>, from the command
-line subscriber, or even manually in a program (though the library is
-more convenient).</p>
-<h2 id="concurrent-rpc-publishers"><a class="header" href="#concurrent-rpc-publishers">Concurrent RPC Publishers</a></h2>
-<p>Because of the way netidx works it's entirely possible and supported
-for multiple programs on multiple machines to publish the same RPC. As
-long as each one publishes the same arguments clients will just pick
-one of them at random when initially subscribing, and will use that
-one from then on (unless it's forced to resubscribe for watever
-reason).</p>
-<p>You might wonder, since the procedure and the arguments are different
-netidx paths, how it's possible to make sure that a client sends all
-it's arguments to the same procedure. Normally in netidx subscriber
-picks a random publisher from the set of all publishers publishing the
-path it is subscribing to. However the resolver server supports
-storing flags for each path, and one of the flags is called
-<code>USE_EXISTING</code>, which causes any subscriber to always use an existing
-publisher connection (if one exists) instead of picking a random
-publisher. Since the RPC library sets this flag on the procedure, and
-all the arguments it publishes, subscribers will choose a random
-publisher of the RPC when they subscribe to the first path of the rpc,
-and thereafter they will always use that publisher (if it fails then
-subscriber will pick a new random rpc publisher).</p>
-<p>Depending on what your RPC actually does you may need more or less
-coordination between publishers, and the cluster protocol can help you
-there, but in many cases load balancing is as simple as starting more
-publishers to handle additional traffic.</p>
-<h2 id="overhead"><a class="header" href="#overhead">Overhead</a></h2>
-<p>Once subscribed, the network overhead of calling a netidx rpc is quite
-low. For example, consider a procedure with 3 double precision
-floating point arguments that also returns a double precision
-float. Then the overhead of making a call to this procedure once
-subscribed is,</p>
-<pre><code># set float arg
-tag:       1 byte, 
-id:        1 byte, 
-value:
-  val_tag: 1 byte,
-  double:  8 bytes
-recipt:    1 byte
-
-# call procedure
-tag:    1 byte,
-id:     1 byte,
-value:  1 byte,
-recipt: 1 byte
-</code></pre>
-<p>So to call a three argument procedure takes 12x3 + 4, or 40 bytes on
-the wire, and 24 bytes of that are the actual argument data. The
-return value is,</p>
-<pre><code>tag:       1 byte,
-id:        1 byte,
-value:
-  val_tag: 1 byte,
-  double:  8 bytes
-</code></pre>
-<p>11 bytes for the return, 8 of which are the actual return value
-data. Clearly data size on the wire should be no impedement to using
-netidx rpc in high performance applications. Aside from data size on
-the wire netidx has some additional beneficial characteristics, for
-example, because of the way subscriber and publisher are designed it
-is possible for a single client to concurrently issue many rpc calls
-to the same publisher, and in that case the messages will
-automatically batch allowing processing overhead to be amortized on
-both sides. e.g.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>futures::join_all(vec![
-    proc.call(args1), 
-    proc.call(args2), 
-    proc.call(args3)
-]).await
-<span class="boring">}</span></code></pre></pre>
-<p>This will cause only one batch containing all the data needed to make
-all three calls to be sent to the publisher. It isn't clear whether
-the results will also be sent as a batch, simply because each call may
-take a different amount of time to produce a result.</p>
-<p>Depending on how the handler for this rpc is written, all three calls
-may be evaluated in parallel on the publisher side.  In fact the
-default behavior is for concurrent calls to the same procedure to run
-in parallel, in order to degrade this one would need to e.g. depend on
-a shared locked data structure.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="clustering"><a class="header" href="#clustering">Clustering</a></h1>
-<p>The cluster protocol uses the resolver server to ease building
-distributed services. A cluster is rooted at a particular path. Each
-member of the cluster will publish it's uuid under that path, and will
-poll for other members. The api provides methods to broadcast to all
-members, as well as determine who is the primary (based on uuid sort
-order). A cluster with two members might look like, e.g.</p>
-<pre><code>/app/cluster/2d66247f02344b5d958039a337b7e218
-/app/cluster/bc60c115971e4e1b96c94a3a17f51a86
-</code></pre>
-<p>Calling the <code>send_to_others</code> method in either member would write a
-message to the other. Also, both members would agree that
-<code>2d66247f02344b5d958039a337b7e218</code> is the primary, though what meaning
-that has depends on the application.</p>
-<p>An example application using the cluster protocol is the
-recorder. Each recorder shard has access to part of the whole data
-set, so in order to replay data accurately, they must coordinate
-creating sessions, as well as their position, rate, start, end,
-etc. When a shard receives an rpc call asking for a new session, it
-forwards that request to all the other shards. Once a session is
-created each shard publishes the control interface. Whenever one
-receives a command, it forwards that command to the other shards,
-ensuring that every shard stays in sync with the user's requests. In
-this example, the concept of "primary" is not used, as all the shards
-are equal.</p>
 <div style="break-before: page; page-break-before: always;"></div><p>Browser specific bscript functions. These are only defined in the
 browser.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="confirm"><a class="header" href="#confirm">confirm</a></h1>

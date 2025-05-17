@@ -12,15 +12,11 @@ you haven't already. Ensure cargo is in your and then run,
 
 `cargo install netidx-tools`
 
-if you are on Max OS you must use,
-
-`cargo install --no-default-features netidx-tools`
-
 This will build and install the `netidx` command, which contains all
 the built in command line tools necessary to run to the resolver
 server, as well as the publisher/subscriber command line tools
 
-You will need some build dependencies,
+On Linux you will need some build dependencies,
 
 - libclang, necessary for bindgen, on debian/ubuntu `sudo apt install libclang-dev`
 - gssapi, necessary for kerberos support, on debian/ubuntu `sudo apt install libkrb5-dev`
@@ -64,7 +60,9 @@ run `netidx resolver-server -c ~/.config/netidx/resolver.json`. This command wil
 immediatly, and the resolver server will daemonize. Check that it's
 running using `ps auxwww | grep netidx`.
 
-NOTE, the resolver server does not currently support Windows.
+NOTE, the resolver server does not support local authentication on
+Windows, if you want to run a resolver server on windows you can use
+tls or kerberos authentication instead.
 
 ### Systemd
 
@@ -134,10 +132,14 @@ and the subscriber again.
 
 ## Optional Netidx Browser
 
+NOTE: the gtk based browser is deprecated, a new browser is in
+development and will eventually replace it.
+
 The browser is an optional gui browser for the netidx tree, you need
   gtk development files installed to build it, on debian/ubuntu add those with 
 
 `sudo apt install libgtk-3-dev`
+`sudo apt install libgtksourceview-4-dev`
 
 and then
 
