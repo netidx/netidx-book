@@ -12,8 +12,9 @@ order). A cluster with two members might look like, e.g.
 /app/cluster/bc60c115971e4e1b96c94a3a17f51a86
 ```
 
-Calling the `send_to_others` method in either member would write a
-message to the other. Also, both members would agree that
+Calling the `send_cmd` method in either member would broadcast a
+message to all other members (use `send_cmd_to_one` to address a
+single peer by path). Also, both members would agree that
 `2d66247f02344b5d958039a337b7e218` is the primary, though what meaning
 that has depends on the application.
 

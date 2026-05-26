@@ -11,12 +11,9 @@ The three fields are,
 - The type
 - The value
 
-or the special form
-
-- The path
-- `null`
-
-or the special form
+To publish a null value use `PATH|null|null` — every regular line is
+always three fields. Two special two-field directives exist for
+control:
 
 - DROP
 - the path
@@ -50,7 +47,7 @@ There are several command line options to the `netidx publisher` command,
   - an expression consisting of an ip/netmask that must match a unique
     network interface on the machine running the publisher. This is
     prefered, e.g.
-    - local, selects 127.0.0.1/24
+    - local, selects loopback (127.0.0.1)
     - 10.0.0.0/8 selects the interface bound to a 10.x.x.x address
     - 192.168.0.0/16 selects the interface bound to a 192.168.x.x address
     - The publisher will choose a free port automatically starting at 5000
@@ -68,8 +65,11 @@ There are several command line options to the `netidx publisher` command,
     - 54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
       but will advertise it's address to the resolver as 54.32.224.1:5001. This
       would correspond to a typical single port forward NAT situation.
- - `-a, --auth`: optional, specifies the authentication mechanism,
-  anonymous, local, or krb5.
+- `-c, --config <path>`: optional, alternate client config path
+  (overrides the auto-discovered `client.json`).
+- `-a, --auth`: optional, specifies the authentication mechanism —
+  `anonymous`, `local`, `krb5`, or `tls`. Defaults to the
+  `default_auth` setting in the client config.
 - `--spn`: optional, required if -a krb5, the service principal name
   the publisher should run as. This principal must have permission to
   publish where you plan to publish, must exist in your krb5
@@ -115,16 +115,21 @@ higher priority messages to stderr.
 ## Types
 
 The following types are supported,
+  - `u8`, `i8`: 8 bit unsigned / signed integer, 1 byte on the wire
+  - `u16`, `i16`: 16 bit unsigned / signed integer, 2 bytes on the wire
   - `u32`: unsigned 32 bit integer, 4 bytes on the wire
   - `v32`: unsigned 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-5 bytes on the wire depending on how big the number is. e.g. 0-128 is just 1 byte
   - `i32`: signed 32 bit integer, 4 bytes on the wire
-  - `z32`: signed 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128) 1-5 bytes on the wire
+  - `z32`: signed 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-5 bytes on the wire
   - `u64`: unsigned 64 bit integer, 8 bytes on the wire
   - `v64`: unsigned 64 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-10 bytes on the wire
   - `i64`: signed 64 bit integer, 8 bytes on the wire
   - `z64`: signed 64 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-10 bytes on the wire
   - `f32`: 32 bit single precision floating point number, 4 bytes on the wire
   - `f64`: 64 bit double precision floating point number, 8 bytes on the wire
+  - `decimal`: arbitrary-precision decimal, useful when binary
+    floating-point rounding is unacceptable (financial data,
+    accounting). LEB128-encoded mantissa + scale.
   - `datetime`: a date + time encoded as an i64 timestamp representing
     the number of seconds since jan 1 1970 UTC and a u32 number of sub
     second nanoseconds fixing the exact point in time. 12 bytes on the
@@ -135,4 +140,11 @@ The following types are supported,
   - `string`: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)
   - `bytes`: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire
   - `array`: an array of netidx values, consuming 1+zlen(array)+sum(len(elts))
-  - `result`: OK, or Error + string, consuming 1-1+string length bytes
+  - `map`: a map of netidx values to netidx values, consuming
+    1+zlen(map)+sum(len(key)+len(value)) bytes
+  - `error`: an error value wrapping any other value (typically a
+    string with diagnostic text)
+  - `null`: the literal `null`. Use `PATH|null|null` to publish a
+    null value.
+  - `abstract`: a user-defined type registered via the abstract-type
+    registry; rarely used from the CLI publisher

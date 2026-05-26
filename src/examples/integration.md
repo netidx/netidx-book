@@ -18,7 +18,7 @@ use anyhow::Result;
 use netidx::{
     config::Config,
     path::Path,
-    publisher::{Publisher, Val, Value},
+    publisher::{PublisherBuilder, Publisher, Val, Value},
     resolver_client::DesiredAuth,
 };
 
@@ -45,7 +45,11 @@ impl HwPub {
         // our network was large and complex we might need to make
         // this a passed in configuration option, but lets assume it's
         // simple.
-        let publisher = Publisher::new(cfg, auth, "192.168.0.0/24".parse()?).await?;
+        let publisher = PublisherBuilder::new(cfg)
+            .desired_auth(auth)
+            .bind_cfg(Some("192.168.0.0/24".parse()?))
+            .build()
+            .await?;
 
         // We're publishing stats about hardware here, so lets put it
         // in /hw/hostname/cpu-temp, that way we keep everything nice
@@ -215,12 +219,12 @@ use futures::{
     channel::mpsc::{channel, Sender},
     prelude::*,
 };
+use arcstr::{literal, ArcStr};
 use netidx::{
-    chars::Chars,
     config::Config,
     path::Path,
-    pool::Pooled,
-    publisher::{self, Publisher, Value},
+    pool::GPooled,
+    publisher::{self, PublisherBuilder, Publisher, Value},
     resolver_client::{DesiredAuth, ChangeTracker, Glob, GlobSet},
     subscriber::{self, Event, SubId, Subscriber, UpdatesFlags},
 };
@@ -242,7 +246,7 @@ struct Temp {
 async fn watch_hosts(
     subscriber: Subscriber,
     publisher: Publisher,
-    tx_current: Sender<Pooled<Vec<(SubId, Event)>>>,
+    tx_current: Sender<GPooled<Vec<(SubId, Event)>>>,
     temps: Arc<Mutex<HashMap<SubId, Temp>>>,
 ) -> Result<()> {
     // we keep track of all the hosts we've already seen, so we don't
@@ -255,7 +259,10 @@ async fn watch_hosts(
     // /hw/*/cpu-temp.
     let resolver = subscriber.resolver();
     let mut ct = ChangeTracker::new(Path::from("/hw"));
-    let pat = GlobSet::new(true, iter::once(Glob::new(Chars::from("/hw/*/cpu-temp"))?))?;
+    let pat = GlobSet::new(
+        true,
+        iter::once(Glob::new(literal!("/hw/*/cpu-temp"))?),
+    )?;
     loop {
         if resolver.check_changed(&mut ct).await? {
             let mut batches = resolver.list_matching(&pat).await?;
@@ -267,11 +274,13 @@ async fn watch_hosts(
                             // main loop can't see an update for an
                             // entry that isn't there yet.
                             let mut temps = temps.lock().unwrap();
-                            // subscribe and register to receive updates
-                            let current = subscriber.durable_subscribe(path.clone());
-                            current.updates(
-                                UpdatesFlags::BEGIN_WITH_LAST,
-                                tx_current.clone(),
+                            // subscribe and register to receive updates.
+                            // subscribe_updates wires the update channel
+                            // up-front; you get every update from the
+                            // first one without asking for BEGIN_WITH_LAST.
+                            let current = subscriber.subscribe_updates(
+                                path.clone(),
+                                [(UpdatesFlags::empty(), tx_current.clone())],
                             );
                             // publish the overtemp records, both with
                             // initial values of Null
@@ -311,7 +320,11 @@ pub async fn main() -> Result<()> {
     let auth = DesiredAuth::Krb5 {upn: None, spn: Some("publish/blackbird.ryu-oh.org@RYU-OH.ORG".into())};
     // setup subscriber and publisher
     let subscriber = Subscriber::new(config.clone(), auth.clone())?;
-    let publisher = Publisher::new(config, auth, "192.168.0.0/24".parse()?).await?;
+    let publisher = PublisherBuilder::new(config)
+        .desired_auth(auth)
+        .bind_cfg(Some("192.168.0.0/24".parse()?))
+        .build()
+        .await?;
     let (tx_current, mut rx_current) = channel(3);
     // this is where we'll store our published overtemp record for each host
     let temps: Arc<Mutex<HashMap<SubId, Temp>>> = Arc::new(Mutex::new(HashMap::new()));

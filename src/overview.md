@@ -100,8 +100,10 @@ Published values have some other properties as well,
 
 ## Security
 
-Netidx currently supports three authentication mechanisms, Kerberos v5, 
-Local, and Tls. Local applies only on the same machine (and isn't supported
+Netidx currently supports four authentication mechanisms: Anonymous,
+Local, Kerberos v5, and Tls. Anonymous disables authentication,
+authorization, and encryption — useful for development and trusted
+networks. Local applies only on the same machine (and isn't supported
 on Windows), while many organizations already have Kerberos v5
 deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
 Directory Server, or one of the many other compatible solutions. Tls

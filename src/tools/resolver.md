@@ -10,6 +10,12 @@ querys/manipulations it can perform,
 - `add`: add a new entry
 - `remove`: remove an entry
 
+Like the other CLIs, the top-level `netidx resolver` command accepts
+the usual client flags before the subcommand: `-c, --config <path>`,
+`-a, --auth <mechanism>`, `--spn`, `--upn`, `--identity`. These
+default to whatever the auto-discovered `client.json` says, so a
+workstation install rarely needs them in practice.
+
 ## List
 
 `netidx resolver list /solar/stats/*`

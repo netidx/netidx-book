@@ -28,6 +28,8 @@ The command line subscriber reads commands from stdin which can direct it to,
   - `CALL|/path/to/the/rpc|arg=typ:val,...,arg=typ:val`
   - commas in the val may be escaped with `\`
   - args may be specified multiple times
+  - the call result is printed to stdout as
+    `CALLED|<path>|<value>`
 
 If the subscriber doesn't recognize a command it will print an error
 to stderr and continue reading commands. If stdin is closed subscriber
@@ -55,6 +57,14 @@ will not quit, but it will no longer be possible to issue commands.
   forever, only retry them for the specified number of seconds, after
   that remove them, and possibly exit if `-o, --oneshot` was also
   specified.
+- `-c, --config <path>`: alternate client config (overrides
+  auto-discovery).
+- `-a, --auth <mechanism>`: `anonymous`, `local`, `krb5`, or `tls`.
+  Defaults to the client config's `default_auth`.
+- `--spn`, `--upn`: Kerberos service / user principal name (for
+  `-a krb5`).
+- `--identity <name>`: TLS identity (for `-a tls`); defaults to
+  the client config's `default_identity`.
 
 ## Notes
 

@@ -18,10 +18,11 @@ RUST_LOG, and resource control via cgroups.
 
 ## Units
 
-Each managed process is configured with a unit file. Unit files are
-placed in a directory, by default `/etc/netidx/activation` or
-`~/.config/netidx/activation`. The user specific directory will take
-prescidence if it exists.
+Each managed process is configured with a unit file. Unit files live
+in a directory and must have the `.unit` suffix; anything else in the
+directory is ignored. The default search order is
+`~/.config/netidx/activation` first, then `/etc/netidx/activation` —
+the user-specific directory takes precedence when present.
 
 Here is an example activation unit triggered on access to any path
 under `/local/music`
@@ -118,16 +119,19 @@ shut down within 30 seconds they are killed with `SIGKILL`.
 ## Args
 
 - `-f, --foreground`: don't daemonize
-- `-a, --auth`: auth mechanism. either anonymous, local, or
-  krb5. default krb5.
+- `-a, --auth`: auth mechanism — `anonymous`, `local`, `krb5`, or
+  `tls`. Defaults to whatever the client config's `default_auth`
+  is (so a workstation install rarely needs this).
 - `-b, --bind`: bind address.
 - `-c, --config`: path to the netidx client config
 - `--pid-file`: path to the pid file you want the activation server to
   write. default no pid file.
 - `--spn`: the spn of the activation server. only relevant if auth =
   krb5
+- `--identity`: TLS identity (for `-a tls`); defaults to the client
+  config's `default_identity`.
 - `-u, --units`: the path to the directory containing unit
-  files. default `/etc/netidx/activation` or
-  `~/.config/netidx/activation`
+  files. Defaults to `~/.config/netidx/activation` (or
+  `/etc/netidx/activation` if the user directory doesn't exist).
 - `--upn`: the upn to use when connecting to the resolver, only valid
   if auth = krb5. default the current user.

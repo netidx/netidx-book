@@ -1,146 +1,107 @@
 # Quick Start for Linux
 
-In this quick start we will set up a Netidx resolver server and
-related tools on your local machine. This configuration is sufficient
-for doing development of netidx services and for trying out various
-publishers, subscribers, and tools without much setup.
+This walk-through sets up a netidx *workstation* — a local-auth
+resolver plus matching client — on your machine. It's enough to do
+netidx development, run publishers and subscribers locally, and try
+out the tools.
 
-## First Install Rust and Netidx
+## Install Rust and Netidx
 
 Install [rust](https://www.rust-lang.org/tools/install) via rustup if
-you haven't already. Ensure cargo is in your and then run,
+you haven't already, then
 
 `cargo install netidx-tools`
 
-This will build and install the `netidx` command, which contains all
-the built in command line tools necessary to run to the resolver
-server, as well as the publisher/subscriber command line tools
+This builds the `netidx` binary with every built-in subcommand: the
+resolver server, the publisher and subscriber CLIs, the conf tooling,
+the id-map daemon, the activation supervisor, and the rest.
 
-On Linux you will need some build dependencies,
+On Linux you'll also need these build dependencies:
 
-- libclang, necessary for bindgen, on debian/ubuntu `sudo apt install libclang-dev`
-- gssapi, necessary for kerberos support, on debian/ubuntu `sudo apt install libkrb5-dev`
+- libclang (for bindgen) — `sudo apt install libclang-dev` on debian/ubuntu
+- gssapi (for kerberos) — `sudo apt install libkrb5-dev` on debian/ubuntu
 
-## Resolver Server Configuration
-
-``` json
-{
-  "parent": null,
-  "children": [],
-  "member_servers": [
-    {
-      "pid_file": "",
-      "addr": "127.0.0.1:4564",
-      "max_connections": 768,
-      "hello_timeout": 10,
-      "reader_ttl": 60,
-      "writer_ttl": 120,
-      "auth": {
-        "Local": "/tmp/netidx-auth"
-      }
-    }
-  ],
-  "perms": {
-    "/": {
-      "wheel": "swlpd",
-      "adm": "swlpd",
-      "domain users": "sl"
-    }
-  }
-}
-```
-
-Install the above config in
-`~/.config/netidx/resolver.json`. This is the config for the
-local resolver on your machine. Make sure port 4564 is free, or change
-it to a free port of your choosing. If necessary you can change the
-local auth socket to one of your choosing.
-
-run `netidx resolver-server -c ~/.config/netidx/resolver.json`. This command will return
-immediatly, and the resolver server will daemonize. Check that it's
-running using `ps auxwww | grep netidx`.
-
-NOTE, the resolver server does not support local authentication on
-Windows, if you want to run a resolver server on windows you can use
-tls or kerberos authentication instead.
-
-### Systemd
-
-If desired you can start the resolver server automatically with systemd. 
+## One-Shot Install
 
 ```
-[Unit]
-Description=Netidx Activation
-
-[Service]
-ExecStart=/home/eric/.cargo/bin/netidx resolver-server -c /home/eric/.config/resolver.json -f
-
-[Install]
-WantedBy=default.target
+netidx conf install workstation
 ```
 
-Modify this example systemd unit to match your configuration and then
-install it in `~/.config/systemd/user/netidx.service`. Then you can run
+This drops a local-auth resolver listening on `127.0.0.1:4654`, a
+matching `client.json`, a `perms.json` granting your current Unix
+user full rights under `/local`, and activation units for the
+resolver and the netidx container. On a TTY it prompts to register
+netidx as an OS service; say yes and the install is complete — the
+resolver is already running and will start on boot. If you said no,
+you can register the service later with `netidx conf service install`
+(user scope) or `netidx conf service install --scope system`
+(system-wide).
 
-`systemctl --user enable netidx`
+If port 4654 is busy use `--listen-port <n>` to pick a different one.
+`--dry-run` prints the plan and writes nothing. The full surface
+including the network-resolver and publisher-host templates is in
+the [Configuration Tooling](./administration/conf.md) chapter.
 
-and
+> **Note**: local-auth uses a Unix-socket peer-credentials handshake
+> and isn't supported on Windows. For Windows workstations use
+> `netidx conf install resolver --auth tls` (or `--auth krb5`) instead.
 
-`systemctl --user start netidx`
+## Smoke Test
 
-## Client Configuration
+Publish 10,000 dummy values from one shell:
 
-``` json
-{
-    "addrs":
-    [
-        ["127.0.0.1:4564", {"Local": "/tmp/netidx-auth"}]
-    ],
-    "base": "/"
-}
+```
+netidx stress publisher --base /local/bench --delay 1000 1000 10
 ```
 
-Install the above config in `~/.config/netidx/client.json`. This is
-the config all netidx clients (publishers and subscribers) will use to
-connect to the resolver cluster.
+This writes `/local/bench/$r/$c` for `r` in `0..1000` and `c` in
+`0..10` — 1000 rows × 10 columns — and updates each value once a
+second (`--delay` is in milliseconds).
 
-- On Mac OS replace `~/.config/netidx` with `~/Library/Application Support/netidx`.
-- On Windows replace `~/.config/netidx` with `~\AppData\Roaming\netidx`
-  (that's `{FOLDERID_RoamingAppData}\netidx`)
+In another shell, look at one cell:
 
-To test the configuration run,
+```
+netidx subscriber /local/bench/0/0
+```
 
-`netidx stress -a local publisher -b 127.0.0.1/0 --delay 1000 1000 10`
+You should see one line per second like
 
-This will publish 10,000 items following the pattern `/bench/$r/$c`
-where `$r` is a row number and `$c` is a column
-number. e.g. `/bench/100/8` corresponds to row 100 column 8. The
-browser will draw this as a table with 1000 rows and 10 columns,
-however for this test we will use the command line subscriber to look
-at one cell in the table.
+```
+/local/bench/0/0|v64|N
+```
 
-`netidx subscriber -a local /bench/0/0`
+with `N` incrementing. If that works, your workstation is set up. If
+not, run both commands again with `RUST_LOG=debug` — that usually
+points at the problem.
 
-should print out one line like this every second
+The subscriber doesn't need `-a local` because the workstation's
+`client.json` has `default_auth: local` already. Other commands
+(`netidx resolver list`, `netidx browser`, etc.) inherit the same
+default.
 
-`/bench/0/0|v64|1`
+### MacOS and Windows config paths
 
-The final number should increment, and if that works then netidx is
-set up on your local machine. If it didn't work, try setting the
-environment variable `RUST_LOG=debug` and running the stress publisher
-and the subscriber again.
+`netidx conf install workstation` writes to the platform-default
+config directory. The paths above use the Linux convention
+(`~/.config/netidx/…`); the equivalents on other platforms are:
 
-## Optional Netidx Browser
+- MacOS: `~/Library/Application Support/netidx/`
+- Windows: `~\AppData\Roaming\netidx\` (i.e. `{FOLDERID_RoamingAppData}\netidx`)
 
-NOTE: the gtk based browser is deprecated, a new browser is in
-development and will eventually replace it.
+## Optional GUI Browser
 
-The browser is an optional gui browser for the netidx tree, you need
-  gtk development files installed to build it, on debian/ubuntu add those with 
+The netidx browser is an optional GTK-based GUI for navigating the
+netidx tree. To build it you need GTK development files installed:
 
-`sudo apt install libgtk-3-dev`
-`sudo apt install libgtksourceview-4-dev`
+```
+sudo apt install libgtk-3-dev libgtksourceview-4-dev
+```
 
-and then
+then
 
-`cargo install netidx-browser`
+```
+cargo install netidx-browser
+```
+
+A TUI browser is also built into `netidx-tools` — run `netidx browser`
+for a terminal-based view of the namespace.

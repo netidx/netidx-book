@@ -1,31 +1,121 @@
 # Managing TLS
 
-Tls authentication requires a bit more care than even Kerberos. Here we'll go over
-a quick configuration using the openssl command line tool. I'll be using,
+TLS authentication in netidx leans on three pieces working together:
+a local certificate authority (or your existing one) that signs
+identities, the resolver and clients that present and verify those
+identities, and — for non-trivial deployments — the
+[id-map daemon](./id_map.md) that translates a certificate SAN into
+the unix-style uid/group identity the perms file is keyed on. Most
+of this is automated by `netidx conf` and you rarely need to think
+about the X.509 plumbing directly.
+
+## The Painless Path
 
 ```
-$ openssl version
-OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)
+netidx conf install resolver --auth tls
 ```
 
-## Setting Up a Local Certificate Authority
+On a TTY this prompts for everything it needs. With no prior CA on
+the machine the prompt for the resolver's certificate defaults to
+the literal token `generate`: pick it and the installer
 
-Unless you already have a corporate certificate authority, or you actually want to buy
-certificates for your netidx resolvers, publishers, and users from a commercial CA then
-you need to set up a certificate authority. This sounds like a big deal, but it's actually
-not. A CA is really just a certificate and accompanying private key that serves as the root
-of trust. That means that it is self signed, and people in your organization choose to trust
-it. It will then sign certificates for your users, publishers, and resolver servers, and they
-will be configured to trust certificates that it has signed.
+1. creates a local CA under `${basedir}/ca/` (encrypting the CA key
+   with a password it then stashes in the system keychain),
+2. issues the resolver's leaf certificate from that CA,
+3. writes the resolver-server config wired to `auth: Tls`,
+4. drops a matching `client.json` reusing the resolver's own cert
+   (so commands on the resolver host work without further setup),
+5. installs the id-map daemon alongside the resolver,
+6. lays down the activation units, and
+7. offers to register netidx as an OS service.
+
+For a workstation pick `netidx conf install workstation --auth tls`
+instead — same idea, different defaults.
+
+If your organisation already has a CA you want to use, point
+`--tls-cert`, `--tls-key`, and `--tls-trusted` at existing PEM files
+instead of letting the installer call `generate`.
+
+## Local CA Management — `netidx conf ca`
+
+`netidx conf install ... --tls-cert generate` calls into this same
+tooling, but `netidx conf ca` is also the supported way to manage
+identities after the initial install. One CA per netidx install,
+lives at `${basedir}/ca/`.
+
+```
+netidx conf ca init       # create the local CA (if you haven't yet)
+netidx conf ca issue      # issue a new leaf cert from the local CA
+netidx conf ca request    # generate a key + CSR locally (for an external CA)
+netidx conf ca sign       # sign a CSR with the local CA
+netidx conf ca list       # list local CAs
+```
+
+`init` and `issue` both prompt for the X.509 fields they need; the
+defaults agree with the in-the-loop installer. `request` is for
+when you want a certificate signed by some other CA: you generate
+the key locally (which never leaves the host), and hand over only
+the CSR. `sign` is the corresponding receive-side for somebody else's
+CSR.
+
+`netidx conf ca sign` is deliberately strict about SubjectAltName:
+the CA is authoritative for the identity it issues, so it never
+silently inherits whatever SAN the CSR claims. Pass `--san dns:foo`
+to set the SAN explicitly, or `--accept-csr-san` if you've verified
+the CSR's claim and want to inherit it on purpose.
+
+## Encrypted Private Keys
+
+The resolver's own key, the CA key, and user identity keys may all
+be encrypted. netidx loads them via an askpass helper at startup —
+on most systems `ssh-askpass` works out of the box and the installer
+auto-discovers it. Once you've entered the password once, netidx
+stashes it in the system keychain (`netidx::tls::save_password_for_key`)
+keyed by the on-disk path, so subsequent startups don't prompt
+again.
+
+The `tls.askpass` field on `client.json` lets you override the helper
+explicitly if the auto-discovered one doesn't fit; the install flow
+sets this for you when you opt into a password during the initial
+prompt.
+
+## On-Disk Layout
+
+Cert and key material for each TLS identity lives under
+`${basedir}/tls/<our-name>/`, where `<our-name>` is the SAN
+embedded in the cert. The `tls.identities` map in `client.json` is
+keyed by *reverse-domain pattern* — `mazikeen.example.com` matches
+the pattern `com.example`, and the closest match wins. The
+installer derives that pattern from the SAN automatically (the
+`--tls-server-pattern` flag is there if you need to override it).
+
+This indirection lets one machine carry multiple identities (e.g.
+one for an internal cluster and one for a partner organisation)
+without having to switch configs.
+
+## Trust Distribution
+
+Every netidx component — resolver, publishers, subscribers — needs
+the trust bundle (the CA cert, or chain) installed and named in
+`client.json` under `tls.trusted`. With the local-CA flow, that
+file is `${basedir}/ca/certificate.pem`; with an external CA, it's
+whatever your org gave you. Beyond that, each component only needs
+its own leaf cert and private key. The CA's *private* key never
+needs to be copied off the CA host.
+
+## By Hand with `openssl`
+
+Most readers don't need this section, but if you're integrating with
+an existing corporate CA whose signing flow is out-of-band (raise a
+ticket, get a PEM back), the following is the openssl recipe that
+matches what `netidx conf ca` does internally. You can use it to
+understand the extension layout the resolver expects, or to drive
+the issuance yourself.
+
+Creating a CA:
 
 ```
 openssl genrsa -aes256 -out ca.key 4096
-```
-
-This will generate the private key we will use for the local ca. This is the most important
-thing to keep secret. Use a strong password on it, and ideally keep it somewhere safe.
-
-```
 openssl req -new -key ./ca.key -x509 -sha512 -out ca.crt -days 7300 \
   -subj "/CN=mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization" \
   -addext "basicConstraints=critical, CA:TRUE" \
@@ -35,27 +125,17 @@ openssl req -new -key ./ca.key -x509 -sha512 -out ca.crt -days 7300 \
   -addext "subjectAltName=DNS:mycompany.com"
 ```
 
-This will generate a certificate for the certificate authority and sign it with the private key.
-The `-addext` flags add x509v3 attributes. Once this is complete we can view the certificate with
+Issuing a leaf:
 
 ```
-openssl x509 -text -in ca.crt
-```
+# resolver key (encrypted; askpass + keychain handles the password)
+openssl genrsa -aes256 -out resolver.key 4096
 
-## Generating User, Resolver, and Publisher Certificates
-
-Now we can create certificates for various parts of the netidx system. Lets make one for the resolver
-server.
-
-```
-# generate the resolver server key. It must not be encrypted.
-openssl genrsa -out resolver.key 4096
-
-# generate a certificate signing request that will be signed our CA
+# CSR
 openssl req -new -key ./resolver.key -sha512 -out resolver.req \
   -subj "/CN=resolver.mycompany.com/C=US/ST=Some State/L=Some City/O=Some organization"
 
-# sign the certificate request with the CA key and add restrictions to it using x509v3 extentions
+# Sign
 openssl x509 -req -in ./resolver.req -CA ca.crt -CAkey ca.key \
   -CAcreateserial -out resolver.crt -days 730 -extfile <(cat <<EOF
 basicConstraints=critical, CA:FALSE
@@ -66,32 +146,17 @@ subjectAltName=DNS:resolver.mycompany.com
 EOF
 )
 
- # check it
+# Sanity check
 openssl verify -trusted ca.crt resolver.crt
 ```
 
-This has one extra step, the generation of the request to be signed. If we were using a commercial
-certificate authority we would send this request to them and they would return the signed certificate
-to us. In this case it's just an extra file we can delete once we've signed the request.
+The SAN is load-bearing — it's what netidx matches identities on,
+not the CN. If you can leave the key unencrypted (e.g. the host is
+otherwise hardened and you don't want a keychain dependency at
+boot), drop the `-aes256` from `genrsa`. Otherwise an encrypted key
+works fine; netidx will ask once via askpass and remember.
 
-The resolver server private key must not be encrypted, this is because it probably doesn't have any
-way to ask for a password on startup, since it's likely running on a headless server somewhere.
-So it's extra important to keep this certificate safe.
-
-Generating user and publisher certificates is exactly the same as the above, except that they are
-permitted to have password protected private keys. However if you do this, make sure there is an
-`askpass` command configured, and that your system level keychain service is running and unlocked.
-Once the password has been entered once, it will be added to the keychain and should not need to 
-be entered again.
-
-It's possible to use the same certificate for multiple services, however it's probably not a great
-idea unless it's for multiple components of the same system (e.g. lots of publishers in a cluster),
-or if a user is testing a new publisher it can probably just use their certificate.
-
-## Distributing Certificates
-
-With the configuration above you only need to distribute the CA certificate. Every netidx component
-that will participate needs to have a copy of it, and it needs to be configured as trusted in the client
-config, and the resolver server config.
-
-Other components only need to have their own certificate, as well as their private key.
+User and publisher certificates are generated the same way. One
+identity per certificate is the usual practice, with the obvious
+exception of a cluster's worth of homogeneous publishers sharing
+one identity.

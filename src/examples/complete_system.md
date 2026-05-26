@@ -45,20 +45,31 @@ publisher module is fed a new stats record read from modbus on each
 timer tick. e.g.
 
 ``` rust
-    fn update(&self, st: &Stats) {
+    fn update(&self, batch: &mut UpdateBatch, st: &Stats) {
         use chrono::prelude::*;
-        self.timestamp
-            .update_changed(Value::DateTime(DateTime::<Utc>::from(st.timestamp)));
-        self.software_version.update_changed(Value::V32(st.software_version as u32));
-        self.battery_voltage_settings_multiplier
-            .update(Value::V32(st.battery_voltage_settings_multiplier as u32));
-        self.supply_3v3.update_changed(Value::F32(st.supply_3v3.get::<volt>()));
-        self.supply_12v.update_changed(Value::F32(st.supply_12v.get::<volt>()));
-        self.supply_5v.update_changed(Value::F32(st.supply_5v.get::<volt>()));
-        self.gate_drive_voltage
-            .update_changed(Value::F32(st.gate_drive_voltage.get::<volt>()));
-        self.battery_terminal_voltage
-            .update_changed(Value::F32(st.battery_terminal_voltage.get::<volt>()));
+        self.timestamp.update_changed(
+            batch,
+            Value::DateTime(DateTime::<Utc>::from(st.timestamp)),
+        );
+        self.software_version.update_changed(
+            batch,
+            Value::V32(st.software_version as u32),
+        );
+        self.battery_voltage_settings_multiplier.update(
+            batch,
+            Value::V32(st.battery_voltage_settings_multiplier as u32),
+        );
+        self.supply_3v3.update_changed(batch, Value::F32(st.supply_3v3.get::<volt>()));
+        self.supply_12v.update_changed(batch, Value::F32(st.supply_12v.get::<volt>()));
+        self.supply_5v.update_changed(batch, Value::F32(st.supply_5v.get::<volt>()));
+        self.gate_drive_voltage.update_changed(
+            batch,
+            Value::F32(st.gate_drive_voltage.get::<volt>()),
+        );
+        self.battery_terminal_voltage.update_changed(
+            batch,
+            Value::F32(st.battery_terminal_voltage.get::<volt>()),
+        );
     ...
 ```
 
@@ -105,9 +116,9 @@ impl PublishedControl {
         })
     }
 
-    fn update(&self, st: &Stats) {
-        self.charging.update_changed(match st.charge_state {
-            ChargeState::Disconnect | ChargeState::Fault => Value::False,
+    fn update(&self, batch: &mut UpdateBatch, st: &Stats) {
+        self.charging.update_changed(batch, match st.charge_state {
+            ChargeState::Disconnect | ChargeState::Fault => Value::Bool(false),
             ChargeState::UnknownState(_)
             | ChargeState::Absorption
             | ChargeState::BulkMPPT
@@ -117,27 +128,31 @@ impl PublishedControl {
             | ChargeState::Night
             | ChargeState::NightCheck
             | ChargeState::Start
-            | ChargeState::Slave => Value::True,
+            | ChargeState::Slave => Value::Bool(true),
         });
-        self.load.update_changed(match st.load_state {
-            LoadState::Disconnect | LoadState::Fault | LoadState::LVD => Value::False,
+        self.load.update_changed(batch, match st.load_state {
+            LoadState::Disconnect | LoadState::Fault | LoadState::LVD => Value::Bool(false),
             LoadState::LVDWarning
             | LoadState::Normal
             | LoadState::NormalOff
             | LoadState::NotUsed
             | LoadState::Override
             | LoadState::Start
-            | LoadState::Unknown(_) => Value::True,
+            | LoadState::Unknown(_) => Value::Bool(true),
         });
     }
 
-    fn register_writable(&self, channel: fmpsc::Sender<Pooled<Vec<WriteRequest>>>) {
-        self.charging.writes(channel.clone());
-        self.load.writes(channel.clone());
-        self.reset.writes(channel.clone());
+    fn register_writable(
+        &self,
+        publisher: &Publisher,
+        channel: fmpsc::Sender<GPooled<Vec<WriteRequest>>>,
+    ) {
+        publisher.writes(self.charging.id(), channel.clone());
+        publisher.writes(self.load.id(), channel.clone());
+        publisher.writes(self.reset.id(), channel.clone());
     }
 
-    fn process_writes(&self, mut batch: Pooled<Vec<WriteRequest>>) -> Vec<FromClient> {
+    fn process_writes(&self, mut batch: GPooled<Vec<WriteRequest>>) -> Vec<FromClient> {
         batch
             .drain(..)
             .filter_map(|r| {
@@ -151,7 +166,7 @@ impl PublishedControl {
                     let m = format!("control id {:?} not recognized", r.id);
                     warn!("{}", &m);
                     if let Some(reply) = r.send_result {
-                        reply.send(Value::Error(Chars::from(m)));
+                        reply.send(Value::error(m.as_str()));
                     }
                     None
                 }

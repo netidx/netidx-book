@@ -1,27 +1,30 @@
 # Recorder
 
-The recorder allows you to subscribe to a set of paths defined by one
-or more globs and write down their values in a file with a compact
-binary format. Moreover, at the same time it can make the contents of
-an archive available for playback by multiple simultaneous client
-sessions, each with a potentially different start time, playback
-speed, end time, and position.
+The recorder subscribes to a set of paths defined by globs and
+writes their values to a compact binary archive on disk. The same
+process can serve replay sessions over netidx — multiple
+simultaneous clients, each at their own start time, playback speed,
+and position. A single recorder may record only, replay only, or do
+both at once; recording and playback are decoupled so they don't
+interfere except through the underlying disk and CPU.
 
-It's possible to set up a recorder to both record data and play it
-back at the same time, or only record, or only play back. It is not
-possible to set up one recorder to record, and another to play back
-the same file, however recording and playback are careful not to
-interfere with each other, so the only limitation should be the
-underlying IO device and the number of processor cores available.
+For very high-volume namespaces the recorder shards across multiple
+processes. Each shard is responsible for a disjoint slice of the
+globbed path set. Shards coordinate via the netidx cluster protocol;
+playback waits until every shard has joined before serving sessions
+(recording itself starts immediately).
 
 ## Args
 
-- `--example`: optional, print an example configuration file
-- `--config`: required, path to the recorder config file
+- `-c, --config <path>` — path to the recorder config file.
+- `-e, --example` — print an example config and exit. The example
+  is the canonical reference for the schema — `netidx record -e`
+  always reflects the version of netidx you have installed.
 
 ## Configuration
 
-e.g.
+The config is a single JSON object. A current example
+(`netidx record -e`):
 
 ```
 {
@@ -29,36 +32,30 @@ e.g.
   "archive_cmds": {
     "list": [
       "cmd_to_list_dates_in_archive",
-      []
+      ["-s", "{shard}"]
     ],
     "get": [
       "cmd_to_fetch_file_from_archive",
-      []
+      ["-s", "{shard}"]
     ],
     "put": [
       "cmd_to_put_file_into_archive",
-      []
+      ["-s", "{shard}"]
     ]
   },
   "netidx_config": null,
   "desired_auth": null,
   "record": {
-    "spec": [
-      "/tmp/**"
-    ],
-    "poll_interval": {
-      "secs": 5,
-      "nanos": 0
-    },
+    "poll_interval": { "secs": 5, "nanos": 0 },
     "image_frequency": 67108864,
     "flush_frequency": 65534,
-    "flush_interval": {
-      "secs": 30,
-      "nanos": 0
-    },
-    "rotate_interval": {
-      "secs": 86400,
-      "nanos": 0
+    "flush_interval": { "secs": 30, "nanos": 0 },
+    "rotate_interval": { "Interval": { "secs": 86400, "nanos": 0 } },
+    "shards": {
+      "0": {
+        "spec": ["/tmp/**"],
+        "slack": 100
+      }
     }
   },
   "publish": {
@@ -66,100 +63,120 @@ e.g.
     "bind": null,
     "max_sessions": 512,
     "max_sessions_per_client": 64,
-    "shards": 0
+    "oneshot_data_limit": 104857600,
+    "cluster_shards": 0,
+    "cluster": "cluster"
   }
 }
 ```
 
-- `archive_directory`: The directory where archive files will be
-  written. The archive currently being written is `current` and
-  previous rotated files are named the rfc3339 timestamp when they
-  ended.
-- `archive_commands`: These are shell hooks that are run when various
-  events happen
-  - `list`: Shell hook to list available historical archive
-    files. This will be combined with the set of timestamped files in
-    `archive_directory` to form the full set of available archive
-    files.
-  - `get`: Shell hook that is run before an archive file needs to be
-    accessed. It will be accessed just after this command
-    returns. This can, for example, move the file into place after
-    fetching it from long term storage. It is passed the name of the
-    file the archiver would like, which will be in the union of the
-    local files and the set returned by list.
-  - `pub`: Shell hook that is run just after the current file is
-    rotated. Could, for example, back the newly rotated file up, or
-    move it to long term storage.
-- `netidx_config`: Optional path to the netidx config. Omit to use the default.
-- `desired_auth`: Optional desired authentication mechanism. Omit to use the default.
-- `record`: Section of the config used to record, omit to only play back.
-  - `spec`: a list of globs describing what to record. If multiple
-    globs are specified and they overlap, the overlapped items will
-    only be archived once.
-  - `poll_interval`: How often, in seconds, to poll the resolver
-    server for changes to the specified glob set. 0 never poll,
-    if omitted, the default is 5 seconds.
-  - `image_frequency`: How often, in bytes, to write a full image of
-    every current value, even if it did not update. Writing images
-    increases the file size, but makes seeking to an arbitrary
-    position in the archive much faster. 0 to disable images, in which
-    case a seek back will read all the data before the requested
-    position, default 64MiB.
-  - `flush_frequency`: How much data to write before flushing to disk,
-    in pages, where a page is a filesystem page. default 65534. This
-    is the maximum amount of data you will probably lose in a power
-    outage, system crash, or program crash. The recorder uses two
-    phase commits to the archive file to ensure that partially written
-    data does not corrupt the file.
-  - `flush_interval`: How long in seconds to wait before flushing data
-    to disk even if `flush_frequency` pages was not yet written. 0 to
-    disable, default if omitted 30 seconds.
-  - `rotate_interval`: How long in seconds to wait before rotating the
-    current archive file. Default if omitted, never rotate.
-- `publish`: Section of the config file to enable publishing
-  - `base`: The base path to publish at
-  - `bind`: The bind config to use. Omit to use the default.
-  - `max_sessions`: The maximum total number of replay sessions
-    concurrently in progress.
-  - `max_sessions_per_client`: The maximum number of replay sessions
-    in progress for any single client.
-  - `shards`: The number of recorder shards to expect. If you want to
-    record/playback a huge namespace, or one that updates a lot, it
-    may not be possible to use just one computer. The recorder
-    supports sharding across an arbitrary number of processes for both
-    recording and playback. n is the number of shards that are
-    expected in a given cluster. playback will not be avaliable until
-    all the shards have appeared and synced with each other, however
-    recording will begin immediatly. default if omitted 0 (meaning
-    just one recorder).
+### Top-level
+
+- `archive_directory` — directory containing archive files. The file
+  currently being written is `current`; rotated files are named with
+  the rfc3339 timestamp at which they ended.
+- `archive_cmds` — shell hooks invoked at archive lifecycle events
+  (optional; omit to disable). The value of each hook is a pair
+  `[command, args]`. The literal string `{shard}` in any arg is
+  substituted with the shard name at invocation time.
+  - `list` — list available historical files. Output is unioned with
+    the local files in `archive_directory` to form the set the
+    replay engine can serve.
+  - `get` — fetch a named historical file into `archive_directory`
+    before access (e.g. pull from cold storage).
+  - `put` — invoked after the current file has rotated; typically
+    used to ship it to long-term storage.
+- `netidx_config` — optional path to a non-default netidx
+  `client.json`.
+- `desired_auth` — optional auth mechanism override.
+- `record` — recording config (omit to run a playback-only
+  recorder).
+- `publish` — playback config (omit to run a record-only recorder).
+
+### `record`
+
+- `poll_interval` — how often to poll the resolver for changes to
+  the glob set. Default 5 s. Set to `null` to disable polling.
+- `image_frequency` — every N bytes of data, write a full image of
+  every current value (even unchanged ones). Larger archive but
+  faster seek. Default 64 MiB. `null` disables images — seeks then
+  have to read everything before the target point.
+- `flush_frequency` — flush after this many filesystem pages.
+  Default 65534. Bounds your worst-case data loss on a crash; the
+  recorder uses two-phase commits so a partial flush won't corrupt
+  the file.
+- `flush_interval` — additionally flush every N seconds even if the
+  page threshold isn't reached. Default 30 s.
+- `rotate_interval` — when to roll the `current` file into a
+  timestamped one. Tagged enum:
+  - `{"Interval": {"secs": 86400, "nanos": 0}}` — rotate every N
+    seconds (the example: daily).
+  - `{"Size": N}` — rotate once `current` reaches N bytes.
+  - `"Never"` — never rotate. Default if omitted: `Interval(1 day)`.
+- `shards` — map from shard name to per-shard config. The keys are
+  free-form strings used in the `{shard}` substitution above and in
+  the cluster protocol. The value is a `RecordShardConfig`:
+  - `spec` — the globs this shard records. **MUST** be disjoint from
+    other shards' specs. An empty spec means "the shard exists but
+    its recorder task is dormant" (you can still log to it
+    programmatically via the `ArchiveCollectionWriter`).
+  - Any of the global `poll_interval` / `image_frequency` /
+    `flush_frequency` / `flush_interval` / `rotate_interval` keys
+    may be repeated here to override the top-level defaults for
+    this shard only.
+  - `slack` — how many batches of channel slack between the
+    subscriber and the recorder task. Higher uses more memory but
+    smooths over slow-disk pushback. Default 100.
+
+### `publish`
+
+- `base` — base path under which the playback API publishes.
+- `bind` — `BindCfg` for the recorder's publisher; omit to use the
+  client config default.
+- `max_sessions`, `max_sessions_per_client` — caps on concurrent
+  replay sessions. Defaults 512 / 64.
+- `oneshot_data_limit` — maximum bytes a `oneshot` RPC may return
+  in one call. Default 100 MiB.
+- `cluster_shards` — number of shards expected in this cluster
+  (0 for a single-process recorder). Playback is blocked until all
+  shards have joined.
+- `cluster` — netidx subpath of `<base>` under which shards
+  rendezvous. Default `cluster`. Override when running multiple
+  recorder clusters under the same `base`.
 
 ## Using Playback Sessions
 
-When initially started for playback or mixed operation the recorder
-publishes only some cluster information, and a netidx rpc called
-`session` under the `publish-base`. Calling the session rpc will
-create a new session, and return the session id. Then it will publish
-the actual playback session under `publish-base/session-id`. A
-playback session consists of two sub directories, `control` contains
-readable/writable values that control the session, and `data` contains
-the actual data.
+When the recorder is running with `publish` configured, it
+publishes some cluster information plus a handful of control RPCs
+under `publish.base`:
 
-### Creating a New Session
+- `<base>/session` — create a new replay session (described below).
+- `<base>/oneshot` — bounded historical pull, returns inline data.
+- `<base>/reindex` — rebuild indexes for the archive files.
+- `<base>/remap-rescan` — re-evaluate the recording globs against
+  the resolver (used to pick up newly published paths).
+- `<base>/reopen` — close and re-open the underlying archive files
+  (useful after an external `archive_cmds.get` populated a file).
 
-It's simple to call a netidx rpc with command line tools, the browser,
-or programatically. To create a new playback session with default
-values just write `null` to `publish-base/session`. e.g.
+The `record-client` subcommands (described below) drive most of
+these in one step; you can also call them directly via
+`netidx subscriber CALL|…` or any RPC-aware client.
+
+### Creating a Session
+
+Writing `null` to `<base>/session` creates a new session with
+defaults and returns its id:
 
 ```
-netidx subscriber <<EOF
+$ netidx subscriber <<EOF
 WRITE|/solar/archive/session|string|null
 EOF
 /solar/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```
 
-We just created a new playback session called
-ef93a9dce21f40c49f5888e64964f93f, we can see that the recorder
-published some new things there,
+The new session shows up at `<base>/<session-id>/` with two
+subdirectories — `control` (writable knobs) and `data` (the
+replayed values).
 
 ```
 $ netidx resolver list /solar/archive/ef93a9dce21f40c49f5888e64964f93f/*
@@ -168,68 +185,81 @@ $ netidx resolver list /solar/archive/ef93a9dce21f40c49f5888e64964f93f/*
 /solar/archive/ef93a9dce21f40c49f5888e64964f93f/control
 ```
 
-If we want to pass some arguments to the rpc so our session will be
-setup how we like by default we can do that as well, e.g.
+Pass arguments to `session` to set knobs at creation time:
 
 ```
-netidx subscriber <<EOF
+$ netidx subscriber <<EOF
 CALL|/solar/archive/session|start="-3d",speed=2
 EOF
-CALLED|/archive/session|"ef93a9dce21f40c49f5888e64964f93f"
+CALLED|/solar/archive/session|"ef93a9dce21f40c49f5888e64964f93f"
 ```
 
-Now our new session would be setup to start 3 days ago, and playback
-at 2x speed.
+`netidx record-client session --base /solar/archive [--pos <ts>]`
+is a convenience wrapper that does the same thing.
 
 ### Playback Controls
 
-Once we've created a new session the recorder publishes some controls
-under the control directory. The five controls both tell you the state
-of the playback session, and allow you to control it. They are,
+Each session publishes five controls under `control/`:
 
-- `start`: The timestamp you want playback to start at, or Unbounded
-  for the beginning of the archive. This will always display
-  Unbounded, or a timestamp, but it in addition to those two values it
-  accepts writes in the form of offsets from the current time,
-  e.g. -3d would set the start to 3 days ago. It accepts offsets
-  [+-]N[yMdhms] where N is a number. y - years, M - months, d - days,
-  h - hours, m - minutes, s - seconds.
-- `end`: Just like start except that Unbounded, or a time in the
-  future means that when playback reaches the end of the archive it
-  will switch mode to tail. In tail mode it will just repeat data as
-  it comes in. In the case that end is in the future, but not
-  unbounded, it will stop when the future time is reached.
-- `pos`: The current position, always displayed as a timestamp unless
-  there is no data in the archive. Pos accepts writes in the form of
-  timestamps, offsets from the current time (like start and end), and
-  [+-]1-128 batches. e.g. -10 would seek back exactly 10 update
-  batches, +100 would seek forward exactly 100 update batches.
-- `speed`: The playback speed as a fraction of real time, or
-  Unlimited. In the case of Unlimited the archive is played as fast as
-  it can be read, encoded, and sent. Otherwise the recorder tries to
-  play back the archive at aproximately the specified fraction of real
-  time. This will not be perfect, because timing things on computers
-  is hard, but it tries to come close.
-- `state`: this is either play, pause or tail, and it accepts writes
-  of any state and will change to the requested state if possible.
+- `start` — when playback begins. A timestamp, `Unbounded` (use the
+  archive's first record), or a relative offset like `-3d`. The
+  offset format is `[+-]N[yMdhms]`.
+- `end` — when playback stops. Same format as `start`. An
+  `Unbounded` or future `end` means "switch to tail mode when you
+  catch up": new updates replay as they arrive.
+- `pos` — current playback position. Reads back as a timestamp;
+  writes accept a timestamp, a relative offset, or `[+-]1..128`
+  (number of batches forward or back).
+- `speed` — playback rate, as a fraction of real time, or
+  `Unlimited`. Approximate; timing on computers is hard.
+- `state` — `play`, `pause`, or `tail`. Writes drive transitions.
 
-Since the controls also include a small amount of documentation meant
-to render as a table, the actual value that you read from/write to is
-`publish-base/session-id/control/name-of-control/current`.
+Each control is itself a small published tree with documentation
+fields; the actual readable/writable value is at
+`<base>/<session-id>/control/<control>/current`.
 
 ### Data
 
-Once the session is set up the data, whatever it may be, appears under
-`publish-base/data`. Every path that ever appears in the archive is
-published from the beginning, however, if at the current `pos` that
-path didn't have a value, then it will be set to `null`. This is a
-slightly unfortunate compromise, as it's not possible to tell the
-difference between a path that wasn't available, and one that was
-intentionally set to null. When you start the playback values will be
-updated as they were recorded, including replicating the observed
-batching.
+Once a session is set up, replayed values appear under
+`<base>/<session-id>/data/`. Every path that ever existed in the
+archive is published from the start. Paths that didn't have a value
+at the current `pos` are published as `null` — there's no way to
+distinguish "not yet recorded" from a value that was intentionally
+`null`. When playback runs, the recorder reproduces the recorded
+update timing and batch boundaries.
 
-### Deleting a Playback Session
+### Deleting a Session
 
-Simply stop subscribing to any value or control in the session and the
-recorder will garbage collect it.
+Stop subscribing to anything in the session and the recorder will
+garbage-collect it.
+
+## `record-client`
+
+`netidx record-client` is a separate subcommand for working with
+archive files and driving a running recorder.
+
+- `record-client compress <file>...` — produce a zstd-compressed
+  archive. `--window <n>` controls how many batches compress in
+  parallel (default 2); `--keep` retains the input file.
+- `record-client compressed <file>` — exit 0 if the file is already
+  compressed, 1 otherwise. Useful in shell pipelines.
+- `record-client dump <file>` — print the archive's contents to
+  stdout. `--metadata-only` skips the data records;
+  `--check-index` validates the index against the data.
+- `record-client index <file>` — (re)build the index for an
+  uncompressed archive. `--keep` retains the original alongside
+  the indexed copy.
+- `record-client verify <file>` — confirm the archive can be read
+  end-to-end without errors. Useful before shipping a file to
+  long-term storage.
+- `record-client oneshot --base <publish-base> [--start ts]
+  [--end ts] [-f glob]...` — bounded historical pull, capped by
+  `publish.oneshot_data_limit`. Returns all values in the time
+  range matching the filter, then exits.
+- `record-client session --base <publish-base> [--pos ts]` —
+  create and drive a playback session interactively. Equivalent
+  to writing `null` to `<base>/session` and then attaching to the
+  resulting subtree.
+
+Both `oneshot` and `session` take the usual client flags
+(`-c`, `-a`, `--spn`, `--upn`, `--identity`).

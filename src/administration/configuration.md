@@ -5,6 +5,15 @@ time each member server is told it's zero based index in the list of
 member servers. Since the default is 0 the argument can be omitted if
 there is only one server in the cluster.
 
+> For most installs you should not hand-write this file —
+> `netidx conf install <role>` generates a self-consistent one, and
+> `netidx conf resolver edit` (and the field-specific editors under
+> `netidx conf perms`, `netidx conf activation`, …) maintain it
+> against the live schema. The section below documents the schema for
+> the cases where you do need to look at the raw JSON: debugging a
+> hand-rolled config, integrating with deployment tooling, or
+> understanding what the installer produced.
+
 Here is an example config file for a resolver cluster that lives in
 the middle of a three level hierarchy. Above it is the root server, it
 is responsible for the /app subtree, and it delegates /app/huge0 and
@@ -53,7 +62,7 @@ is responsible for the /app subtree, and it delegates /app/huge0 and
   "member_servers": [
     {
       "pid_file": "/var/run/netidx",
-      "addr": "192.168.0.4:4564",
+      "addr": "192.168.0.4:4654",
       "max_connections": 768,
       "hello_timeout": 10,
       "reader_ttl": 60,
@@ -109,29 +118,54 @@ path will be referred to the child.
 This section is a list of all the servers in this cluster. The fields
 on each server are,
 
-- id_map_command: Optional. The path to the command the server should run
-  in order to map a user name to a user and a set of groups that user is
-  a member of. Default is `/usr/bin/id`. If a custom command is specified
-  then it's output MUST be in the same format as the `/usr/bin/id` command.
-  This command will be passed the name of the user as a single argument.
-  Depending on the auth mechanism this "name" could be e.g. `eric@RYU-OH.ORG` for
-  kerberos, just `eric` for local auth, or `eric.users.architect.com` for
-  tls auth (it will pass the common name of the users' certificate)
+- id_map_type / id_map_command / id_map_timeout: how the resolver
+  translates a netidx principal name to a unix-style (uid, primary
+  gid, supplementary groups) tuple for the permission lookup.
+  
+  `id_map_type` is one of:
+  
+  - `Command` (default): exec a `/bin/id`-compatible program and
+    parse its output. `id_map_command` is the path to the program
+    (default: the platform `/bin/id`). The program is invoked with
+    the principal name as a single argument — e.g.
+    `eric@RYU-OH.ORG` for Kerberos, `eric` for local auth, or the
+    DNS SAN for TLS. The output format must match `/bin/id`'s
+    (`uid=N(name) gid=M(primary) groups=...`).
+  - `Socket`: connect to a unix-socket daemon at `id_map_command`
+    and run the same `/bin/id`-style query over the socket. This is
+    the recommended path for TLS deployments — see the
+    [id-map daemon](./id_map.md) chapter, which the installer wires
+    up automatically.
+  - `DoNotMap`: skip lookup entirely. Every caller is treated as
+    the bare name with no groups. Useful when permissions are
+    indexed only by exact principal name.
+  
+  `id_map_timeout` (default 3600 s) is how long the resolver caches
+  a successful lookup per caller before re-querying.
 
-- pid_file: the path to the pid file you want the server to write. The
-  server id folowed by .pid will be appended to whatever is in this
-  field. So server 0 in the above example will write it's pid to
-  /var/run/netidx0.pid
+- pid_file: path of the pid file written when the resolver
+  daemonises (i.e. when started without `-f`). The member-server
+  index is set as the file extension, so a `pid_file` of
+  `/var/run/netidx` becomes `/var/run/netidx.0` for server 0,
+  `/var/run/netidx.1` for server 1, etc. Default is empty —
+  daemonisation without an explicit pid file is rare in practice
+  because the activation supervisor runs the resolver in the
+  foreground.
 
 - addr: The socket address and port that this member server will report
   to clients. This should be it's public ip, the ip clients use to connect
-  to it from the outside.
+  to it from the outside. Must be a concrete address — using `0.0.0.0`
+  here is rejected at config-load time because that's an instruction
+  to *bind*, not an advertisable address.
 
 - bind_addr: The socket address that the server will actually bind to on
-  the local machine. This defaults to 0.0.0.0. In the case where you are
-  behind a NAT, or some other contraption, you should set this to the private
-  ip address corresponding to the interface you actually want to receive
-  traffic on.
+  the local machine. Defaults to the IP from `addr`. Set this when the
+  server is behind a NAT or has multiple interfaces and you want it to
+  bind to a specific private address while advertising the public one.
+  `0.0.0.0` is permitted *here* (it means listen on every interface).
+
+  For `Local` auth, both `addr` and `bind_addr` must be loopback —
+  mixing loopback with non-loopback addresses is rejected.
 
 - max_connections: The maximum number of simultaneous client
   connections that this server will allow. Client connections in
@@ -157,11 +191,11 @@ on each server are,
 - auth: The authentication mechanism used by this server. One of
   Anonymous, Local, Krb5, or Tls. Local must include the path to the local
   auth socket file that will be used to verify the identity of
-  clients. Krb5 must include the server's spn. Tls must include the 
-  domain name of the server, the path to the trusted certificates, 
-  the server's certificate (it's CN must match the domain name), 
-  and the path to the server's private key. For example,
-  
+  clients. Krb5 must include the server's spn. Tls must include the
+  server's expected name, the path to the trusted-CA bundle, the
+  server's leaf certificate, and the path to the server's private
+  key. For example,
+
   ``` json
   "Tls": {
       "name": "resolver.architect.com",
@@ -170,15 +204,23 @@ on each server are,
       "private_key": "private.key"
   }
   ```
-  
-  The certificate `CN` must be `resolver.architect.com`. The
-  may not be encrypted.
 
-### perms
+  The certificate's *subjectAltName* (not the CN) must include
+  `resolver.architect.com`. Keys may be encrypted — at startup
+  netidx asks once via askpass (typically `ssh-askpass`) and then
+  stashes the password in the system keychain for subsequent runs.
 
-The server perissions map. This will be covered in detail in the
-authorization chapter. If a member server's auth mechanism is
-anonymous, then this is ignored.
+### perms / include_permissions
+
+The server permissions map. Covered in detail in the [Authorization]
+(./authorization.md) chapter. If a member server's auth mechanism is
+Anonymous, this map is ignored.
+
+For installs where perms live in their own file (the default that
+`netidx conf install` lays down, for example), the resolver config
+references it via `include_permissions: "<path>"`. The referenced
+file is merged in at load time and re-loaded on `SIGHUP`, so perms
+can be reshuffled without restarting the resolver.
 
 ## Client Configuration
 
@@ -193,7 +235,7 @@ configuration files from the following places in order.
 - global_dir
   - on Linux: /etc/netidx/client.json
   - on Windows: C:\netidx\client.json
-  - on MacOS: /etc/netix/client.json
+  - on MacOS: /etc/netidx/client.json
 
 Since the dirs crate is used to discover these paths, they are locally
 configurable by OS specific means.
@@ -218,14 +260,19 @@ socket file. Krb5 should include the server's spn.
 
 #### base
 
-The base path of this server cluster in the tree. This should
-correspond to the server cluster's parent, or "/" if it's parent is
-null.
+The base path *this* cluster attaches at in the tree. For a root
+resolver this is `/`; for a non-root cluster it's the path under
+which this cluster's namespace lives (e.g. `/local` for the
+workstation template). Defaults to `/`.
 
 #### default_auth
 
-Optional. Specify the default authentication mechanism. May be one of
-`Anonymous`, `Local`, `Krb5`, or `Tls`
+Optional. The authentication mechanism used when a CLI tool doesn't
+specify `-a` / `--auth`. One of `Anonymous`, `Local`, `Krb5`, or
+`Tls`. Defaults to `Krb5`. `netidx conf install` writes a value
+that matches the resolver's chosen auth (e.g. `Local` for the
+workstation template, `Tls` for a TLS install) so the user rarely
+has to pass `-a` by hand.
 
 #### tls
 
@@ -247,6 +294,7 @@ specified to the publisher.
 ``` json
 "tls": {
     "default_identity": "footraders.com",
+    "askpass": "/usr/bin/ssh-askpass",
     "identities": {
         "footraders.com": {
             "trusted": "/home/joe/.config/netidx/footradersca.pem",
@@ -266,3 +314,12 @@ specified to the publisher.
     }
 }
 ```
+
+`default_identity` is optional when exactly one identity is
+configured — netidx auto-derives it. `askpass` is the command
+netidx invokes when one of the configured private keys is
+encrypted; the installer auto-discovers `ssh-askpass` and sets
+this for you when you opt into a password during the initial
+prompt. After the first successful unlock the password is stashed
+in the system keychain, keyed by the on-disk key path, so
+subsequent runs don't prompt.

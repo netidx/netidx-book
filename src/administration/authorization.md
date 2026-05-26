@@ -103,6 +103,92 @@ Each server cluster is completely independent for permissions. If for
 example this cluster had a child cluster, the administrators of that
 cluster would be responsible for deciding it's permissions map.
 
+### Dynamic Entries (`$[user]` and `$[group]`)
+
+The normal entries above are *static* — entity names and paths are
+fixed. Two template patterns let an entry match a *family* of
+identities or paths at evaluation time.
+
+**`$[user]`** is a per-user subtree pattern. The path ends in
+`$[user]` and the entity inside the entry is literally `$[user]`. At
+lookup time the resolver substitutes the connecting principal's name
+for `$[user]` and grants the listed bits to the matching child:
+
+``` json
+"/users/$[user]": {
+    "$[user]": "swlpd"
+}
+```
+
+means "the direct child of `/users` whose name matches the
+connecting user's principal gets `swlpd`". So `alice@RYU-OH.ORG`
+gets full rights under `/users/alice@RYU-OH.ORG/**`, while
+`bob@RYU-OH.ORG` gets full rights under `/users/bob@RYU-OH.ORG/**`,
+and neither can touch the other's subtree.
+
+Two constraints to be aware of. First, a `$[user]` path may not
+appear directly under root — the PMap loader rejects it because the
+dirname of `/$[user]` is empty. Anchor the entry under a real
+directory (the conventional one being `users`, so `/users/$[user]`
+or `<base>/users/$[user]`). Second, the entity inside a `$[user]`
+entry can only be the literal `$[user]` — there's no mixing it with
+named entities in the same entry.
+
+**`$[group]`** is the analogous pattern for groups, with one
+extra degree of freedom: the entity may *contain* `$[group]` as a
+substring, letting you encode a prefix or suffix. The basename of
+the path must contain `$[group]`. At lookup the resolver takes the
+basename being accessed, substitutes it into the entity's
+`$[group]` template, and checks whether the user is a member of
+the resulting group. For example:
+
+``` json
+"/team/$[group]": {
+    "RYU-OH\\$[group]": "swl"
+}
+```
+
+means "to access `/team/operations`, the user must be a member of
+`RYU-OH\operations`; to access `/team/finance`, the user must be a
+member of `RYU-OH\finance`". The prefix lets one entry cover a
+whole organisational-unit naming convention without listing each
+group by hand.
+
+### The Default Seeded `perms.json`
+
+`netidx conf install workstation` and `netidx conf install resolver`
+auto-seed a starter `perms.json` (unless you pass `--no-perms` or
+`--perms-seed`). Its shape is:
+
+``` json
+{
+    "<base>": {
+        "users": "swl"
+    },
+    "<base>/users/$[user]": {
+        "$[user]": "swlpd"
+    }
+}
+```
+
+where `<base>` is the resolver's base path (`/local` for the
+workstation template, `/` for the standalone resolver).
+
+The first entry grants every member of the `users` group the right
+to subscribe (`s`), write (`w`), and list (`l`) anywhere under the
+resolver's base — read-and-write of existing paths, but *not*
+publish (so a user can't drop new top-level paths into other
+people's subtrees). The second entry — the `$[user]` dynamic — gives
+each authenticated user full rights (`swlpd`) under their *own*
+subtree `<base>/users/<their-name>/**`.
+
+This produces a shared read-write tree at the resolver's base, plus
+a per-user playground under `<base>/users` — a sensible default for
+a workstation. The `users`-group entry assumes group resolution
+returns `users` for human accounts; for TLS deployments wire
+`netidx conf install ... --auth tls` to the [id-map
+daemon](./id_map.md) and add identities there.
+
 ### Anonymous
 
 It's possible to give anonymous users permissions even on a Kerberos
