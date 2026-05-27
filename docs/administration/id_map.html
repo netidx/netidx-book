@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Scale - Introduction to Netidx</title>
+        <title>Id-Map Daemon - Introduction to Netidx</title>
 
 
         <!-- Custom HTML head -->
@@ -174,60 +174,143 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="scale"><a class="header" href="#scale">Scale</a></h1>
-<p><img src="./widget-scale.png" alt="Scale"></p>
-<p>Scale visualizes a floating point number between a minimum and maximum
-value, and allows the user to drag the slider to change the value. It
-has several properties,</p>
-<h2 id="direction"><a class="header" href="#direction">Direction</a></h2>
-<p>This static property indicates whether the slider is horizontal or
-vertical.</p>
-<h2 id="draw-value"><a class="header" href="#draw-value">Draw Value</a></h2>
-<p>if <code>true</code> then the actual value is drawn, if <code>false</code> it is not.</p>
-<h2 id="marks"><a class="header" href="#marks">Marks</a></h2>
-<p>Allows displaying marks along the scale’s axis. When dragging the
-slider the browser will snap to the nearest mark, making these values
-easy to hit exactly.</p>
-<pre><code>[mark, ...]
-
-mark: [&lt;pos&gt;, position-spec, (null | &lt;text&gt;)]
-
-position-spec: ("left" | "right" | "top" | "bottom")
+                        <h1 id="the-id-map-daemon"><a class="header" href="#the-id-map-daemon">The Id-Map Daemon</a></h1>
+<p>When the resolver authorises an operation it looks up the caller’s
+<em>unix-style</em> identity — a uid, a primary gid, and a list of
+supplementary group names — and matches that against the entries in
+<code>perms.json</code>. For Kerberos and local-auth deployments the lookup
+follows the kernel’s own user database via <code>/bin/id</code>, which is what
+the resolver runs by default (<code>id_map_type: Command</code>,
+<code>id_map_command: /bin/id</code>). For TLS, the principal is a certificate
+SAN — a DNS name like <code>alice.example.com</code> or <code>mazikeen.local</code> — and
+<code>/bin/id</code> has nothing useful to say about it.</p>
+<p>The id-map daemon (<code>netidx id-map serve</code>) is the answer. It reads a
+small JSON file mapping netidx names to uids, primary groups, and
+supplementary group memberships, and answers the resolver’s lookup
+queries over a unix socket using the same <code>/bin/id</code>-style line format
+the resolver already understands.</p>
+<h2 id="wiring-it-into-the-resolver"><a class="header" href="#wiring-it-into-the-resolver">Wiring it into the resolver</a></h2>
+<p>Two fields in the resolver-server config:</p>
+<pre><code class="language-json">{
+  "id_map_type": "Socket",
+  "id_map_command": "/var/run/netidx/id-map.sock"
+}
 </code></pre>
-<p>Example</p>
-<pre><code>[
-  [0.25, "bottom", "0.25"], 
-  [0.5, "bottom", "0.5"], 
-  [0.75, "bottom", "0.75"]
-]
+<p><code>id_map_type</code> chooses between <code>Command</code> (default — exec <code>/bin/id</code>
+or whatever path you give), <code>Socket</code> (connect to the daemon at the
+given path), and <code>DoNotMap</code> (skip lookup entirely; every caller is
+treated as the bare SAN with no groups). <code>id_map_timeout</code> (default
+3600 s) controls how long the resolver caches successful lookups
+per caller.</p>
+<p><code>netidx conf install resolver --auth tls</code> writes this section for you
+and drops a matching <code>id-map.unit</code> so the daemon comes up alongside
+the resolver under the activation supervisor. Pass <code>--no-id-map</code> to
+skip that and fall back to the platform <code>/bin/id</code>.</p>
+<h2 id="the-json-schema"><a class="header" href="#the-json-schema">The JSON schema</a></h2>
+<p>The on-disk file is a single <code>IdMap</code> object with four keys:</p>
+<pre><code class="language-json">{
+  "$default_uid": 65534,
+  "$default_gid": 65534,
+  "groups": {
+    "users":   { "gid": 100 },
+    "wheel":   { "gid": 10 }
+  },
+  "identities": {
+    "alice.example.com": {
+      "uid": 1000,
+      "primary_group": "users",
+      "groups": ["wheel"]
+    }
+  }
+}
 </code></pre>
-<p>Will draw marks at 1/4, 1/2, and 3/4 along the axis on the bottom
-side.</p>
-<h2 id="has-origin"><a class="header" href="#has-origin">Has Origin</a></h2>
-<p>If this propery is <code>true</code> then the left or top of the scale is
-considered the origin, and the part from there to the handle will be
-filled in.</p>
-<h2 id="value"><a class="header" href="#value">Value</a></h2>
-<p>This defines the position of the handle. It must be between the
-minimum and maximum values.</p>
-<h2 id="min"><a class="header" href="#min">Min</a></h2>
-<p>The minimum value, this defines the origin if Has Origin is true.</p>
-<h2 id="max"><a class="header" href="#max">Max</a></h2>
-<p>The maximum value.</p>
-<h2 id="on-change"><a class="header" href="#on-change">On Change</a></h2>
-<p><code>event()</code> in this expression will yield the value of the slider
-whenever the user changes it.</p>
-<p><img src="./editor-scale.png" alt="Editor"></p>
+<ul>
+<li><code>$default_uid</code> / <code>$default_gid</code> are returned for queries that don’t
+match any identity. They’re the equivalent of the <code>nobody</code> /
+<code>nogroup</code> fallback that <code>/bin/id</code> would emit for an unknown user.
+If <code>$default_gid</code> matches a registered group, the daemon reports
+that group’s name in the fallback line; otherwise it emits the
+literal <code>nogroup</code> token. Most perms files have no entries for
+<code>nogroup</code>, which makes the fallback effectively “no permissions” —
+the safe default.</li>
+<li><code>groups</code> maps a group name (as it appears in <code>perms.json</code>) to a
+numeric gid. The number is decorative for TLS deployments (the
+resolver reads only the group name), but it has to be present and
+unique so the daemon can produce well-formed responses.</li>
+<li><code>identities</code> maps a netidx name to a <code>{uid, primary_group, groups}</code>
+record. The uid is similarly decorative for TLS; only the
+local-auth peer-credentials path ever reverses uid → name.</li>
+</ul>
+<p>Validation runs at save time and again whenever the daemon reloads
+the file. The interesting invariants:</p>
+<ol>
+<li>Every group named by an identity (primary or secondary) must exist
+in the <code>groups</code> table.</li>
+<li>Names may not contain <code>(</code>, <code>)</code>, <code>,</code>, <code>=</code>, or whitespace — the
+resolver parses responses by scanning parenthesised tokens, and a
+group named e.g. <code>wheel) gid=0(root</code> could inject extra group
+memberships into the reply.</li>
+<li>No identity name may parse as a <code>u32</code>; the wire protocol
+distinguishes uid queries from name queries by integer-parsing the
+query string, so an identity literally named <code>"1000"</code> would be
+unreachable by name.</li>
+<li>No two identities may share a uid (reverse lookups would otherwise
+be order-dependent).</li>
+</ol>
+<h2 id="editing-the-file"><a class="header" href="#editing-the-file">Editing the file</a></h2>
+<p><code>netidx conf id-map</code> is the supported way to edit the JSON:</p>
+<ul>
+<li><code>netidx conf id-map init</code> — create an empty file at the canonical
+user path.</li>
+<li><code>netidx conf id-map list</code> — print identities and groups in a table.</li>
+<li><code>netidx conf id-map show</code> — pretty-print the underlying JSON.</li>
+<li><code>netidx conf id-map edit</code> — open in <code>$VISUAL</code> / <code>$EDITOR</code>, validate
+on save.</li>
+<li><code>netidx conf id-map add-group &lt;name&gt; [--gid N]</code> — add or update a
+group. <code>--gid</code> is auto-allocated when omitted.</li>
+<li><code>netidx conf id-map add-user &lt;name&gt; [--uid N] [primary-group] [-g secondary]...</code> — add or update an identity. The uid is
+auto-allocated, the primary group lists available groups and
+defaults to <code>users</code> if present.</li>
+<li><code>netidx conf id-map add-member &lt;user&gt; &lt;group&gt;</code> /
+<code>remove-member &lt;user&gt; &lt;group&gt;</code> — manipulate secondary group
+membership.</li>
+<li><code>netidx conf id-map remove-user &lt;name&gt;</code> /
+<code>remove-group &lt;name&gt;</code> — delete entries (groups can’t be removed
+while in use).</li>
+</ul>
+<p><code>add-user</code> and <code>add-group</code> keep their numeric ids when applied to
+an existing entry, so re-running them to tweak group membership
+won’t renumber the identity.</p>
+<h2 id="running-the-daemon-by-hand"><a class="header" href="#running-the-daemon-by-hand">Running the daemon by hand</a></h2>
+<p>Most installs let the activation supervisor manage the daemon. If
+you’re debugging or running outside of the standard layout:</p>
+<pre><code class="language-shell">$ netidx id-map serve \
+    --foreground \
+    --config /etc/netidx/id-map.json \
+    --socket /var/run/netidx/id-map.sock \
+    --socket-mode 0o660
+</code></pre>
+<p>The daemon watches the config file and reloads when it changes — a
+<code>netidx conf id-map edit</code> (which writes atomically) is enough to push
+new entries live without a restart. <code>SIGHUP</code> forces a re-read for
+environments where the filesystem watch is unreliable (some network
+mounts, some container setups). Parse errors keep the previous
+good map in place rather than locking out every TLS identity.</p>
+<p>Use <code>--socket-mode 0o660</code> and <code>chgrp</code> the socket to a shared service
+account when the resolver runs under a different uid than the
+id-mapper. The default <code>0o600</code> keeps the socket per-user, which is
+the right choice when both processes run as the same user (the
+common case for the workstation template).</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../browser/search_entry.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../administration/tls.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../browser/progress_bar.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../administration/authorization.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -237,11 +320,11 @@ whenever the user changes it.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../browser/search_entry.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../administration/tls.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../browser/progress_bar.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../administration/authorization.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

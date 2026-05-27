@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Scale - Introduction to Netidx</title>
+        <title>Configuration Tooling - Introduction to Netidx</title>
 
 
         <!-- Custom HTML head -->
@@ -174,60 +174,156 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="scale"><a class="header" href="#scale">Scale</a></h1>
-<p><img src="./widget-scale.png" alt="Scale"></p>
-<p>Scale visualizes a floating point number between a minimum and maximum
-value, and allows the user to drag the slider to change the value. It
-has several properties,</p>
-<h2 id="direction"><a class="header" href="#direction">Direction</a></h2>
-<p>This static property indicates whether the slider is horizontal or
-vertical.</p>
-<h2 id="draw-value"><a class="header" href="#draw-value">Draw Value</a></h2>
-<p>if <code>true</code> then the actual value is drawn, if <code>false</code> it is not.</p>
-<h2 id="marks"><a class="header" href="#marks">Marks</a></h2>
-<p>Allows displaying marks along the scale’s axis. When dragging the
-slider the browser will snap to the nearest mark, making these values
-easy to hit exactly.</p>
-<pre><code>[mark, ...]
-
-mark: [&lt;pos&gt;, position-spec, (null | &lt;text&gt;)]
-
-position-spec: ("left" | "right" | "top" | "bottom")
+                        <h1 id="configuration-tooling-netidx-conf"><a class="header" href="#configuration-tooling-netidx-conf">Configuration Tooling (<code>netidx conf</code>)</a></h1>
+<p>Every netidx install is shaped by a small handful of JSON files — the
+client config, the resolver-server config, a permissions file, and
+(for TLS deployments) some keys and certificates. You can write all of
+this by hand, and earlier chapters do show you the schema, but in
+practice the supported way to set up netidx is the <code>netidx conf</code>
+subcommand suite. It groups three things in one place:</p>
+<ul>
+<li><strong>templated installs</strong> that lay down a self-consistent set of files
+for a known role (workstation, network resolver, publisher host),</li>
+<li><strong>editors</strong> that load, validate, and atomically rewrite the
+individual config files, and</li>
+<li><strong>OS-service integration</strong> that registers the activation supervisor
+with systemd or launchd so the cluster comes up on boot.</li>
+</ul>
+<p>This chapter is a tour. Every subcommand has its own <code>--help</code> with
+exhaustive flags; here we focus on the shape and the common workflows.</p>
+<h2 id="templated-installs"><a class="header" href="#templated-installs">Templated Installs</a></h2>
+<p>The fast path is <code>netidx conf install &lt;role&gt;</code>. Three roles ship today:</p>
+<pre><code>netidx conf install workstation   # local resolver + matching client
+netidx conf install resolver      # network-facing resolver, optional client
+netidx conf install publisher     # publisher-host config + units
 </code></pre>
-<p>Example</p>
-<pre><code>[
-  [0.25, "bottom", "0.25"], 
-  [0.5, "bottom", "0.5"], 
-  [0.75, "bottom", "0.75"]
-]
+<h3 id="workstation"><a class="header" href="#workstation">Workstation</a></h3>
+<p>This is the right pick for a single developer machine. Run</p>
+<pre><code class="language-shell">$ netidx conf install workstation
 </code></pre>
-<p>Will draw marks at 1/4, 1/2, and 3/4 along the axis on the bottom
-side.</p>
-<h2 id="has-origin"><a class="header" href="#has-origin">Has Origin</a></h2>
-<p>If this propery is <code>true</code> then the left or top of the scale is
-considered the origin, and the part from there to the handle will be
-filled in.</p>
-<h2 id="value"><a class="header" href="#value">Value</a></h2>
-<p>This defines the position of the handle. It must be between the
-minimum and maximum values.</p>
-<h2 id="min"><a class="header" href="#min">Min</a></h2>
-<p>The minimum value, this defines the origin if Has Origin is true.</p>
-<h2 id="max"><a class="header" href="#max">Max</a></h2>
-<p>The maximum value.</p>
-<h2 id="on-change"><a class="header" href="#on-change">On Change</a></h2>
-<p><code>event()</code> in this expression will yield the value of the slider
-whenever the user changes it.</p>
-<p><img src="./editor-scale.png" alt="Editor"></p>
+<p>with no flags and the installer drops a local-auth resolver listening
+on <code>127.0.0.1:4654</code>, a matching <code>client.json</code>, a <code>perms.json</code> granting
+your current Unix user full rights under <code>/local</code>, an activation unit
+for the resolver, and (by default) one for the netidx container too.
+On a TTY it asks if you also want to register netidx as an OS service;
+say yes and you’re done.</p>
+<p>Useful flags:</p>
+<ul>
+<li><code>--dry-run</code> — print the plan, write nothing.</li>
+<li><code>--force</code> — overwrite an existing install.</li>
+<li><code>--base /alt</code> — change the local namespace root from <code>/local</code> to
+something else.</li>
+<li><code>--owner alice</code> — grant full rights to <code>alice</code> instead of the
+current user (useful when installing as root on someone’s behalf).</li>
+<li><code>--no-perms</code>, <code>--no-container</code>, <code>--no-service</code>, <code>--no-units</code> — opt
+out of pieces of the default bundle.</li>
+<li><code>--parent-addr</code>, <code>--parent-auth</code>, <code>--parent-path</code>, <code>--parent-ttl</code>
+(+ auth-specific <code>--parent-spn</code> / <code>--parent-tls-name</code> /
+<code>--parent-socket</code>) — attach this resolver to a parent cluster so
+the workstation participates in a federated namespace.</li>
+</ul>
+<h3 id="network-resolver"><a class="header" href="#network-resolver">Network resolver</a></h3>
+<p><code>netidx conf install resolver</code> is the standalone-resolver template.
+It prompts (or takes flags) for the listen address, auth scheme,
+and where to source TLS material. The most useful pieces:</p>
+<ul>
+<li><code>--auth {anonymous,local,krb5,tls}</code> — chooses the authentication
+scheme the resolver exposes. Prompted when omitted.</li>
+<li><code>--listen &lt;addr&gt;</code> — the address subscribers and publishers will
+use to find this resolver. Must be concrete (not <code>0.0.0.0</code>); use
+<code>--bind</code> separately if the socket itself should bind a different
+address.</li>
+<li><code>--tls-cert generate</code> — when using <code>--auth tls</code>, the literal token
+<code>generate</code> issues a fresh resolver cert from the local CA, creating
+the CA first if none exists. This is the painless path for the
+common “resolver host is also the CA host” case.</li>
+<li><code>--no-id-map</code> — skip auto-installing the id-mapper daemon. By
+default a TLS resolver gets one (cert SANs have no meaningful
+<code>/bin/id</code> translation path); see the <a href="./id_map.html">id-map chapter</a>
+for what it does and when you want it.</li>
+<li><code>--no-client</code> — skip dropping a matching <code>client.json</code> on the
+resolver host. Default is to drop one so <code>netidx resolver list</code>
+works locally without further setup.</li>
+<li><code>--perms-seed &lt;path&gt;</code> — load a starter <code>perms.json</code> from a file
+instead of the built-in <code>/users/$[user]</code> template.</li>
+</ul>
+<h3 id="publisher-host"><a class="header" href="#publisher-host">Publisher host</a></h3>
+<p><code>netidx conf install publisher</code> writes the client-side config a
+dedicated publisher machine needs to find a remote cluster and offer
+itself for inbound subscriber connections. It takes one or more
+cluster addresses (<code>--addr</code>, repeatable), an auth scheme, and
+optionally a <code>default_bind_config</code> so the publisher knows which local
+interface to advertise.</p>
+<h2 id="local-ca"><a class="header" href="#local-ca">Local CA</a></h2>
+<p><code>netidx conf ca</code> manages a local certificate authority that lives at
+<code>${basedir}/ca/</code>. One CA per netidx install.</p>
+<ul>
+<li><code>netidx conf ca init</code> — create the CA. Prompts for CN and other
+X.509 fields; <code>--no-password</code> writes an unencrypted private key
+(otherwise the key is encrypted and the password is stashed in the
+system keychain).</li>
+<li><code>netidx conf ca issue</code> — issue a leaf certificate directly from
+the local CA. Used by <code>netidx conf install ... --tls-cert generate</code>
+under the hood, and stands on its own for issuing additional
+identities later.</li>
+<li><code>netidx conf ca request</code> — generate a key + CSR locally, to be
+signed by a CA on another machine.</li>
+<li><code>netidx conf ca sign</code> — sign an externally-supplied CSR with the
+local CA. Use <code>--san</code> to set the SubjectAltName authoritatively
+(the CA never silently inherits the CSR’s claimed SAN; pass
+<code>--accept-csr-san</code> if you really do want that).</li>
+<li><code>netidx conf ca list</code> — list known CAs.</li>
+</ul>
+<h2 id="configuration-editors"><a class="header" href="#configuration-editors">Configuration Editors</a></h2>
+<p>For each JSON file netidx maintains there’s a matching pair under
+<code>netidx conf &lt;file&gt;</code>. The editors load the file, drop it in
+<code>$VISUAL</code> / <code>$EDITOR</code>, run the same validation netidx runs at
+startup, and only on success atomically replace the on-disk copy.
+A botched edit leaves the original untouched and offers a re-edit
+prompt.</p>
+<ul>
+<li><code>netidx conf client {show,edit}</code> — the client config.</li>
+<li><code>netidx conf resolver {show,edit}</code> — the resolver-server config.</li>
+<li><code>netidx conf perms {list,set,remove}</code> — permission entries. <code>set</code>
+takes an entity, a path, and a bit string like <code>swlpd</code> (see the
+<a href="./authorization.html">Authorization</a> chapter for the bits).</li>
+<li><code>netidx conf activation {list,add,remove}</code> — activation units
+used by the supervisor.</li>
+<li><code>netidx conf id-map ...</code> — the id-map JSON used by the
+id-mapper daemon. Has its own <a href="./id_map.html">chapter</a>.</li>
+</ul>
+<h2 id="os-service-integration"><a class="header" href="#os-service-integration">OS Service Integration</a></h2>
+<p><code>netidx conf service</code> registers (or unregisters) netidx as an OS
+service, so the activation supervisor starts on boot.</p>
+<ul>
+<li><code>netidx conf service install</code> — install. Defaults to user scope
+(no privileges needed); pass <code>--scope system</code> to install
+system-wide (this re-execs under sudo).</li>
+<li><code>netidx conf service uninstall</code> — remove the service.</li>
+<li><code>netidx conf service status</code> — report whether the service is
+running.</li>
+</ul>
+<p><code>netidx conf install &lt;role&gt;</code> already prompts to do this for you on a
+TTY; the standalone <code>service</code> subcommand is for cases where you
+declined that prompt or want to flip between user and system scope
+later.</p>
+<h2 id="teardown"><a class="header" href="#teardown">Teardown</a></h2>
+<p><code>netidx conf uninstall</code> reverses an install: removes the config
+directory and the OS service registration. <code>--dry-run</code> previews the
+plan. <code>--with-ca</code> additionally deletes the local CA’s private key
+and issued certificates — only do this when you are sure: anything
+signed by the CA cannot be re-issued without bootstrapping a new
+chain of trust.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../browser/search_entry.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../administration/overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../browser/progress_bar.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../administration/configuration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -237,11 +333,11 @@ whenever the user changes it.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../browser/search_entry.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../administration/overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../browser/progress_bar.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../administration/configuration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
