@@ -156,7 +156,7 @@ group by hand.
 
 ### The Default Seeded `perms.json`
 
-`netidx conf install workstation` and `netidx conf install resolver`
+`netidx admin workstation install` and `netidx admin resolver install`
 auto-seed a starter `perms.json` (unless you pass `--no-perms` or
 `--perms-seed`). Its shape is:
 
@@ -186,7 +186,7 @@ This produces a shared read-write tree at the resolver's base, plus
 a per-user playground under `<base>/users` — a sensible default for
 a workstation. The `users`-group entry assumes group resolution
 returns `users` for human accounts; for TLS deployments wire
-`netidx conf install ... --auth tls` to the [id-map
+`netidx admin resolver install --auth tls` to the [id-map
 daemon](./id_map.md) and add identities there.
 
 ### Anonymous

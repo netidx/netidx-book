@@ -4,7 +4,9 @@
 - [Overview](./overview.md)
 - [Example Publishing vmstat](./examples/vmstat.md)
 - [Administration](./administration/overview.md)
-  - [Configuration Tooling](./administration/conf.md)
+  - [The netidx admin Tool](./administration/admin.md)
+  - [Admin-Plane Security](./administration/security.md)
+  - [Controller Backup and Recovery](./administration/backup_recovery.md)
   - [Configuration](./administration/configuration.md)
   - [Managing TLS](./administration/tls.md)
   - [Id-Map Daemon](./administration/id_map.md)
@@ -105,4 +107,3 @@
     - [trim](bscript/stdfn/trim.md)
     - [trim_start](bscript/stdfn/trim_start.md)
     - [uniq](bscript/stdfn/uniq.md)
-

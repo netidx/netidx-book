@@ -22,15 +22,16 @@ Core data-plane tools:
   channel_publisher / channel_subscriber).
 
 Configuration management (covered in
-[Configuration Tooling](../administration/conf.md)):
+[netidx admin](../administration/admin.md)):
 
-- `netidx conf install <role>` — templated installs (workstation,
+- `netidx admin <role> install` — templated installs (workstation,
   resolver, publisher).
-- `netidx conf uninstall` — tear down an install.
-- `netidx conf ca` — local certificate authority management.
-- `netidx conf service` — register netidx as an OS service.
-- `netidx conf {client,resolver,perms,activation,id-map}` —
-  per-config editors.
+- `netidx admin uninstall` — tear down an install.
+- `netidx admin ca` — certificate authority + enrollment management.
+- `netidx admin perms` / `netidx admin component service` — remote
+  permission editing and OS-service registration.
+- `netidx admin component {client,resolver,perms,activation,id-map}`
+  — per-config editors.
 
 Other:
 

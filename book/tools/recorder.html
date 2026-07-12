@@ -1,0 +1,480 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>recorder - Introduction to Netidx</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-0392ca55.css">
+        <link rel="stylesheet" href="../css/chrome-fc474251.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-f0033bd4.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-102419d9.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Introduction to Netidx</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="recorder"><a class="header" href="#recorder">Recorder</a></h1>
+<p>The recorder subscribes to a set of paths defined by globs and
+writes their values to a compact binary archive on disk. The same
+process can serve replay sessions over netidx — multiple
+simultaneous clients, each at their own start time, playback speed,
+and position. A single recorder may record only, replay only, or do
+both at once; recording and playback are decoupled so they don’t
+interfere except through the underlying disk and CPU.</p>
+<p>For very high-volume namespaces the recorder shards across multiple
+processes. Each shard is responsible for a disjoint slice of the
+globbed path set. Shards coordinate via the netidx cluster protocol;
+playback waits until every shard has joined before serving sessions
+(recording itself starts immediately).</p>
+<h2 id="args"><a class="header" href="#args">Args</a></h2>
+<ul>
+<li><code>-c, --config &lt;path&gt;</code> — path to the recorder config file.</li>
+<li><code>-e, --example</code> — print an example config and exit. The example
+is the canonical reference for the schema — <code>netidx record -e</code>
+always reflects the version of netidx you have installed.</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The config is a single JSON object. A current example
+(<code>netidx record -e</code>):</p>
+<pre><code>{
+  "archive_directory": "/foo/bar",
+  "archive_cmds": {
+    "list": [
+      "cmd_to_list_dates_in_archive",
+      ["-s", "{shard}"]
+    ],
+    "get": [
+      "cmd_to_fetch_file_from_archive",
+      ["-s", "{shard}"]
+    ],
+    "put": [
+      "cmd_to_put_file_into_archive",
+      ["-s", "{shard}"]
+    ]
+  },
+  "netidx_config": null,
+  "desired_auth": null,
+  "record": {
+    "poll_interval": { "secs": 5, "nanos": 0 },
+    "image_frequency": 67108864,
+    "flush_frequency": 65534,
+    "flush_interval": { "secs": 30, "nanos": 0 },
+    "rotate_interval": { "Interval": { "secs": 86400, "nanos": 0 } },
+    "shards": {
+      "0": {
+        "spec": ["/tmp/**"],
+        "slack": 100
+      }
+    }
+  },
+  "publish": {
+    "base": "/archive",
+    "bind": null,
+    "max_sessions": 512,
+    "max_sessions_per_client": 64,
+    "oneshot_data_limit": 104857600,
+    "cluster_shards": 0,
+    "cluster": "cluster"
+  }
+}
+</code></pre>
+<h3 id="top-level"><a class="header" href="#top-level">Top-level</a></h3>
+<ul>
+<li><code>archive_directory</code> — directory containing archive files. The file
+currently being written is <code>current</code>; rotated files are named with
+the rfc3339 timestamp at which they ended.</li>
+<li><code>archive_cmds</code> — shell hooks invoked at archive lifecycle events
+(optional; omit to disable). The value of each hook is a pair
+<code>[command, args]</code>. The literal string <code>{shard}</code> in any arg is
+substituted with the shard name at invocation time.
+<ul>
+<li><code>list</code> — list available historical files. Output is unioned with
+the local files in <code>archive_directory</code> to form the set the
+replay engine can serve.</li>
+<li><code>get</code> — fetch a named historical file into <code>archive_directory</code>
+before access (e.g. pull from cold storage).</li>
+<li><code>put</code> — invoked after the current file has rotated; typically
+used to ship it to long-term storage.</li>
+</ul>
+</li>
+<li><code>netidx_config</code> — optional path to a non-default netidx
+<code>client.json</code>.</li>
+<li><code>desired_auth</code> — optional auth mechanism override.</li>
+<li><code>record</code> — recording config (omit to run a playback-only
+recorder).</li>
+<li><code>publish</code> — playback config (omit to run a record-only recorder).</li>
+</ul>
+<h3 id="record"><a class="header" href="#record"><code>record</code></a></h3>
+<ul>
+<li><code>poll_interval</code> — how often to poll the resolver for changes to
+the glob set. Default 5 s. Set to <code>null</code> to disable polling.</li>
+<li><code>image_frequency</code> — every N bytes of data, write a full image of
+every current value (even unchanged ones). Larger archive but
+faster seek. Default 64 MiB. <code>null</code> disables images — seeks then
+have to read everything before the target point.</li>
+<li><code>flush_frequency</code> — flush after this many filesystem pages.
+Default 65534. Bounds your worst-case data loss on a crash; the
+recorder uses two-phase commits so a partial flush won’t corrupt
+the file.</li>
+<li><code>flush_interval</code> — additionally flush every N seconds even if the
+page threshold isn’t reached. Default 30 s.</li>
+<li><code>rotate_interval</code> — when to roll the <code>current</code> file into a
+timestamped one. Tagged enum:
+<ul>
+<li><code>{"Interval": {"secs": 86400, "nanos": 0}}</code> — rotate every N
+seconds (the example: daily).</li>
+<li><code>{"Size": N}</code> — rotate once <code>current</code> reaches N bytes.</li>
+<li><code>"Never"</code> — never rotate. Default if omitted: <code>Interval(1 day)</code>.</li>
+</ul>
+</li>
+<li><code>shards</code> — map from shard name to per-shard config. The keys are
+free-form strings used in the <code>{shard}</code> substitution above and in
+the cluster protocol. The value is a <code>RecordShardConfig</code>:
+<ul>
+<li><code>spec</code> — the globs this shard records. <strong>MUST</strong> be disjoint from
+other shards’ specs. An empty spec means “the shard exists but
+its recorder task is dormant” (you can still log to it
+programmatically via the <code>ArchiveCollectionWriter</code>).</li>
+<li>Any of the global <code>poll_interval</code> / <code>image_frequency</code> /
+<code>flush_frequency</code> / <code>flush_interval</code> / <code>rotate_interval</code> keys
+may be repeated here to override the top-level defaults for
+this shard only.</li>
+<li><code>slack</code> — how many batches of channel slack between the
+subscriber and the recorder task. Higher uses more memory but
+smooths over slow-disk pushback. Default 100.</li>
+</ul>
+</li>
+</ul>
+<h3 id="publish"><a class="header" href="#publish"><code>publish</code></a></h3>
+<ul>
+<li><code>base</code> — base path under which the playback API publishes.</li>
+<li><code>bind</code> — <code>BindCfg</code> for the recorder’s publisher; omit to use the
+client config default.</li>
+<li><code>max_sessions</code>, <code>max_sessions_per_client</code> — caps on concurrent
+replay sessions. Defaults 512 / 64.</li>
+<li><code>oneshot_data_limit</code> — maximum bytes a <code>oneshot</code> RPC may return
+in one call. Default 100 MiB.</li>
+<li><code>cluster_shards</code> — number of shards expected in this cluster
+(0 for a single-process recorder). Playback is blocked until all
+shards have joined.</li>
+<li><code>cluster</code> — netidx subpath of <code>&lt;base&gt;</code> under which shards
+rendezvous. Default <code>cluster</code>. Override when running multiple
+recorder clusters under the same <code>base</code>.</li>
+</ul>
+<h2 id="using-playback-sessions"><a class="header" href="#using-playback-sessions">Using Playback Sessions</a></h2>
+<p>When the recorder is running with <code>publish</code> configured, it
+publishes some cluster information plus a handful of control RPCs
+under <code>publish.base</code>:</p>
+<ul>
+<li><code>&lt;base&gt;/session</code> — create a new replay session (described below).</li>
+<li><code>&lt;base&gt;/oneshot</code> — bounded historical pull, returns inline data.</li>
+<li><code>&lt;base&gt;/reindex</code> — rebuild indexes for the archive files.</li>
+<li><code>&lt;base&gt;/remap-rescan</code> — re-evaluate the recording globs against
+the resolver (used to pick up newly published paths).</li>
+<li><code>&lt;base&gt;/reopen</code> — close and re-open the underlying archive files
+(useful after an external <code>archive_cmds.get</code> populated a file).</li>
+</ul>
+<p>The <code>record-client</code> subcommands (described below) drive most of
+these in one step; you can also call them directly via
+<code>netidx subscriber CALL|…</code> or any RPC-aware client.</p>
+<h3 id="creating-a-session"><a class="header" href="#creating-a-session">Creating a Session</a></h3>
+<p>Writing <code>null</code> to <code>&lt;base&gt;/session</code> creates a new session with
+defaults and returns its id:</p>
+<pre><code>$ netidx subscriber &lt;&lt;EOF
+WRITE|/solar/archive/session|string|null
+EOF
+/solar/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
+</code></pre>
+<p>The new session shows up at <code>&lt;base&gt;/&lt;session-id&gt;/</code> with two
+subdirectories — <code>control</code> (writable knobs) and <code>data</code> (the
+replayed values).</p>
+<pre><code>$ netidx resolver list /solar/archive/ef93a9dce21f40c49f5888e64964f93f/*
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/data
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/cluster
+/solar/archive/ef93a9dce21f40c49f5888e64964f93f/control
+</code></pre>
+<p>Pass arguments to <code>session</code> to set knobs at creation time:</p>
+<pre><code>$ netidx subscriber &lt;&lt;EOF
+CALL|/solar/archive/session|start="-3d",speed=2
+EOF
+CALLED|/solar/archive/session|"ef93a9dce21f40c49f5888e64964f93f"
+</code></pre>
+<p><code>netidx record-client session --base /solar/archive [--pos &lt;ts&gt;]</code>
+is a convenience wrapper that does the same thing.</p>
+<h3 id="playback-controls"><a class="header" href="#playback-controls">Playback Controls</a></h3>
+<p>Each session publishes five controls under <code>control/</code>:</p>
+<ul>
+<li><code>start</code> — when playback begins. A timestamp, <code>Unbounded</code> (use the
+archive’s first record), or a relative offset like <code>-3d</code>. The
+offset format is <code>[+-]N[yMdhms]</code>.</li>
+<li><code>end</code> — when playback stops. Same format as <code>start</code>. An
+<code>Unbounded</code> or future <code>end</code> means “switch to tail mode when you
+catch up”: new updates replay as they arrive.</li>
+<li><code>pos</code> — current playback position. Reads back as a timestamp;
+writes accept a timestamp, a relative offset, or <code>[+-]1..128</code>
+(number of batches forward or back).</li>
+<li><code>speed</code> — playback rate, as a fraction of real time, or
+<code>Unlimited</code>. Approximate; timing on computers is hard.</li>
+<li><code>state</code> — <code>play</code>, <code>pause</code>, or <code>tail</code>. Writes drive transitions.</li>
+</ul>
+<p>Each control is itself a small published tree with documentation
+fields; the actual readable/writable value is at
+<code>&lt;base&gt;/&lt;session-id&gt;/control/&lt;control&gt;/current</code>.</p>
+<h3 id="data"><a class="header" href="#data">Data</a></h3>
+<p>Once a session is set up, replayed values appear under
+<code>&lt;base&gt;/&lt;session-id&gt;/data/</code>. Every path that ever existed in the
+archive is published from the start. Paths that didn’t have a value
+at the current <code>pos</code> are published as <code>null</code> — there’s no way to
+distinguish “not yet recorded” from a value that was intentionally
+<code>null</code>. When playback runs, the recorder reproduces the recorded
+update timing and batch boundaries.</p>
+<h3 id="deleting-a-session"><a class="header" href="#deleting-a-session">Deleting a Session</a></h3>
+<p>Stop subscribing to anything in the session and the recorder will
+garbage-collect it.</p>
+<h2 id="record-client"><a class="header" href="#record-client"><code>record-client</code></a></h2>
+<p><code>netidx record-client</code> is a separate subcommand for working with
+archive files and driving a running recorder.</p>
+<ul>
+<li><code>record-client compress &lt;file&gt;...</code> — produce a zstd-compressed
+archive. <code>--window &lt;n&gt;</code> controls how many batches compress in
+parallel (default 2); <code>--keep</code> retains the input file.</li>
+<li><code>record-client compressed &lt;file&gt;</code> — exit 0 if the file is already
+compressed, 1 otherwise. Useful in shell pipelines.</li>
+<li><code>record-client dump &lt;file&gt;</code> — print the archive’s contents to
+stdout. <code>--metadata-only</code> skips the data records;
+<code>--check-index</code> validates the index against the data.</li>
+<li><code>record-client index &lt;file&gt;</code> — (re)build the index for an
+uncompressed archive. <code>--keep</code> retains the original alongside
+the indexed copy.</li>
+<li><code>record-client verify &lt;file&gt;</code> — confirm the archive can be read
+end-to-end without errors. Useful before shipping a file to
+long-term storage.</li>
+<li><code>record-client oneshot --base &lt;publish-base&gt; [--start ts] [--end ts] [-f glob]...</code> — bounded historical pull, capped by
+<code>publish.oneshot_data_limit</code>. Returns all values in the time
+range matching the filter, then exits.</li>
+<li><code>record-client session --base &lt;publish-base&gt; [--pos ts]</code> —
+create and drive a playback session interactively. Equivalent
+to writing <code>null</code> to <code>&lt;base&gt;/session</code> and then attaching to the
+resulting subtree.</li>
+</ul>
+<p>Both <code>oneshot</code> and <code>session</code> take the usual client flags
+(<code>-c</code>, <code>-a</code>, <code>--spn</code>, <code>--upn</code>, <code>--identity</code>).</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../tools/resolver.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../tools/container.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../tools/resolver.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../tools/container.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-c22b7243.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

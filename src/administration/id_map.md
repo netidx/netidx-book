@@ -34,7 +34,7 @@ treated as the bare SAN with no groups). `id_map_timeout` (default
 3600 s) controls how long the resolver caches successful lookups
 per caller.
 
-`netidx conf install resolver --auth tls` writes this section for you
+`netidx admin resolver install --auth tls` writes this section for you
 and drops a matching `id-map.unit` so the daemon comes up alongside
 the resolver under the activation supervisor. Pass `--no-id-map` to
 skip that and fall back to the platform `/bin/id`.
@@ -95,24 +95,24 @@ the file. The interesting invariants:
 
 ## Editing the file
 
-`netidx conf id-map` is the supported way to edit the JSON:
+`netidx admin component id-map` is the supported way to edit the JSON:
 
-- `netidx conf id-map init` — create an empty file at the canonical
+- `netidx admin component id-map init` — create an empty file at the canonical
   user path.
-- `netidx conf id-map list` — print identities and groups in a table.
-- `netidx conf id-map show` — pretty-print the underlying JSON.
-- `netidx conf id-map edit` — open in `$VISUAL` / `$EDITOR`, validate
+- `netidx admin component id-map list` — print identities and groups in a table.
+- `netidx admin component id-map show` — pretty-print the underlying JSON.
+- `netidx admin component id-map edit` — open in `$VISUAL` / `$EDITOR`, validate
   on save.
-- `netidx conf id-map add-group <name> [--gid N]` — add or update a
+- `netidx admin component id-map add-group <name> [--gid N]` — add or update a
   group. `--gid` is auto-allocated when omitted.
-- `netidx conf id-map add-user <name> [--uid N] [primary-group]
+- `netidx admin component id-map add-user <name> [--uid N] [primary-group]
   [-g secondary]...` — add or update an identity. The uid is
   auto-allocated, the primary group lists available groups and
   defaults to `users` if present.
-- `netidx conf id-map add-member <user> <group>` /
+- `netidx admin component id-map add-member <user> <group>` /
   `remove-member <user> <group>` — manipulate secondary group
   membership.
-- `netidx conf id-map remove-user <name>` /
+- `netidx admin component id-map remove-user <name>` /
   `remove-group <name>` — delete entries (groups can't be removed
   while in use).
 
@@ -134,7 +134,7 @@ $ netidx id-map serve \
 ```
 
 The daemon watches the config file and reloads when it changes — a
-`netidx conf id-map edit` (which writes atomically) is enough to push
+`netidx admin component id-map edit` (which writes atomically) is enough to push
 new entries live without a restart. `SIGHUP` forces a re-read for
 environments where the filesystem watch is unreliable (some network
 mounts, some container setups). Parse errors keep the previous

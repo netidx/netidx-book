@@ -13,7 +13,7 @@ you haven't already, then
 `cargo install netidx-tools`
 
 This builds the `netidx` binary with every built-in subcommand: the
-resolver server, the publisher and subscriber CLIs, the conf tooling,
+resolver server, the publisher and subscriber CLIs, the admin tooling,
 the id-map daemon, the activation supervisor, and the rest.
 
 On Linux you'll also need these build dependencies:
@@ -24,27 +24,26 @@ On Linux you'll also need these build dependencies:
 ## One-Shot Install
 
 ```
-netidx conf install workstation
+netidx admin workstation install --with-service
 ```
 
 This drops a local-auth resolver listening on `127.0.0.1:4654`, a
 matching `client.json`, a `perms.json` granting your current Unix
 user full rights under `/local`, and activation units for the
-resolver and the netidx container. On a TTY it prompts to register
-netidx as an OS service; say yes and the install is complete — the
-resolver is already running and will start on boot. If you said no,
-you can register the service later with `netidx conf service install`
-(user scope) or `netidx conf service install --scope system`
-(system-wide).
+resolver and the netidx container, then registers the OS service. For an
+interactive install, run bare `netidx admin`, choose Workstation, and answer
+the service question in the TUI. If you initially skip it, register later with
+`netidx admin component service install` (see its `--help` for user/system
+scope).
 
 If port 4654 is busy use `--listen-port <n>` to pick a different one.
 `--dry-run` prints the plan and writes nothing. The full surface
 including the network-resolver and publisher-host templates is in
-the [Configuration Tooling](./administration/conf.md) chapter.
+the [netidx admin](./administration/admin.md) chapter.
 
 > **Note**: local-auth uses a Unix-socket peer-credentials handshake
 > and isn't supported on Windows. For Windows workstations use
-> `netidx conf install resolver --auth tls` (or `--auth krb5`) instead.
+> join a TLS or Kerberos network through the `netidx admin` TUI instead.
 
 ## Smoke Test
 
@@ -81,7 +80,7 @@ default.
 
 ### MacOS and Windows config paths
 
-`netidx conf install workstation` writes to the platform-default
+`netidx admin workstation install` writes to the platform-default
 config directory. The paths above use the Linux convention
 (`~/.config/netidx/…`); the equivalents on other platforms are:
 

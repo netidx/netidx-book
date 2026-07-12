@@ -1,14 +1,17 @@
 ## Resolver Server Configuration
 
-Each resolver server cluster shares a configuration file. At startup
-time each member server is told it's zero based index in the list of
-member servers. Since the default is 0 the argument can be omitted if
-there is only one server in the cluster.
+Each resolver member reads a configuration describing the hierarchy and the
+addresses it advertises to clients. The file may list several cluster members,
+in which case startup selects this process's zero-based index; the default is
+0. Listing every member is a client-configuration convenience, not a resolver
+protocol requirement. Resolver members do not talk to or replicate to one
+another, and a valid member-local file may list only that member.
 
 > For most installs you should not hand-write this file —
-> `netidx conf install <role>` generates a self-consistent one, and
-> `netidx conf resolver edit` (and the field-specific editors under
-> `netidx conf perms`, `netidx conf activation`, …) maintain it
+> `netidx admin <role> install` generates a self-consistent one, and
+> `netidx admin component resolver edit` (and the field-specific editors under
+> `netidx admin component perms`, `netidx admin component activation`, …)
+> maintain it
 > against the live schema. The section below documents the schema for
 > the cases where you do need to look at the raw JSON: debugging a
 > hand-rolled config, integrating with deployment tooling, or
@@ -217,7 +220,7 @@ The server permissions map. Covered in detail in the [Authorization]
 Anonymous, this map is ignored.
 
 For installs where perms live in their own file (the default that
-`netidx conf install` lays down, for example), the resolver config
+`netidx admin resolver install` lays down, for example), the resolver config
 references it via `include_permissions: "<path>"`. The referenced
 file is merged in at load time and re-loaded on `SIGHUP`, so perms
 can be reshuffled without restarting the resolver.
@@ -269,7 +272,7 @@ workstation template). Defaults to `/`.
 
 Optional. The authentication mechanism used when a CLI tool doesn't
 specify `-a` / `--auth`. One of `Anonymous`, `Local`, `Krb5`, or
-`Tls`. Defaults to `Krb5`. `netidx conf install` writes a value
+`Tls`. Defaults to `Krb5`. `netidx admin <role> install` writes a value
 that matches the resolver's chosen auth (e.g. `Local` for the
 workstation template, `Tls` for a TLS install) so the user rarely
 has to pass `-a` by hand.
