@@ -135,7 +135,13 @@ def main():
     src, dst = Path(sys.argv[1]), Path(sys.argv[2])
     text = src.read_text(errors="replace").rstrip("\n")
     rows = parse(text)
+    # tmux strips trailing whitespace, so a frame whose widest line falls short
+    # of the pane renders narrower than its siblings -- ragged in a walkthrough
+    # where every frame came from the same terminal. Pass the capture width to
+    # pin them all to it.
     cols = max((sum(len(s) for _, s in runs) for runs, _ in rows), default=80)
+    if len(sys.argv) > 3:
+        cols = max(cols, int(sys.argv[3]))
     page = to_html(rows, cols)
     tmp = dst.with_suffix(".html").resolve()
     tmp.write_text(page)
