@@ -1,0 +1,30 @@
+[38;2;0;0;0m[48;2;199;199;199m┌[1m netidx.test — root [0m[38;2;0;0;0m[48;2;199;199;199m────────────────────────────────────┐┌[1m Description [0m[38;2;0;0;0m[48;2;199;199;199m───────────────────────────┐
+│[1m[38;2;255;255;255m[48;2;170;0;0m▸ Enrollment Queue                                      [0m[38;2;0;0;0m[48;2;199;199;199m││Review and approve                      │
+│  Delegation Requests                                   ││certificate-enrollment requests from    │
+│  Admin Roster                                          ││nodes joining the admin domain.         │
+│  Admin Servers                                         ││                                        │
+│  Issued Certificates                                   ││                                        │
+│  Permissions                                           ││                                        │
+│  Services                                              ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+│                                                        ││                                        │
+└────────────────────────────────────────────────────────┘└────────────────────────────────────────┘
+[38;2;205;212;228m[48;2;0;40;120m ↑/↓ · Enter open · L logout · Esc disconnect
