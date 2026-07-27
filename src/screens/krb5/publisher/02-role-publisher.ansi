@@ -1,0 +1,30 @@
+[38;2;0;0;0m[48;2;199;199;199m┌[1m Set Up This Machine [0m[38;2;0;0;0m[48;2;199;199;199m─┐┌[1m Publisher [0m[38;2;0;0;0m[48;2;199;199;199m───────────────────────────────────────────────────────────────┐
+│  CA                  ││A client configuration for a host that publishes data: point it at an     │
+│  Workstation         ││admin domain's resolvers with the right auth. Installs a                  │
+│  Resolver            ││certificate-renewal service when the admin domain uses TLS.               │
+│[1m[38;2;255;255;255m[48;2;170;0;0m▸ Publisher           [0m[38;2;0;0;0m[48;2;199;199;199m││                                                                          │
+│  Restore from Backup ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+└[38;2;88;88;88m Enter · p preview [38;2;0;0;0m───┘└──────────────────────────────────────────────────────────────────────────┘
+[1m[38;2;205;212;228m[48;2;0;40;120m ↑/↓[0m[38;2;205;212;228m[48;2;0;40;120m navigate  [1mq[0m[38;2;205;212;228m[48;2;0;40;120m quit

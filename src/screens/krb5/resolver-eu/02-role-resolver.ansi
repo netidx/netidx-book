@@ -1,0 +1,30 @@
+[38;2;0;0;0m[48;2;199;199;199m┌[1m Set Up This Machine [0m[38;2;0;0;0m[48;2;199;199;199m─┐┌[1m Resolver [0m[38;2;0;0;0m[48;2;199;199;199m────────────────────────────────────────────────────────────────┐
+│  CA                  ││A network-facing resolver server — the directory that maps paths to       │
+│  Workstation         ││publishers for a whole admin domain or a delegated subtree. Can mint a new│
+│[1m[38;2;255;255;255m[48;2;170;0;0m▸ Resolver            [0m[38;2;0;0;0m[48;2;199;199;199m││admin domain's certificate authority and admin server, or enroll under an │
+│  Publisher           ││existing one.                                                             │
+│  Restore from Backup ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+└[38;2;88;88;88m Enter · p preview [38;2;0;0;0m───┘└──────────────────────────────────────────────────────────────────────────┘
+[1m[38;2;205;212;228m[48;2;0;40;120m ↑/↓[0m[38;2;205;212;228m[48;2;0;40;120m navigate  [1mq[0m[38;2;205;212;228m[48;2;0;40;120m quit
