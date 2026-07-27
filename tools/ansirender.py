@@ -17,7 +17,7 @@ DEFAULT_BG = "#002878"
 DEFAULT_FG = "#cdd4e4"
 
 FONT_PX = 15
-LINE_H = 1.25
+LINE_H = 1.0  # box-drawing glyphs only tile at 1.0; extra leading dashes borders
 LINE_PX = round(FONT_PX * LINE_H)
 PAD = 22
 RADIUS = 8
