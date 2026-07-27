@@ -62,6 +62,9 @@ step 21-resolver-port        "resolver port"                    -- Enter
 step 22-register-service     "register OS service"              -- y
 step 23-installed            "Configuration written"            -- Enter
 step 24-local-status         "Admin Domain"                     -- Enter
+# The CA-credential line is filled in by a background probe; the screen is
+# stable before it lands, so wait for the real value rather than a placeholder.
+"$T" waitfor "Recovery slot"
 step 25-status-detail        "Admin domain sync"                --
 
 "$T" stop

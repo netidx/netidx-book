@@ -9,7 +9,8 @@
 #   tuicap.sh start <cols> <rows> <cmd...>   launch the TUI in a tmux session
 #   tuicap.sh key   <tmux send-keys args>    send input
 #   tuicap.sh shot  <out.ansi>               settle, then capture
-#   tuicap.sh expect <substring>             assert screen contains it (wording audit)
+#   tuicap.sh expect  <substring>            assert screen contains it (wording audit)
+#   tuicap.sh waitfor <substring>            poll until it appears (async fills)
 #   tuicap.sh text                           dump current screen, no escapes
 #   tuicap.sh stop
 #
@@ -38,6 +39,25 @@ key)
     # record every keystroke so an exploratory run can be replayed later
     [ -n "${TUICAP_KEYLOG:-}" ] && printf 'key %s\n' "$*" >>"$TUICAP_KEYLOG"
     tmux send-keys -t "$S" "$@"
+    ;;
+waitfor)
+    # Poll until a substring appears. Needed where a panel is filled in by a
+    # background probe: the screen can be stable -- and so "settled" -- while
+    # still showing a placeholder or a transient lock error, because the real
+    # answer has not arrived yet. Settle detection cannot see that; only
+    # knowing what you are waiting for can.
+    shift
+    want=$*
+    for _ in $(seq 1 "$MAXPOLL"); do
+        if tmux capture-pane -t "$S" -p | grep -qF -- "$want"; then
+            printf '  ok  (waited) %s\n' "$want"
+            exit 0
+        fi
+        sleep "$IVL"
+    done
+    printf 'WAITFOR TIMED OUT: %s\n--- screen ---\n' "$want" >&2
+    tmux capture-pane -t "$S" -p >&2
+    exit 1
     ;;
 expect)
     # assert the settled screen contains a substring -- the wording audit and
