@@ -9,6 +9,7 @@
 #   tuicap.sh start <cols> <rows> <cmd...>   launch the TUI in a tmux session
 #   tuicap.sh key   <tmux send-keys args>    send input
 #   tuicap.sh shot  <out.ansi>               settle, then capture
+#   tuicap.sh expect <substring>             assert screen contains it (wording audit)
 #   tuicap.sh text                           dump current screen, no escapes
 #   tuicap.sh stop
 #
@@ -16,9 +17,12 @@
 #   tuicap.sh start 100 30 "ssh resolver-hq 'TERM=xterm-256color netidx admin'"
 set -u
 S=${TUICAP_SESSION:-tuicap}
-# poll interval and how many identical polls mean "settled"
-IVL=${TUICAP_INTERVAL:-0.15}
-STABLE=${TUICAP_STABLE:-2}
+# Poll interval and how many identical polls mean "settled". A screen in
+# transition can be briefly blank *and* stable, so settle needs to be slower
+# than a redraw: TUICAP_SETTLE_MIN is a floor before polling even starts.
+IVL=${TUICAP_INTERVAL:-0.25}
+STABLE=${TUICAP_STABLE:-3}
+SETTLE_MIN=${TUICAP_SETTLE_MIN:-0.5}
 MAXPOLL=${TUICAP_MAXPOLL:-80}
 
 case "${1:-}" in
@@ -31,10 +35,26 @@ start)
     ;;
 key)
     shift
+    # record every keystroke so an exploratory run can be replayed later
+    [ -n "${TUICAP_KEYLOG:-}" ] && printf 'key %s\n' "$*" >>"$TUICAP_KEYLOG"
     tmux send-keys -t "$S" "$@"
+    ;;
+expect)
+    # assert the settled screen contains a substring -- the wording audit and
+    # the screenshot run are the same pass
+    shift
+    want=$*
+    if tmux capture-pane -t "$S" -p | grep -qF -- "$want"; then
+        printf '  ok  %s\n' "$want"
+    else
+        printf 'EXPECT FAILED: %s\n--- screen ---\n' "$want" >&2
+        tmux capture-pane -t "$S" -p >&2
+        exit 1
+    fi
     ;;
 shot)
     out=$2
+    sleep "$SETTLE_MIN"
     prev="" same=0 i=0
     while [ $i -lt "$MAXPOLL" ]; do
         cur=$(tmux capture-pane -t "$S" -p -e)
