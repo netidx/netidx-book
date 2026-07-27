@@ -36,13 +36,13 @@ image-spec: [
 ]
 ```
 
-- <icon-name>: A string naming the stock icon from the current theme
+- `<icon-name>`: A string naming the stock icon from the current theme
   that should be displayed. The default size is "small-toolbar".
-- icon-spec: A pair specifying the icon name and the icon size.
-- icon-size: The size of the icon
+- `icon-spec`: A pair specifying the icon name and the icon size.
+- `icon-size`: The size of the icon
 - `<image-bytes>`: A bytes value containing the image in any format
   supported by gdk_pixbuf.
-- image-spec: an alist containing the image bytes in any format
+- `image-spec`: an alist containing the image bytes in any format
   supported by gdk_pixbuf and some metadata.
 
 Examples,

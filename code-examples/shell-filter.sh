@@ -15,8 +15,8 @@ netidx resolver list -w '/hw/*/cpu-temp' | \
             echo "/hw/${host}/overtemp|f64|$temp"
         elif test -z "${HOSTS[$host]}"; then
             HOSTS[$host]=$host
-            echo "/hw/${host}/overtemp-ts|null"
-            echo "/hw/${host}/overtemp|null"
+            echo "/hw/${host}/overtemp-ts|null|null"
+            echo "/hw/${host}/overtemp|null|null"
         fi
     done | \
         netidx publisher \

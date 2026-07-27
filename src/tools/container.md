@@ -31,9 +31,11 @@ default-publisher behaviour can be turned off per subtree with
 
 ### Args
 
-- `--db <path>` — path to the sled database file.
+- `--db <path>` — path to the sled database directory. Defaults to
+  the platform data directory's `netidx/container/db`.
 - `--api-path <path>` — netidx path under which the container
-  publishes its RPC interface and db stats.
+  publishes its database stats and `rpcs/` interface. If omitted, neither is
+  published; an existing database can still serve its configured roots.
 - `-b, --bind <spec>` — bind address (e.g. `local`, `192.168.0.0/16`,
   `127.0.0.1:5000`).
 - `-a, --auth <mechanism>` — `anonymous`, `local`, `krb5`, or `tls`.
@@ -42,11 +44,11 @@ default-publisher behaviour can be turned off per subtree with
   omitted).
 - `--spn <spn>` / `--upn <upn>` — Kerberos service / user principal
   names.
-- `--cache-size <bytes>` — sled page cache size (defaults to
-  whatever sled uses when unset).
+- `--cache-size <bytes>` — sled page cache size (default 16 MiB).
 - `--timeout <seconds>` — drop slow subscribers that haven't
-  consumed an update in this many seconds; `0` disables the timeout.
-- `--max_clients <n>` — maximum simultaneous subscribers; default 768.
+  consumed an update in this many seconds. Omit this option to wait
+  indefinitely.
+- `--max-clients <n>` — maximum simultaneous subscribers; default 768.
 - `--slack <batches>` — publisher slack (max queued batches per
   client); default 3.
 - `--sparse` — don't even advertise paths; subscribers must already
@@ -79,8 +81,15 @@ through by name.
 The container's RPC interface is the only way to do several things:
 add or remove roots, lock subtrees, create the sheet/table helpers,
 and so on. The RPCs are published under the configured `--api-path`,
-alongside a small set of status values (db busy state, pending write
-count, etc).
+at `<api-path>/rpcs/<procedure>`, alongside a small set of status values (db
+busy state, pending write count, etc) directly under `<api-path>`.
+
+The signatures below use function notation for readability. With the command
+line subscriber, invoke one as
+`CALL|<api-path>/rpcs/<procedure>|name=value,...`. String values are quoted,
+and arguments whose type is a list use an array value such as
+`path=["/one", "/two"]`; repeating the same argument name does not construct a
+list.
 
 ### add-root
 
@@ -148,18 +157,18 @@ or marks an inner subtree as locally unlocked under a locked parent.
 set-data(path, value)
 ```
 
-Set one or more cells to plain data values. `path` and `value` may be
-specified multiple times to set multiple cells in one call. `value`
-is optional and defaults to `null`. Cells that don't exist are
-created regardless of their subtree's lock state.
+Set one or more cells to the same plain data value. `path` accepts an array;
+`value` is optional and defaults to `null`. Cells that don't exist are created
+regardless of their subtree's lock state. Use separate calls when the cells
+need different values.
 
 ```
 set-data(
-    path=string:/tmp/the-cake,
-    value=bool:false,
-    path=string:/tmp/is-a-lie,
-    value=bool:true
+    path=["/tmp/the-cake", "/tmp/is-a-lie"],
+    value=false
 )
+
+set-data(path="/tmp/is-a-lie", value=true)
 ```
 
 ### delete
@@ -185,31 +194,31 @@ restricting to administrators.
 ### create-sheet
 
 ```
-create-sheet(path, rows, columns, max-rows, max-columns, lock)
+create-sheet(path, rows, columns, max_rows, max_columns, lock)
 ```
 
 Helper that pre-creates a tree structured like a numbered
-spreadsheet at `path` — `/<path>/<row>/<col>`, with row/col indices
+spreadsheet at `path` — `<path>/<row>/<col>`, with row/column indices
 zero-padded so they sort correctly. `rows` and `columns` are the
-initial extents. `max-rows` / `max-columns` (optional) tune the
+initial extents. `max_rows` / `max_columns` (optional) tune the
 padding width; if you exceed them later the cells still work but
 the sort order goes wrong. `lock` defaults to true.
 
 ```
-create-sheet(path=string:/tmp/sheet, rows=u64:1000000, columns=u64:10)
+create-sheet(path="/tmp/sheet", rows=u64:1000000, columns=u64:10)
 ```
 
 Pre-creating a million-row sheet takes some time and disk; for big
 sheets it's often better to start small and grow with
-`add-sheet-rows` / `add-sheet-columns`. Use `max-rows` to reserve
+`add-sheet-rows` / `add-sheet-columns`. Use `max_rows` to reserve
 enough digits up front:
 
 ```
 create-sheet(
-    path=string:/tmp/sheet,
+    path="/tmp/sheet",
     rows=u64:1000,
     columns=u64:10,
-    max-rows=u64:1000000
+    max_rows=u64:1000000
 )
 ```
 
@@ -229,32 +238,29 @@ use `delete-subtree` directly on that row's path.
 ### create-table
 
 ```
-create-table(path, row, column, lock)
+create-table(path, rows, columns, lock)
 ```
 
-Helper that creates a tree structured as a named table — `row` and
-`column` are repeatable label arguments and become the row/column
-names. Renders in the browser as a table.
+Helper that creates a tree structured as a named table. `rows` and `columns`
+are arrays of labels that become the row and column names. It renders in the
+browser as a table.
 
 ```
 create-table(
-    path=string:/tmp/table,
-    row=string:01,
-    row=string:02,
-    row=string:03,
-    column=string:widget,
-    column=string:implemented
+    path="/tmp/table",
+    rows=["01", "02", "03"],
+    columns=["widget", "implemented"]
 )
 ```
 
 ### add-table-rows / add-table-columns / delete-table-rows / delete-table-columns
 
 ```
-add-table-rows(path, row)
-add-table-columns(path, column)
-delete-table-rows(path, row)
-delete-table-columns(path, column)
+add-table-rows(path, rows)
+add-table-columns(path, columns)
+delete-table-rows(path, rows)
+delete-table-columns(path, columns)
 ```
 
 Add or remove the named rows/columns from a table created with
-`create-table`. Row and column arguments are repeatable.
+`create-table`. Pass row and column names as arrays.

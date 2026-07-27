@@ -82,10 +82,10 @@ of centralized infrastructure.
 
 ## The Data Format
 
-In Netidx the data that is published is called a value. Values are
-mostly primitive types, consisting of numbers, strings, durations,
-timestamps, packed byte arrays, and arrays of values. Arrays of values
-can be nested.
+In Netidx the data that is published is called a value. Built-in values include
+fixed-width and variable-width numbers, decimal numbers, strings, durations,
+timestamps, byte arrays, errors, arrays, and maps. Arrays and maps may contain
+other values, and applications can register abstract user-defined value types.
 
 Bytes values are zero copy decoded, so they can be a building block
 for sending other encoded data efficiently.
@@ -98,18 +98,26 @@ Published values have some other properties as well,
 * Updates arrive reliably and in the order the publisher made them
   (like a TCP stream)
 
+## The Admin Plane Is Optional
+
+`netidx admin` is a provisioning and operations tool, not part of the netidx
+data plane. It can generate configuration, manage a TLS CA, enroll nodes, and
+coordinate administrative changes, but resolvers, publishers, and subscribers
+do not depend on an admin server in order to operate. A deployment built and
+maintained entirely with hand-authored configuration files is fully supported,
+and the netidx protocols contain no `netidx-admin`-specific dependency.
+
 ## Security
 
-Netidx currently supports four authentication mechanisms: Anonymous,
-Local, Kerberos v5, and Tls. Anonymous disables authentication,
-authorization, and encryption — useful for development and trusted
-networks. Local applies only on the same machine (and isn't supported
-on Windows), while many organizations already have Kerberos v5
-deployed in the form of Microsoft Active Directory, Samba ADS, Redhat
-Directory Server, or one of the many other compatible solutions. Tls
-requires each participant in netidx (resolver server, subscriber, publisher)
-to have a certificate issued by a certificate authority that the others
-it wants to interact with trust.
+Netidx supports four authentication mechanisms: Anonymous, Local, Kerberos v5,
+and TLS. Anonymous disables authentication, authorization, and encryption—useful
+for development and trusted networks. Local is host-only authentication. It
+uses Unix-socket peer credentials on Unix and named-pipe impersonation on
+Windows, so no password or network identity service is involved. Many
+organizations already have Kerberos v5 through Microsoft Active Directory,
+Samba ADS, FreeIPA, or another compatible system. TLS requires each resolver,
+subscriber, and publisher to have a certificate trusted by the peers it needs
+to contact.
 
 Security is optional in netidx, it's possible to deploy a netidx
 system with no security at all, or it's possible to deploy a mixed
@@ -121,17 +129,17 @@ restrictions.
 * If a publisher is configured with security, then it won't talk to a
   subscriber that isn't.
 
-When security is enabled, regardless of which of the three mechanisms
-you get the following guarantees,
+When Local, Kerberos, or TLS authentication is enabled, it provides the
+following guarantees:
 
 * **Mutual Authentication**, the publisher knows the subscriber is who
   they claim to be, and the subscriber knows the publisher is who they
   claim to be. This applies for the resolver <-> subscriber, and
   resolver <-> publisher as well.
   
-* **Confidentiality** and Tamper detection, all messages are encrypted
-  if they will leave the local machine, and data cannot be altered 
-  undetected by a man in the middle.
+* **Confidentiality and tamper detection.** Kerberos and TLS protect network
+  traffic. Local-auth traffic remains on the host and is authenticated through
+  the operating system's local IPC mechanism.
 
 * **Authorization**, The user subscribing to a given data value is
   authorized to do so. The resolver servers maintain a permissions
@@ -141,8 +149,9 @@ you get the following guarantees,
 
 ## Cross Platform
 
-While netidx is primarily developed on Linux, it has been tested on
-Windows, and Mac OS.
+Netidx supports Linux, macOS, and Windows. The workstation installer, Local
+authentication, activation supervisor, and data-plane tools use the native
+facilities of each platform.
 
 ## Scale
 
@@ -150,8 +159,9 @@ Netidx has been designed to support single namespaces that are pretty
 large. This is done by allowing delegation of subtrees to different
 resolver clusters, which can be done to an existing system without
 disturbing running publishers or subscribers. Resolver clusters
-themselves can also have a number of replicas, with read load split
-between them, further augmenting scaling.
+themselves can also have multiple members, with read load split between them.
+Resolver members do not replicate to or communicate with one another;
+publishers register their paths with each configured member.
 
 At the publisher level, multiple publishers may publish the same
 name. When a client subscribes it will randomly pick one of them. This

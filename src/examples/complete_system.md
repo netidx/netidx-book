@@ -190,7 +190,7 @@ permissions.
 For the basic day to day use case, that's all we need on the server
 side. The entire daemon uses 6.5 MB of ram, and almost no cpu, it
 could certainly run on a smaller device, though we depend on tokio,
-which means we at least need a unix like OS under us.
+which supports the Linux target used here as well as macOS and Windows.
 
 The kerberos configuration for this service is also quite simple,
 there is a service principal called svc_solar in samba ADS, and solar

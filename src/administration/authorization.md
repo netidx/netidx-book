@@ -1,7 +1,7 @@
 # Authorization
 
 When using the Kerberos, Local, or Tls auth mechanisms we also need to
-specify permissions in the cluster config file, e.g.
+specify permissions in the resolver cluster config file, e.g.
 
 ``` json
 ...
@@ -78,7 +78,7 @@ this by group.
 ``` json
 "/solar": {
     "svc_solar@RYU-OH.ORG": "pd",
-    "RYU-OH\domain admins": "!swl",
+    "RYU-OH\\domain admins": "!swl",
 }
 ```
 
@@ -90,8 +90,8 @@ them would be removed. e.g.
 ``` json
 "/solar": {
     "svc_solar@RYU-OH.ORG": "pd",
-    "RYU-OH\domain admins": "!swl",
-    "RYU-OH\enterprise admins": "!pd",
+    "RYU-OH\\domain admins": "!swl",
+    "RYU-OH\\enterprise admins": "!pd",
 }
 ```
 
@@ -99,9 +99,9 @@ Now my effective permissions under `/solar` are empty, I can do
 nothing. If I am a member of more than one group, and one denies
 permissions that the other grants the deny always takes precidence.
 
-Each server cluster is completely independent for permissions. If for
-example this cluster had a child cluster, the administrators of that
-cluster would be responsible for deciding it's permissions map.
+Each resolver cluster is completely independent for permissions. If for
+example this resolver cluster had a child resolver cluster, the administrators of that
+resolver cluster would be responsible for deciding it's permissions map.
 
 ### Dynamic Entries (`$[user]` and `$[group]`)
 
@@ -154,11 +154,24 @@ member of `RYU-OH\finance`". The prefix lets one entry cover a
 whole organisational-unit naming convention without listing each
 group by hand.
 
-### The Default Seeded `perms.json`
+### Default Seeded `perms.json`
 
-`netidx admin workstation install` and `netidx admin resolver install`
-auto-seed a starter `perms.json` (unless you pass `--no-perms` or
-`--perms-seed`). Its shape is:
+The workstation and network-resolver templates use different safe defaults.
+A workstation grants its current local identity full rights at its base:
+
+``` json
+{
+    "/local": {
+        "<current-user>": "swlpd"
+    }
+}
+```
+
+On Unix `<current-user>` is the login name. On Windows it is the canonical
+`DOMAIN\\user` name reported by Local authentication.
+
+`netidx admin resolver install` seeds a shared resolver differently (unless
+you pass `--no-perms` or `--perms-seed`):
 
 ``` json
 {
@@ -171,8 +184,7 @@ auto-seed a starter `perms.json` (unless you pass `--no-perms` or
 }
 ```
 
-where `<base>` is the resolver's base path (`/local` for the
-workstation template, `/` for the standalone resolver).
+where `<base>` is the resolver's base path (normally `/` for a root resolver).
 
 The first entry grants every member of the `users` group the right
 to subscribe (`s`), write (`w`), and list (`l`) anywhere under the
@@ -183,8 +195,7 @@ each authenticated user full rights (`swlpd`) under their *own*
 subtree `<base>/users/<their-name>/**`.
 
 This produces a shared read-write tree at the resolver's base, plus
-a per-user playground under `<base>/users` — a sensible default for
-a workstation. The `users`-group entry assumes group resolution
+a per-user playground under `<base>/users`. The `users`-group entry assumes group resolution
 returns `users` for human accounts; for TLS deployments wire
 `netidx admin resolver install --auth tls` to the [id-map
 daemon](./id_map.md) and add identities there.
@@ -215,22 +226,17 @@ resolver server infrastructure for them.
 
 ### Groups
 
-You'll might have noticed I'm using AD style group names above, that's
-because my example setup uses Samba in ADS mode so I can test windows
-and unix clients on the same domain. The most important thing about
-the fact that I'm using Samba ADS and thus have the group names I have
-is that it doesn't matter. Groups are just strings to netidx, for a
-given user, whatever the `id` command would spit out for that user is
-what it's going to use for the set of groups the user is in (so that
-better match what's in your permissions file). You need to set up the
-resolver server machines such that they can properly resolve the set
-of groups every user who might use netidx is in.
+The examples use AD-style group names, but groups are simply strings to
+netidx. On Unix the default mapper obtains them from `/bin/id`; on Windows it
+uses native account and local-group APIs. A custom command or the Unix id-map
+daemon may supply them instead. The names returned by the resolver host's
+mapper must match the names in the permissions file.
 
 Luckily you only need to get this right on the machines that run
 resolver servers, because that's the only place group resolution
-happens in netidx. You're other client and server machines can be as
-screwed up and inconsistent as you want, as long as the resolver
-server machine agrees that I'm a member of "RYU-OH\domain admins" then
+happens in netidx. Other client and publisher machines do not need matching
+group databases; as long as the resolver server agrees that I'm a member of
+`RYU-OH\domain admins`, then
 whatever permissions assigned to that group in the permission file
 will apply to me.
 

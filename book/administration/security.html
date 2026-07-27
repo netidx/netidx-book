@@ -12,20 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -35,24 +36,12 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f0033bd4.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-102419d9.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
-    <div id="mdbook-help-container">
-        <div id="mdbook-help-popup">
-            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
-            <div>
-                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
-                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
-                <p>Press <kbd>?</kbd> to show this help</p>
-                <p>Press <kbd>Esc</kbd> to hide this help</p>
-            </div>
-        </div>
-    </div>
-    <div id="mdbook-body-container">
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -81,59 +70,56 @@
             html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             let sidebar = null;
-            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
-                sidebar_toggle.checked = false;
             }
-            if (sidebar === 'visible') {
-                sidebar_toggle.checked = true;
-            } else {
-                html.classList.remove('sidebar-visible');
-            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
-        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
-            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <div id="mdbook-page-wrapper" class="page-wrapper">
+        <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="mdbook-menu-bar-hover-placeholder"></div>
-                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
                         </label>
-                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
                         </button>
-                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
                         </button>
                     </div>
 
@@ -141,222 +127,265 @@
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
-                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                            <i id="print-button" class="fa fa-print"></i>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="mdbook-search-wrapper" class="hidden">
-                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
-                        <div class="search-wrapper">
-                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
-                            <div class="spinner-wrapper">
-                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
-                            </div>
-                        </div>
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
-                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
-                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
-                        <ul id="mdbook-searchresults">
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="mdbook-content" class="content">
+                <div id="content" class="content">
                     <main>
                         <h1 id="admin-plane-security"><a class="header" href="#admin-plane-security">Admin-Plane Security</a></h1>
-<p>This chapter describes the security boundary of <code>netidx admin</code>. It is separate
-from the data-plane authentication selected for publishers, subscribers, and
-resolvers (<code>anonymous</code>, <code>local</code>, <code>krb5</code>, or <code>tls</code>). A deployment may manage
-netidx entirely by editing configuration files and never run an admin server;
-nothing in the netidx data plane depends on <code>netidx admin</code>.</p>
-<p>When the admin plane is used, its job is deliberately narrow: establish node
-identities, maintain the authoritative network map, authorize administrators,
-and deliver approved changes to the right machines.</p>
-<h2 id="trust-hierarchy"><a class="header" href="#trust-hierarchy">Trust hierarchy</a></h2>
-<p>An administrative network has one <strong>home CA</strong> and one active <strong>controller</strong>.
-The controller is the admin server that holds the CA role. Other admin servers
-are satellites: they may host a resolver or id-map role, but they do not gain
-the controller’s authority merely by having a certificate.</p>
-<p>Every admin-server certificate contains:</p>
+<p>The admin plane is separate from the resolver, publisher, and subscriber data
+plane. It is also optional: a deployment may be managed entirely through
+configuration files and never run an admin server.</p>
+<p>This chapter starts with the authority model an administrator needs in order
+to operate the system safely. It then explains the certificate and glyph trust
+ceremony. The wire identities, request classes, discovery rules, and session
+internals are collected under <a href="#implementation-details">Implementation details</a>
+for readers who need to audit the mechanism.</p>
+<h2 id="who-holds-the-power"><a class="header" href="#who-holds-the-power">Who holds the power</a></h2>
+<p>An admin domain has one active <strong>CA</strong> — the admin server that holds the
+certificate authority. It is the central enforcer for the admin domain.</p>
 <ul>
-<li>the DNS SAN <code>netidx-admin-server</code>, used for TLS name verification, and</li>
-<li>exactly one immutable URI identity,
-<code>urn:netidx:admin:server:&lt;uuid&gt;</code>.</li>
+<li>Administrators authenticate to the CA. It applies their policy and
+decides whether an operation is allowed.</li>
+<li>The CA owns the authoritative record of admin servers, resolver
+clusters, roles, and the resolver hierarchy.</li>
+<li>All remote administrative changes are authorized and dispatched by the
+CA. It sends each approved change to the affected machines and
+records the result.</li>
+<li>Other admin servers are satellites. They serve their local resolver or
+identity-map role, but they do not become administrative authorities and
+cannot order changes on other machines.</li>
+<li>Satellites accept remote mutations only from their home CA.</li>
 </ul>
-<p>Only the controller certificate also contains
-<code>urn:netidx:admin:role:controller</code>. The CA creates server and resolver-cluster
-UUIDs; an enrolling machine cannot choose them. Renewal may rotate the private
-key, but preserves the server UUID and the controller marker. A second live
-controller identity cannot be issued until the old one has been revoked.</p>
-<p>Each node stores its server UUID and the fingerprint of its home CA in
-<code>admin-server.json</code>. At startup the daemon checks both against the serving
-certificate. An address is routing data and may change; the UUID is identity.</p>
-<p><code>trusted.pem</code> may contain other CAs for data-plane federation. Those CAs do
-<strong>not</strong> acquire admin-plane authority. Controller and node checks are pinned to
-the exact home CA, not to any certificate that happens to chain to the trust
-bundle.</p>
-<h2 id="establishing-trust-without-leaking-a-credential"><a class="header" href="#establishing-trust-without-leaking-a-credential">Establishing trust without leaking a credential</a></h2>
-<p>The first connection to a network is a no-secret inspection. The TUI and CLI
-show a CA <strong>glyph</strong>: an identicon and grouped fingerprint which the operator
-compares with a value obtained out of band. The CLI can print it with:</p>
-<pre><code class="language-console">netidx admin ca fingerprint 10.0.0.10:4565
+<p>The normal flow is therefore:</p>
+<pre><code class="language-text">administrator  →  CA  →  selected satellite(s)  →  local change
+                         │
+                         └── authoritative admin domain map and audit record
 </code></pre>
-<p><img src="./tui-clusters.png" alt="The Cluster tab shows only live clusters whose saved CA identity still verifies."></p>
-<p>mDNS advertisements are untrusted discovery hints and include the admin
-server’s actual socket address, including a non-standard port. Direct CLI/TUI
-connections accept <code>host:port</code>; a bare hostname uses the conventional admin
-port 4565. In every case the address only chooses where to connect—the
-certificate and confirmed home-CA glyph decide what was reached.</p>
-<p>The server used for discovery need not be the controller. Its map and peer list
-are treated only as candidate hints. Before asking for or unsealing an
-administrator credential, the client:</p>
+<p>This is the most important security property in the system: compromising an
+ordinary satellite must not give an attacker CA authority. Additional
+CAs trusted for data-plane federation do not gain that authority either.</p>
+<p>The CA is consequently both powerful and operationally important.
+Compromise of its host, the CA recovery password, or a signing-tier
+administrator is a CA compromise. If the CA is offline, enrollment
+and remote administration stop, but existing resolvers, publishers, and
+subscribers keep operating. On-box privileged controls and hand-edited
+configuration also remain available.</p>
+<h2 id="how-certificates-and-glyphs-establish-trust"><a class="header" href="#how-certificates-and-glyphs-establish-trust">How certificates and glyphs establish trust</a></h2>
+<p>Every admin server has a certificate issued by its home CA.
+Certificates let a satellite distinguish its CA from every other
+machine, and let the CA distinguish one enrolled satellite from
+another. The CA's certificate carries the additional authority to
+issue remote changes; ordinary admin-server certificates do not.</p>
+<p>Certificates solve machine-to-machine authentication after trust exists. A
+human still has to establish that trust the first time. Netidx represents a
+certificate or enrollment key with a <strong>glyph</strong>: a colored 8×8 identicon plus a
+grouped fingerprint code. Two screens showing the same glyph represent the
+same key.</p>
+<p>The glyph is compared over an independent channel. For example, the person
+installing a satellite can send a screenshot or read the grouped code over a
+phone call. The CA administrator approves only when the independently
+received glyph matches the request shown by the CA. Network discovery
+alone is never sufficient evidence.</p>
+<p>After the CA glyph has been confirmed, an administrative client verifies the
+CA before it sends an administrator password or login session. A real
+satellite can offer discovery information, but it cannot persuade the client
+to reveal credentials by claiming to be the CA.</p>
+<h2 id="what-enrollment-looks-like"><a class="header" href="#what-enrollment-looks-like">What enrollment looks like</a></h2>
+<p>Enrollment is deliberately two-person-friendly. The joining user proves
+possession of a newly generated private key; the administrator decides what
+that key is allowed to represent.</p>
+<p>A workstation joining a TLS admin domain uses this ceremony to obtain its client
+certificate. It does not thereby become an admin server or acquire a place in
+the authoritative map. A workstation joining a Kerberos or anonymous admin domain
+still confirms the CA glyph used to identify the admin domain, but it has no TLS
+client-certificate request to approve. Admin-server enrollment uses the same
+glyph ceremony and additionally requests roles, a listen address, and resolver
+resolver cluster placement.</p>
+<div class="table-wrapper"><table><thead><tr><th>Joining user or node</th><th>CA administrator</th></tr></thead><tbody>
+<tr><td>Selects the requested certificate identity. An admin server also supplies its requested roles, resolver addresses, and resolver cluster placement.</td><td>Opens the CA's <strong>Enrollment Queue</strong>.</td></tr>
+<tr><td>Generates the private key locally. The private key never crosses the network.</td><td>Sees the requested role, listen address, resolver members, and resolver cluster base or ID.</td></tr>
+<tr><td>Sends a certificate request and sees its glyph and grouped code.</td><td>Sees the same request glyph and code.</td></tr>
+<tr><td>Sends that glyph to the administrator out of band, then waits. Losing the network while waiting is recoverable.</td><td>Compares the glyphs and checks that the requested placement and roles are appropriate before approving or denying.</td></tr>
+<tr><td>Receives the signed certificate after approval. An admin server then registers its granted identity.</td><td>The CA issues the certificate. For an admin server, it records the grant and updates the authoritative map.</td></tr>
+</tbody></table>
+</div>
+<p>Approval does not allow the joining machine to invent its identity or rewrite
+the map. The CA, acting as the certificate authority, assigns the
+identity and records the approved roles and resolver cluster placement before
+registration. Registration merely activates that existing grant and reports
+the node's current address.</p>
+<h2 id="administrator-accounts-and-sessions"><a class="header" href="#administrator-accounts-and-sessions">Administrator accounts and sessions</a></h2>
+<p>Administrators have named slots with policies in the CA vault. A
+signing-tier administrator has full authority; role administrators may be
+limited to particular path scopes and operations. Policy is evaluated by the
+CA when the operation is performed, not copied permanently into a
+client.</p>
+<p>An administrator may authenticate with a password for one operation or use
+<code>netidx admin login</code> to create a reusable session. The password is sent only to
+the verified CA. A successful login lets the CLI or TUI reuse a
+short-lived bearer session without retaining the password. Removing the
+administrator, rotating the password, or reducing the policy takes effect
+immediately for existing sessions.</p>
+<p>Persistent session caches are sealed by the platform TPM or Secure Enclave.
+If sealing is unavailable, one-shot password authentication remains possible
+and the TUI may keep a session only in process memory.</p>
+<h2 id="revocation-outages-and-partial-changes"><a class="header" href="#revocation-outages-and-partial-changes">Revocation, outages, and partial changes</a></h2>
+<p>Certificate revocation is authoritative immediately at the CA. The
+CA distributes the updated revocation list to registered nodes; an
+unreachable site is reported as a failed target rather than silently treated
+as updated.</p>
+<p>The same rule applies to other multi-machine operations. A WAN partition can
+leave a change only partly delivered. Results identify each target, and the
+operator repeats the idempotent operation after connectivity returns. There is
+no durable background job that unexpectedly retries a change later.</p>
+<p>The admin plane never automatically restarts resolver members. Resolver
+members do not replicate to or communicate with one another. When a resolver
+configuration change requires a restart, restart one member, wait its
+<code>delay-reads</code> period for publishers to republish, verify it, and only then
+restart the next member.</p>
+<h2 id="implementation-details"><a class="header" href="#implementation-details">Implementation details</a></h2>
+<p>Everything below explains how the preceding authority model is enforced. It
+is useful for security review and troubleshooting but is not required for
+day-to-day operation.</p>
+<h3 id="certificate-identities"><a class="header" href="#certificate-identities">Certificate identities</a></h3>
+<p>Every admin-server certificate contains the DNS SAN
+<code>netidx-admin-server</code>, used for TLS name verification, and exactly one URI
+identity:</p>
+<pre><code class="language-text">urn:netidx:admin:server:&lt;uuid&gt;
+</code></pre>
+<p>Only the CA certificate also contains:</p>
+<pre><code class="language-text">urn:netidx:admin:role:ca
+</code></pre>
+<p>The CA creates server and resolver-cluster UUIDs; an enrollee cannot
+choose them. Renewal may rotate the key and SPKI, but preserves the server UUID
+and CA marker. A second live CA identity cannot be issued
+until the old one is revoked.</p>
+<p>Each node stores its server UUID and exact home-CA fingerprint in
+<code>admin-server.json</code> and checks them against its serving certificate at startup.
+An address is mutable routing data; the UUID is identity. <code>trusted.pem</code> may
+contain other CAs for data-plane federation, but admin authorization is pinned
+to the exact home CA rather than to any certificate in that bundle.</p>
+<h3 id="bootstrap-and-ca-verification"><a class="header" href="#bootstrap-and-ca-verification">Bootstrap and CA verification</a></h3>
+<p>The first contact with an admin domain is a no-secret inspection. mDNS and direct
+addresses choose candidate machines; they do not establish trust. mDNS
+includes the actual admin socket address, including a non-standard port. A
+direct connection accepts <code>host:port</code>; a bare hostname uses port 4565.</p>
+<p>After the operator confirms the CA glyph, the client:</p>
 <ol>
-<li>pins the candidate network to the confirmed home-CA fingerprint,</li>
-<li>resolves the controller from the network map,</li>
-<li>connects to that candidate under the same home CA, and</li>
-<li>requires the exact controller UUID and controller URI in its certificate.</li>
+<li>pins the admin domain to that home-CA fingerprint,</li>
+<li>treats the bootstrap server's map and peer list only as candidate hints,</li>
+<li>resolves and connects to the CA under the same home CA, and</li>
+<li>requires the expected CA identity and CA role in its
+certificate.</li>
 </ol>
-<p>Only then is a password or session token sent. A legitimate satellite admin
-server therefore cannot collect credentials by claiming to be the CA.</p>
-<p>The protocol is length-delimited <a href="../protocols/overview.html">Pack</a>, over TLS.
+<p>Only then does it collect, unseal, or transmit an administrator credential.</p>
+<p>The protocol is length-delimited <a href="../protocols/overview.html">Pack</a> over TLS.
 Protocol version 6 is an epoch: peers require exact equality before a request
 or credential is sent. Compatible releases append defaulted fields and retain
-old fields; removals, changed tags, and security-sensitive semantic breaks
-advance the epoch. A hard epoch change requires upgrading admin servers,
-clients, and renewal daemons together.</p>
-<h2 id="request-authorization"><a class="header" href="#request-authorization">Request authorization</a></h2>
-<p>Every request is assigned one authorization class in one central classifier.
-This prevents a new handler from quietly inheriting whatever checks a nearby
-handler happened to use.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Class</th><th>Who may call it</th><th>Examples</th></tr>
-</thead>
-<tbody>
-<tr><td>Public</td><td>An unauthenticated connection</td><td>discovery, CA/map hints, CRL fetch, enrollment submission and polling</td></tr>
-<tr><td>Controller only</td><td>The home-CA certificate carrying the controller URI</td><td>apply permission, referral, CRL, identity-map, controller-state, and service-control changes</td></tr>
-<tr><td>Node self</td><td>A home-CA admin-server certificate</td><td>register or deregister that certificate’s own server UUID</td></tr>
-<tr><td>Admin authenticated</td><td>A verified controller plus an administrator password or session</td><td>approve enrollment/delegation, issue or revoke, read/edit permissions, manage admins, remove a server</td></tr>
-<tr><td>Local only</td><td>The protected local control socket</td><td>controller backup and recovery/autorenew credential rotation</td></tr>
-</tbody>
-</table>
+old fields; removals, changed tags, or security-sensitive semantic breaks
+advance the epoch. Admin servers, clients, and renewal daemons must be upgraded
+together across an epoch change.</p>
+<h3 id="request-authorization-classes"><a class="header" href="#request-authorization-classes">Request authorization classes</a></h3>
+<p>Every request is assigned one class in a central classifier:</p>
+<div class="table-wrapper"><table><thead><tr><th>Class</th><th>Required caller</th><th>Examples</th></tr></thead><tbody>
+<tr><td>Public</td><td>No authenticated admin identity</td><td>discovery hints, CRL fetch, enrollment submission and polling</td></tr>
+<tr><td>CA only</td><td>Home CA's certificate carrying the CA role</td><td>apply permission, referral, CRL, identity-map, CA-state, and service-control changes</td></tr>
+<tr><td>Node self</td><td>Admin-server certificate issued by the home CA</td><td>register or deregister only that certificate's server identity</td></tr>
+<tr><td>Admin authenticated</td><td>Verified CA plus administrator password or session</td><td>approve enrollment or delegation, issue or revoke, edit permissions, manage administrators, remove a server</td></tr>
+<tr><td>Local only</td><td>Protected on-box control socket</td><td>the CA component of a role-level backup, recovery/autorenew credential rotation, and external-CA CSR or certificate installation</td></tr>
+</tbody></table>
 </div>
+<p>The local endpoint is not a loopback TCP shortcut. On Unix it is a mode-0600
+socket, and the server checks peer credentials for root or the daemon UID.</p>
+<h3 id="authoritative-admin-domain-map"><a class="header" href="#authoritative-admin-domain-map">Authoritative admin domain map</a></h3>
+<p>The CA owns the admin domain map. Server records are keyed by immutable
+server UUID and contain the mutable admin address, granted roles,
+resolver-resolver cluster UUID, and enrollment state. Only registered servers are
+routing targets. Resolver clusters have stable UUIDs and are either pending or
+active; pending resolver clusters are excluded from normal routing.</p>
+<p>Enrollment approval creates the grant before registration. Every
+non-CA admin server must have the resolver role. The CA role
+is never accepted from an enrollee, and the identity-map role is granted
+explicitly. A role administrator may approve only resolver cluster bases covered by
+their enrollment scopes and roles included in their allowed set.</p>
 <p>Registration is identity-implicit. A node may update only its own admin
-address, and its reported resolver configuration must match the CA-approved
-cluster, base, members, and referral topology. It cannot change its UUID,
-roles, cluster placement, another node, or the CA’s map.</p>
-<p>The local control socket is not a loopback TCP shortcut. On Unix it is a mode
-0600 Unix socket, and the server checks peer credentials for root or the daemon
-UID. It is intended for on-box privileged operations only.</p>
-<h2 id="the-authoritative-network-map"><a class="header" href="#the-authoritative-network-map">The authoritative network map</a></h2>
-<p>The CA owns the network map. Server entries are keyed by immutable server UUID
-and carry a mutable admin address, granted roles, cluster UUID, and enrollment
-state. Only <code>Registered</code> servers are routing targets. Resolver clusters have a
-stable UUID and are either <code>Pending</code> or <code>Active</code>; pending clusters are excluded
-from ordinary routing.</p>
-<p>An enrollment approval creates the grant before a node can register it. Every
-non-controller admin server must have the resolver role. The CA role is never
-accepted from an enrollee, and the id-map role is present only when explicitly
-granted. A role administrator may approve only cluster bases covered by its
-enrollment scopes and roles included in its allowed role set.</p>
-<p>Security-sensitive operations fetch the map from the verified controller.
-Maps cached on satellites remain useful discovery hints, but are not treated
-as authority. When the controller sends a mutation it verifies the target’s
-exact server UUID before transmitting it. Permission changes go to registered
-members of the chosen resolver cluster; service control goes to the one chosen
-server UUID; identity registration goes only to registered, CA-granted id-map
-servers.</p>
-<p>The TUI exposes this distinction directly: addresses can move, while UUIDs and
-CA-granted placement remain visible and stable.</p>
-<p><img src="./tui-admin-servers.png" alt="The Admin Servers panel groups registered identities by authoritative cluster and protects the active controller from removal."></p>
-<h2 id="administrator-passwords-and-sessions"><a class="header" href="#administrator-passwords-and-sessions">Administrator passwords and sessions</a></h2>
-<p>Administrator passwords unlock role-admin slots in the CA vault; the server
-uses Argon2 and never stores a reusable plaintext password. Failed network
-password attempts are throttled by source address (IPv6 by <code>/64</code>): after each
-failure the next attempt waits one additional second, using a ten-minute
-sliding window. Only one password KDF per source may run at once, and a global
-semaphore bounds Argon2 memory use under distributed traffic. Network-level
-controls are still appropriate for an Internet-exposed controller.</p>
-<p><code>netidx admin login</code> performs that expensive authentication once and creates a
-random 256-bit bearer token. The controller stores only its SHA-256 hash, in
-memory, together with the vault slot’s stable UUID and credential revision.
-Defaults are an eight-hour absolute lifetime, a 30-minute idle timeout, and at
-most 4096 sessions. The optional CA-role settings
-<code>session_absolute_lifetime</code> and <code>session_idle_timeout</code> override the two
-deadlines.</p>
-<p>On every use the controller resolves the slot and its current policy again.
-Removing a slot, removing and recreating an admin with the same name, or
-rotating its password invalidates the old session. Policy reductions and
-expansions take effect immediately. Restarting the controller invalidates all
-sessions.</p>
-<p>The client stores one cache per normalized CA fingerprint. The complete cache,
-including the token, is sealed with the platform TPM or Secure Enclave and the
-opaque file is mode 0600. If sealing is unavailable, <code>admin login</code> refuses to
-create a persistent cache. The TUI may retain the session in process memory;
-one-shot CLI commands continue to accept a password. An explicit password
-takes precedence over a cache.</p>
-<pre><code class="language-console">netidx admin login --server 10.0.0.10:4565 --admin operations \
-  --accept-glyph 'THE CONFIRMED GROUPED FINGERPRINT'
-netidx admin logout
-netidx admin logout --all
-</code></pre>
-<p>Expired or server-rejected cache entries are deleted and the client reports
-that login is required. Logout always deletes the local cache and makes a
-best-effort server-side revocation when the controller is reachable.</p>
-<h2 id="revocation-fanout-and-partial-failure"><a class="header" href="#revocation-fanout-and-partial-failure">Revocation, fanout, and partial failure</a></h2>
-<p>Revocation is immediate. The controller updates the signed CRL and fans it out
-to registered nodes; renewal daemons also pull it. Removing a dead server is a
-stronger operation: it revokes all live serving certificates for that UUID,
-removes the grant, recomputes cluster membership, and pushes the resulting
-topology. It never restarts a service.</p>
-<p>Fanout is bounded (32 concurrent targets with a per-target timeout), and results
-are sorted by server UUID. Every operation has an operation ID carried in
-target logs, CA audit records, and the response. There is no durable job queue
-and no automatic retry. Failures identify both UUID and last address, and the
-corresponding operation can be repeated as an idempotent manual reconciliation.</p>
-<p>Resolver servers do not communicate with one another, and <code>resolver.json</code>
-does not need to list every cluster member. If a resolver configuration change
-requires a restart, the operator performs a rolling restart: restart one
-member, wait at least its <code>delay-reads</code> period so publishers republish, verify
-it, then restart the next member. The admin plane never automatically restarts
-resolver members.</p>
-<h2 id="residual-trust-and-availability-assumptions"><a class="header" href="#residual-trust-and-availability-assumptions">Residual trust and availability assumptions</a></h2>
-<ul>
-<li>Compromise of the live controller host, the CA recovery password, or a
-signing-tier administrator is a CA compromise.</li>
-<li>The single controller is an admin-plane availability dependency. If it is
-down, remote mutations and enrollment stop; existing resolvers and local
-privileged controls continue operating.</li>
-<li>A WAN partition can leave a fanout partially applied. UUID-address results,
-operation IDs, and idempotent reconciliation make this visible and
-recoverable, but do not pretend the partition did not happen.</li>
-<li>Disaster recovery cannot determine whether the old controller will return.
-Fencing it is an operator responsibility and a mandatory part of the
-<a href="./backup_recovery.html">recovery procedure</a>.</li>
-</ul>
+address. Its reported resolver members, base, and referral topology must match
+the CA-approved resolver cluster. It cannot change its identity, roles, placement,
+another node, or arbitrary map content.</p>
+<p>Security-sensitive reads use the verified CA's map. Maps cached on
+satellites remain discovery hints. Before sending a mutation, the CA
+verifies the target's exact server UUID. Permission changes go to registered
+members of the selected resolver cluster, service control to the selected server UUID,
+and identity registration only to registered servers granted the identity-map
+role.</p>
+<p><img src="./tui-admin-servers.png" alt="The CA&#39;s Admin Servers panel distinguishes immutable identities from mutable addresses and protects the active CA from removal." /></p>
+<h3 id="password-and-session-handling"><a class="header" href="#password-and-session-handling">Password and session handling</a></h3>
+<p>The CA authenticates administrator passwords with Argon2 and never
+stores a reusable plaintext password. Failed network attempts are throttled by
+source address (IPv6 by <code>/64</code>): each failure adds one second of delay within a
+ten-minute sliding window. Only one password KDF per source runs at once, and a
+global semaphore bounds aggregate Argon2 memory use.</p>
+<p>Login creates a random 256-bit bearer token. The CA retains only its
+SHA-256 hash in memory, associated with the vault slot's stable UUID and
+credential revision. Defaults are an eight-hour absolute lifetime, a
+30-minute idle timeout, and 4096 sessions. A CA restart invalidates
+every session.</p>
+<p>The CA resolves the slot and its current policy on every use. Removing
+and recreating an administrator with the same name does not revive an old
+session. Password rotation invalidates existing sessions; policy reductions
+and expansions apply immediately.</p>
+<p>The client keeps one sealed cache per normalized CA fingerprint. An explicit
+password takes precedence over a cache. Expired or rejected caches are deleted,
+and logout always deletes the local cache while making a best-effort server-side
+revocation.</p>
+<h3 id="fanout-audit-and-reconciliation"><a class="header" href="#fanout-audit-and-reconciliation">Fanout, audit, and reconciliation</a></h3>
+<p>CA fanout is limited to 32 concurrent targets with a per-target
+timeout. Results are sorted by server UUID and include the last known address.
+Every operation receives an operation ID carried in target logs, the
+CA's audit records, and the response.</p>
+<p>Removing a dead server revokes all live serving certificates for its UUID,
+removes its grant, recomputes resolver cluster membership, and distributes the new
+topology and CRL. The active CA cannot be removed this way. Fanout has
+no durable job storage or automatic retries; repeating the corresponding
+idempotent operation is the manual reconciliation path.</p>
+<p>Disaster recovery cannot prove that an old CA will never return.
+Fencing the old host is an operator responsibility and a mandatory part of the
+<a href="./backup_recovery.html">recovery procedure</a>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                             <a rel="prev" href="../administration/admin.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                                <i class="fa fa-angle-left"></i>
                             </a>
 
                             <a rel="next prefetch" href="../administration/backup_recovery.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                                <i class="fa fa-angle-right"></i>
                             </a>
 
                         <div style="clear: both"></div>
@@ -366,21 +395,16 @@ Fencing it is an operator responsibility and a mandatory part of the
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                     <a rel="prev" href="../administration/admin.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                        <i class="fa fa-angle-left"></i>
                     </a>
 
                     <a rel="next prefetch" href="../administration/backup_recovery.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
-        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
-        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
-        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
-        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -389,16 +413,15 @@ Fencing it is an operator responsibility and a mandatory part of the
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-
 
 
     </div>

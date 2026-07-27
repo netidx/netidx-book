@@ -1,10 +1,7 @@
 # Language Overview
 
-NOTE: The version of bscript used by the browser is deprecated
-
-The browser scripting language exists to glue the widgets in your gui
-to the inputs and outputs in netidx, and to compute your formulas in
-the container. If you're familiar with the model view controller gui
+The browser scripting language exists to glue the widgets in your GUI
+to the inputs and outputs in netidx. If you're familiar with the model-view-controller GUI
 paradigm, browser script is the controller layer. Because of it's
 purpose it works differently from most scripting languages, in that it
 is a 'reactive' or 'incremental' language. Instead of describing
@@ -80,9 +77,8 @@ base <- load("/where")
 
 # Scope
 
-Bscipt variables are lexically scoped, both in terms of their lexical
-position in code, and the position of the widget they attach to, or in
-the case of the container their base path in netidx. Container widgets
+BScript variables are lexically scoped, both in terms of their lexical
+position in code and the position of the widget they attach to. Container widgets
 such as Box, Grid, Paned, etc introduce new scopes, so bscripts that
 are compiled in the context of these widgets may set local variables
 that are not visible above them. Local variable bindings are made

@@ -29,11 +29,11 @@ pub struct HwPub {
 
 impl HwPub {
     pub async fn new(host: &str, current: f64) -> Result<HwPub> {
-        // load the site cluster config from the path in the
+        // load the site client config from the path in the
         // environment variable NETIDX_CFG, or from
-        // dirs::config_dir()/netidx/client.json if the environment
-        // variable isn't specified, or from ~/.netidx.json if the
-        // previous file isn't present. Note this uses the cross
+        // the platform configuration directory's netidx/client.json if
+        // the variable isn't specified, then from
+        // ~/.config/netidx/client.json. Note this uses the cross
         // platform dirs library, so yes, it does something reasonable
         // on windows.
         let cfg = Config::load_default()?;
@@ -79,7 +79,7 @@ impl HwPub {
 Now all we would need to do is create a HwPub on startup, and call
 HwPub::update whenever we learn about a new cpu temperature value. Of
 course we also need to deploy a resolver server, and distribute a
-cluster config to each machine that needs one, that will be covered in
+client config to each machine that needs one, that will be covered in
 the administration section.
 
 ## Using the Data We Just Published
@@ -147,12 +147,11 @@ done
 
 To ring a very loud alarm when an over temp event is detected. This
 would in fact work, it just would not be as timely as the author might
-expect. The reason is that the subscriber practices linear backoff
-when it's instructed to subscribe to a path that doesn't exist. This
-is a good practice, in general it reduces the cost of mistakes on the
-entire system, but in this case it could result in getting the alarm
-minutes, hours, or longer after you should. The good news is there is
-a simple solution, we just need to publish all the paths from the
+expect. A durable subscription uses an increasing randomized retry delay
+when the requested path does not exist. This reduces the system-wide cost of
+bad or obsolete paths, but it also means a path that appears later may not be
+observed immediately. The good news is there is a simple solution: we just
+need to publish all the paths from the
 start, but fill them will null until the event actually happens (and
 change the above code to ignore the null). That way the subscription
 will be successful right away, and the alarm will sound immediately
@@ -176,8 +175,8 @@ netidx resolver -a anonymous list -w '/hw/*/cpu-temp' | \
             echo "/hw/${host}/overtemp|f64|$temp"
         elif test -z "${HOSTS[$host]}"; then
             HOSTS[$host]=$host
-            echo "/hw/${host}/overtemp-ts|null"
-            echo "/hw/${host}/overtemp|null"
+            echo "/hw/${host}/overtemp-ts|null|null"
+            echo "/hw/${host}/overtemp|null|null"
         fi
     done | netidx publisher -a anonymous --bind 192.168.0.0/24
 ```
@@ -219,11 +218,11 @@ use futures::{
     channel::mpsc::{channel, Sender},
     prelude::*,
 };
-use arcstr::{literal, ArcStr};
+use arcstr::literal;
 use netidx::{
     config::Config,
     path::Path,
-    pool::GPooled,
+    pool::global::GPooled,
     publisher::{self, PublisherBuilder, Publisher, Value},
     resolver_client::{DesiredAuth, ChangeTracker, Glob, GlobSet},
     subscriber::{self, Event, SubId, Subscriber, UpdatesFlags},
@@ -346,7 +345,10 @@ pub async fn main() -> Result<()> {
                         if let Ok(temp) = v.cast_to::<f64>() {
                             if temp > 75. {
                                 let tr = &temps[&id];
-                                tr.timestamp.update(&mut updates, Value::DateTime(Utc::now()));
+                                tr.timestamp.update(
+                                    &mut updates,
+                                    Value::DateTime(Utc::now().into()),
+                                );
                                 tr.temperature.update(&mut updates, Value::F64(temp));
                             }
                         }

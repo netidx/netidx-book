@@ -32,8 +32,8 @@ talking about.
 ### Subscriber & Publisher
 
 - Hang: Most hang situations are solved by heartbeats. Publisher sends
-  a heartbeat to every subscriber that is connected to it every 5
-  seconds. Subscriber disconnects if it doesn't reveive at least 1
+  a heartbeat to every subscriber that is connected to it every
+  second. Subscriber disconnects if it doesn't receive at least 1
   message every 100 seconds.
 
   Once a hang is detected it is dealt with by disconnecting, and it
@@ -43,17 +43,17 @@ talking about.
   but not fast enough. This could have multiple causes e.g. the
   subscriber is too slow, the publisher is too slow, or the link
   between them is too slow. Whatever the cause, the publisher can
-  handle this condition by providing a timeout to it's `flush`
-  function. This will cause any subscriber that can't consume the
-  flushed batch within the specified timeout to be disconnected.
+  handle this condition by providing a timeout when committing an update
+  batch. This causes any subscriber that can't consume that batch within the
+  specified timeout to be disconnected.
 - Crash: Subscriber allows the library user to decide how to deal with
   a publisher crash. If the lower level `subscribe` function is used
   then on being disconnected unexpecetedly by the publisher all
   subscriptions are notified and marked as dead. The library user is
-  free to retry. The library user could also use `durable_subscribe`
-  which will dilligently keep trying to resubscribe, with linear
+  free to retry. The normal `subscribe` API creates a durable subscription
+  which diligently keeps trying to resubscribe, with increasing randomized
   backoff, until it is successful. Regardless of whether you retry
-  manually or use `durable_subscribe` each retry will go through the
+  manually after `subscribe_nondurable` or use `subscribe`, each retry goes through the
   entire process again, so it will eventually try all the publishers
   publishing a value, and it will pick up any new publishers that
   appear in the resolver server.
@@ -75,7 +75,7 @@ talking about.
 - Crash: Resolver clients deal with crashes differently depending on
   whether they are read or write connections.
   - Read Connections (Subscriber): Abandon the current connection, wait a random
-    time between 1 and 12 seconds, and then go through the whole
+    time between 1 and 11 seconds, and then go through the whole
     connection process again. That roughly entails taking the list of
     all servers, permuting it, and then connecting to each server in
     the list until one of them answers, says a proper hello, and
@@ -90,8 +90,8 @@ talking about.
   - Write Connections (Publishers): Since write connections are
     responsible for replicating their data out to each resolver server
     they don't include some of the retry logic used in the read
-    client. They do try to replicate each batch 3 times seperated by a
-    1-12 second pause to each server in the cluster. If after 3 tries
+    client. They do try to replicate each batch 3 times separated by a
+    random 1–11 second pause to each server in the resolver cluster. If after 3 tries
     they still can't write to one of the servers then it is marked as
     degraded. The write client will try to replicate to a degraded
     server again at each heartbeat interval. In a nutshell write

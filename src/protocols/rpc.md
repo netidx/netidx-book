@@ -1,9 +1,8 @@
 # Remote Procedure Call
 
-At the library level RPCs in netidix are just like any other RPC. 
-The procedure name is the netidx path, the arguments are an array
-of netidx values. Below the library layer, mapping the RPC model into
-netidx is quite simple. e.g.
+At the library level, netidx RPCs have a procedure path and a set of named
+netidx-value arguments. Below the library layer, the procedure and its
+discoverable interface map into netidx paths quite simply:
 
 ```
 /app/rpcs/do_thing                            <- the procedure
@@ -17,9 +16,11 @@ netidx is quite simple. e.g.
 /app/rpcs/do_thing/args-can-have-any-name/doc <- doc string
 ```
 
-We set arguments by writing to `.../arg-name/val`, and we call the
-procedure by writing `null` to the procedure. The return value of the
-procedure is sent back to the caller in one of two ways. If the caller
+For manual calls, set arguments by writing to `.../arg-name/val`, then call the
+procedure by writing `null` to the procedure. The current client library can
+instead put the complete named argument set in the write to the procedure,
+which makes a normal call one write rather than one write per argument. The
+return value of the procedure is sent back to the caller in one of two ways. If the caller
 used `write_with_recipt`, then the return will be sent as the reply to
 that write request. If the caller did a normal write, then the
 procedure value will be updated with the return value, but only for
@@ -47,70 +48,28 @@ one of them at random when initially subscribing, and will use that
 one from then on (unless it's forced to resubscribe for watever
 reason).
 
-You might wonder, since the procedure and the arguments are different
-netidx paths, how it's possible to make sure that a client sends all
-it's arguments to the same procedure. Normally in netidx subscriber
-picks a random publisher from the set of all publishers publishing the
-path it is subscribing to. However the resolver server supports
-storing flags for each path, and one of the flags is called
-`USE_EXISTING`, which causes any subscriber to always use an existing
-publisher connection (if one exists) instead of picking a random
-publisher. Since the RPC library sets this flag on the procedure, and
-all the arguments it publishes, subscribers will choose a random
-publisher of the RPC when they subscribe to the first path of the rpc,
-and thereafter they will always use that publisher (if it fails then
-subscriber will pick a new random rpc publisher).
+An inline library call carries every argument in the write to the selected
+procedure, so they inherently reach one publisher. The separately published
+argument paths still support manual calls. The RPC server marks the procedure
+and those paths `USE_EXISTING`, which makes a subscriber reuse an existing
+publisher connection instead of independently choosing a publisher for each
+path. If that publisher fails, the subscriber can select another RPC publisher.
 
 Depending on what your RPC actually does you may need more or less
 coordination between publishers, and the cluster protocol can help you
 there, but in many cases load balancing is as simple as starting more
 publishers to handle additional traffic.
 
-## Overhead
+## Overhead and batching
 
-Once subscribed, the network overhead of calling a netidx rpc is quite
-low. For example, consider a procedure with 3 double precision
-floating point arguments that also returns a double precision
-float. Then the overhead of making a call to this procedure once
-subscribed is,
+Once subscribed, a library call sends one write-with-receipt to the procedure.
+Its value is a compact Pack array of `(argument-name, value)` pairs; the reply
+is one netidx value. The exact byte count therefore depends on the argument
+names and value encodings, rather than being a fixed per-argument write cost.
 
-```
-# set float arg
-tag:       1 byte, 
-id:        1 byte, 
-value:
-  val_tag: 1 byte,
-  double:  8 bytes
-recipt:    1 byte
-
-# call procedure
-tag:    1 byte,
-id:     1 byte,
-value:  1 byte,
-recipt: 1 byte
-```
-
-So to call a three argument procedure takes 12x3 + 4, or 40 bytes on
-the wire, and 24 bytes of that are the actual argument data. The
-return value is,
-
-```
-tag:       1 byte,
-id:        1 byte,
-value:
-  val_tag: 1 byte,
-  double:  8 bytes
-```
-
-11 bytes for the return, 8 of which are the actual return value
-data. Clearly data size on the wire should be no impedement to using
-netidx rpc in high performance applications. Aside from data size on
-the wire netidx has some additional beneficial characteristics, for
-example, because of the way subscriber and publisher are designed it
-is possible for a single client to concurrently issue many rpc calls
-to the same publisher, and in that case the messages will
-automatically batch allowing processing overhead to be amortized on
-both sides. e.g.
+A single client can concurrently issue many calls to the same publisher. The
+subscriber automatically batches the resulting writes, amortizing transport
+and processing overhead on both sides. For example:
 
 ``` rust
 futures::join_all(vec![
@@ -125,8 +84,6 @@ all three calls to be sent to the publisher. It isn't clear whether
 the results will also be sent as a batch, simply because each call may
 take a different amount of time to produce a result.
 
-Depending on how the handler for this rpc is written, all three calls
-may be evaluated in parallel on the publisher side.  In fact the
-default behavior is for concurrent calls to the same procedure to run
-in parallel, in order to degrade this one would need to e.g. depend on
-a shared locked data structure.
+Whether the publisher evaluates those calls serially or in parallel is a
+property of the application handler. The RPC transport permits either and does
+not impose shared mutable state between calls.

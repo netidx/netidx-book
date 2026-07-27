@@ -46,7 +46,7 @@ components are involved.
    * The addresses of all the publishers who are publishing that path
    * The service principal names of those publishers
    * The permissions the subscriber has to the path
-   * The authorization token, which is a SHA512 hash of the concatenation of
+   * The authorization token, which is a SHA3-512 hash of the concatenation of
      * A secret shared by the Resolver Cluster and the Publisher
      * The path
      * The permissions
@@ -75,7 +75,7 @@ components are involved.
 9. The publisher validates the subscriber's GSSAPI token and
    establishes an encrypted session, and then reads the subscribe
    request. It looks up the request path, and assuming it is
-   publishing that path, it constructs a SHA512 hash value of,
+   publishing that path, it constructs a SHA3-512 hash value of,
    * The secret it shared with the resolver cluster when it initially
      published the path.
    * The path the subscriber is requesting
@@ -91,24 +91,24 @@ components are involved.
 
    Assuming all the authentication and authorization checks out, and
    the publisher actually publishes the requested value, it sends the
-   current value back to the publisher along with the ID of the
+   current value back to the subscriber along with the ID of the
    subscription.
    
    Whenever the value changes the publisher sends the new value along
-   with the ID of the subscription to the publisher (encrypted using
+   with the ID of the subscription to the subscriber (encrypted using
    the GSSAPI session, and over the same TCP session that was
    established earlier).
 
 ### Other Authentication Methods
 
-In the case of Tls and Local authentication, the subscription flow is similar,
-it just doesn't involve the KDC. Under local authentication, the resolver server
-is listening on a unix domain socket at an agreed upon path. The client connects
-to the socket, and the server is able to determine the local user on the other end.
-It then sends the client a token that it can use to make requests. From step 2 on local
-auth is more or less the same as kerberos.
+In the case of TLS and Local authentication, the subscription flow is similar,
+but it does not involve the KDC. Under Local authentication, the resolver's
+authentication endpoint is a Unix socket on Unix or a named pipe on Windows.
+The operating system identifies the peer, and the resolver issues a short-lived
+token that the same client uses on its loopback TCP connection. From step 2 on,
+Local authentication follows the same authorization-token flow as Kerberos.
 
-Tls is very similar as well, except instead of a kdc, it's doing a TLS handshake. If the
+TLS is very similar as well, except instead of a KDC, it uses a TLS handshake. If the
 certificates check out, then from step 2 on, it's pretty much identical to kerberos.
 
 In the case of anonymous authentication it's just a simple matter of look up the address

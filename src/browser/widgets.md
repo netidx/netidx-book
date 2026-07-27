@@ -24,4 +24,8 @@ take bscript expressions instead of static values, these are
 Since these are bscript expressions they can change at any time and
 the gui will change.
 
+The widget picker also includes an invisible **BScript** widget. It has no GTK
+surface; use it for background event graphs and variable initialization that
+belong to the view rather than to a visible control.
+
 ![Common Properties](./widget-common.png)

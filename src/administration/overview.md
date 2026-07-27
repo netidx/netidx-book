@@ -8,18 +8,19 @@ moves values around, and once it is set up it runs on its own.
 
 The **admin plane** is how you *set that up and keep it running*: standing up
 resolvers, minting the TLS certificates that let nodes trust each other,
-granting permissions, adding a resolver to a cluster, restarting a member for
+granting permissions, adding a resolver to a resolver cluster, restarting a member for
 maintenance. In a small anonymous deployment the admin plane is barely there —
 you write a couple of config files and you're done. In a secured,
-multi-site deployment it is a real thing with its own server (the **admin
-server**), its own certificate authority, and its own access control. The whole
-admin plane is driven by one tool, [`netidx admin`](./admin.md), and this
+multi-site deployment it is a real thing with one active **CA**, which
+is also its certificate authority, and its own access control. Satellite admin
+servers trust that CA but do not share its authority. The whole admin
+plane is driven by one tool, [`netidx admin`](./admin.md), and this
 section of the book is about that tool and the concepts behind it.
 
 `netidx admin` has two faces over the same underlying logic:
 
 - an interactive **TUI** (run `netidx admin` with no subcommand) for a human at
-  a terminal — installs, cluster administration, approving enrollments, and
+  a terminal — installs, admin-domain administration, approving enrollments, and
 - a strict **command-line interface** (`netidx admin <command> --flags…`) for
   scripts and automation, where every decision is a flag and a missing one is
   an error rather than a prompt.
@@ -28,7 +29,7 @@ They are the same program: anything you can do in the TUI you can do from the
 CLI, and vice-versa. The rest of this section starts with a
 [tour of the tool](./admin.md), then covers the config files it manages, TLS
 and the CA, the [admin-plane security model](./security.md),
-[controller backup and recovery](./backup_recovery.md), the id-map daemon, and
+[CA backup and recovery](./backup_recovery.md), the id-map daemon, and
 authorization, before returning to the operational details of running a
 resolver server.
 

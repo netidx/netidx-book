@@ -28,8 +28,10 @@ or the special form
 e.g. `WRITE|/foo/bar`
 
 enables writing to `/foo/bar`, and publishes it as `null` if it was
-not already published. Written values will be sent to stdout in the
-same format as is written by subscriber.
+not already published. Each accepted write is sent to stdout as
+`PATH|VALUE`, where `VALUE` uses netidx's self-describing value syntax (for
+example `/foo/bar|u32:42`). This two-field write-notification format is
+different from the subscriber's three-field `PATH|TYPE|VALUE` output.
 
 If you want to publish to a path that has a `|` character in it then
 you must escape the `|` with `\`, e.g. `\|`. If you want to publish a
@@ -61,7 +63,7 @@ There are several command line options to the `netidx publisher` command,
     - 54.32.223.1@172.31.0.0/16 will bind to any interface matching 172.31.0.0,
       but will advertise it's address to the resolver as 54.32.223.1.
     - 54.32.224.1@0.0.0.0/32 will bind to every interface on the local machine
-      but will advertise it's address to the resolver as 54.32.223.1.
+      but will advertise its address to the resolver as 54.32.224.1.
     - 54.32.224.1:5001@172.31.23.234:5001 will bind to 172.31.23.234 on port 5001
       but will advertise it's address to the resolver as 54.32.224.1:5001. This
       would correspond to a typical single port forward NAT situation.
@@ -114,34 +116,35 @@ higher priority messages to stderr.
 
 ## Types
 
-The following types are supported,
-  - `u8`, `i8`: 8 bit unsigned / signed integer, 1 byte on the wire
-  - `u16`, `i16`: 16 bit unsigned / signed integer, 2 bytes on the wire
-  - `u32`: unsigned 32 bit integer, 4 bytes on the wire
-  - `v32`: unsigned 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-5 bytes on the wire depending on how big the number is. e.g. 0-128 is just 1 byte
-  - `i32`: signed 32 bit integer, 4 bytes on the wire
-  - `z32`: signed 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-5 bytes on the wire
-  - `u64`: unsigned 64 bit integer, 8 bytes on the wire
-  - `v64`: unsigned 64 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-10 bytes on the wire
-  - `i64`: signed 64 bit integer, 8 bytes on the wire
-  - `z64`: signed 64 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1-10 bytes on the wire
-  - `f32`: 32 bit single precision floating point number, 4 bytes on the wire
-  - `f64`: 64 bit double precision floating point number, 8 bytes on the wire
-  - `decimal`: arbitrary-precision decimal, useful when binary
-    floating-point rounding is unacceptable (financial data,
-    accounting). LEB128-encoded mantissa + scale.
+The following types are supported. Every value has a one-byte type tag in
+addition to the payload sizes described below.
+
+  - `u8`, `i8`: 8 bit unsigned / signed integer, 1-byte payload
+  - `u16`, `i16`: 16 bit unsigned / signed integer, 2-byte payload
+  - `u32`: unsigned 32 bit integer, 4-byte payload
+  - `v32`: unsigned 32 bit integer [LEB128 encoded](https://en.wikipedia.org/wiki/LEB128), 1–5 byte payload depending on magnitude
+  - `i32`: signed 32 bit integer, 4-byte payload
+  - `z32`: signed 32 bit integer, zigzag + LEB128 encoded, 1–5 byte payload
+  - `u64`: unsigned 64 bit integer, 8-byte payload
+  - `v64`: unsigned 64 bit integer, LEB128 encoded, 1–10 byte payload
+  - `i64`: signed 64 bit integer, 8-byte payload
+  - `z64`: signed 64 bit integer, zigzag + LEB128 encoded, 1–10 byte payload
+  - `f32`: 32 bit single precision floating point number, 4-byte payload
+  - `f64`: 64 bit double precision floating point number, 8-byte payload
+  - `decimal`: a 128-bit fixed-point decimal, useful when binary
+    floating-point rounding is unacceptable (financial data and accounting),
+    with a 16-byte payload
   - `datetime`: a date + time encoded as an i64 timestamp representing
     the number of seconds since jan 1 1970 UTC and a u32 number of sub
-    second nanoseconds fixing the exact point in time. 12 bytes on the
-    wire
+    second nanoseconds fixing the exact point in time; 12-byte payload
   - `duration`: a duration encoded as a u64 number of seconds plus a u32
-    number of sub second nanoseconds fixing the exact duration. 12 bytes on the wire
-  - `bool`: true, or false. 1 byte on the wire
-  - `string`: a unicode string, limited to 1 GB in length. Consuming 1-10 + number of bytes in the string on the wire (the length is LEB128 encoded)
-  - `bytes`: a byte array, limited to 1 GB in length, Consuming 1-10 + number of bytes in the array on the wire
-  - `array`: an array of netidx values, consuming 1+zlen(array)+sum(len(elts))
+    number of sub second nanoseconds; 12-byte payload
+  - `bool`: true or false; the tag itself carries the value, so there is no payload
+  - `string`: a Unicode string, encoded as a LEB128 byte length followed by UTF-8 bytes
+  - `bytes`: a byte array, encoded as a LEB128 length followed by its bytes
+  - `array`: an array of netidx values, with a LEB128 element count followed by the values
   - `map`: a map of netidx values to netidx values, consuming
-    1+zlen(map)+sum(len(key)+len(value)) bytes
+    a LEB128 entry count followed by each key and value
   - `error`: an error value wrapping any other value (typically a
     string with diagnostic text)
   - `null`: the literal `null`. Use `PATH|null|null` to publish a

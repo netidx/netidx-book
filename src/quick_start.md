@@ -1,106 +1,283 @@
-# Quick Start for Linux
+# Quick Start
 
-This walk-through sets up a netidx *workstation* — a local-auth
-resolver plus matching client — on your machine. It's enough to do
-netidx development, run publishers and subscribers locally, and try
-out the tools.
+Choose the setup that matches what you want to try. The commands are the same
+on Linux, macOS, and Windows.
 
-## Install Rust and Netidx
+## One machine: a standalone workstation
 
-Install [rust](https://www.rust-lang.org/tools/install) via rustup if
-you haven't already, then
+Use this when you want to experiment with netidx on one development machine.
+Install [Rust](https://www.rust-lang.org/tools/install) if necessary, then run:
 
-`cargo install netidx-tools`
-
-This builds the `netidx` binary with every built-in subcommand: the
-resolver server, the publisher and subscriber CLIs, the admin tooling,
-the id-map daemon, the activation supervisor, and the rest.
-
-On Linux you'll also need these build dependencies:
-
-- libclang (for bindgen) — `sudo apt install libclang-dev` on debian/ubuntu
-- gssapi (for kerberos) — `sudo apt install libkrb5-dev` on debian/ubuntu
-
-## One-Shot Install
-
-```
+```console
+cargo install netidx-tools
 netidx admin workstation install --with-service
 ```
 
-This drops a local-auth resolver listening on `127.0.0.1:4654`, a
-matching `client.json`, a `perms.json` granting your current Unix
-user full rights under `/local`, and activation units for the
-resolver and the netidx container, then registers the OS service. For an
-interactive install, run bare `netidx admin`, choose Workstation, and answer
-the service question in the TUI. If you initially skip it, register later with
-`netidx admin component service install` (see its `--help` for user/system
-scope).
+This installs a local resolver and matching client rooted at `/local`. Start a
+publisher in one terminal and leave it running:
 
-If port 4654 is busy use `--listen-port <n>` to pick a different one.
-`--dry-run` prints the plan and writes nothing. The full surface
-including the network-resolver and publisher-host templates is in
-the [netidx admin](./administration/admin.md) chapter.
-
-> **Note**: local-auth uses a Unix-socket peer-credentials handshake
-> and isn't supported on Windows. For Windows workstations use
-> join a TLS or Kerberos network through the `netidx admin` TUI instead.
-
-## Smoke Test
-
-Publish 10,000 dummy values from one shell:
-
-```
-netidx stress publisher --base /local/bench --delay 1000 1000 10
+```console
+netidx publisher
+/local/hello|string|hello from netidx
 ```
 
-This writes `/local/bench/$r/$c` for `r` in `0..1000` and `c` in
-`0..10` — 1000 rows × 10 columns — and updates each value once a
-second (`--delay` is in milliseconds).
+In another terminal, read the value:
 
-In another shell, look at one cell:
-
-```
-netidx subscriber /local/bench/0/0
+```console
+netidx subscriber -o /local/hello
 ```
 
-You should see one line per second like
+The configuration lives in the platform's normal per-user configuration
+directory: `~/.config/netidx` on Linux, `~/Library/Application Support/netidx`
+on macOS, and `%APPDATA%\netidx` on Windows.
 
-```
-/local/bench/0/0|v64|N
-```
+## Several machines: a secure local network
 
-with `N` incrementing. If that works, your workstation is set up. If
-not, run both commands again with `RUST_LOG=debug` — that usually
-points at the problem.
+This walkthrough creates one TLS-secured resolver that is also the admin
+domain's CA, then joins a workstation to it. It uses the interactive TUI
+throughout. Install the tools on both machines first:
 
-The subscriber doesn't need `-a local` because the workstation's
-`client.json` has `default_auth: local` already. Other commands
-(`netidx resolver list`, `netidx browser`, etc.) inherit the same
-default.
-
-### MacOS and Windows config paths
-
-`netidx admin workstation install` writes to the platform-default
-config directory. The paths above use the Linux convention
-(`~/.config/netidx/…`); the equivalents on other platforms are:
-
-- MacOS: `~/Library/Application Support/netidx/`
-- Windows: `~\AppData\Roaming\netidx\` (i.e. `{FOLDERID_RoamingAppData}\netidx`)
-
-## Optional GUI Browser
-
-The netidx browser is an optional GTK-based GUI for navigating the
-netidx tree. To build it you need GTK development files installed:
-
-```
-sudo apt install libgtk-3-dev libgtksourceview-4-dev
+```console
+cargo install netidx-tools
 ```
 
-then
+The names and addresses in these screenshots are examples. Use a domain and
+LAN addresses appropriate for your network.
 
-```
-cargo install netidx-browser
+### Create the admin domain and resolver
+
+On the machine that will remain running as the resolver, start the TUI:
+
+```console
+netidx admin
 ```
 
-A TUI browser is also built into `netidx-tools` — run `netidx browser`
-for a terminal-based view of the namespace.
+**1. Start the installation.** On a fresh machine, read the welcome message and
+press **Enter**.
+
+![The welcome message on a fresh machine.](./quick-start/resolver/01-welcome.png)
+
+**2. Select Resolver.** Use the arrow keys to select **Resolver**, then press
+**Enter**.
+
+![Resolver selected in the role list.](./quick-start/resolver/02-select-resolver.png)
+
+**3. Create the admin domain.** Select **Create a new admin domain (creates a
+CA)**. This creates the admin domain's one active CA on this resolver host.
+
+![Creating a new admin domain.](./quick-start/resolver/03-create-network.png)
+
+**4. Acknowledge the CA setup.** The installer explains that a new admin
+domain needs a certificate authority. Press **Enter**.
+
+![The installer explains that it will create a CA.](./quick-start/resolver/04-ca-required.png)
+
+**5. Name the admin domain.** Enter the domain name under which this admin
+domain will be discovered. The example uses `local`.
+
+![Entering the admin domain's domain name.](./quick-start/resolver/05-domain.png)
+
+**6. Record the CA identity.** The new CA displays a glyph and grouped
+fingerprint. This is the identity that joining machines must confirm. Save it
+somewhere the workstation operator can verify independently, then press
+**Enter**.
+
+![The newly created CA's glyph and grouped fingerprint.](./quick-start/resolver/06-ca-identity.png)
+
+**7. Store the recovery password off the machine.** This password can unlock
+the CA vault after loss of the original host. Store it in your normal secrets
+or disaster-recovery system before acknowledging the screen; it cannot be
+shown again.
+
+> The credential visible below belonged to the deleted, disposable CA used for
+> this walkthrough. Never publish a recovery password for a live CA.
+
+![The one-time CA recovery-password screen.](./quick-start/resolver/07-recovery-password.png)
+
+**8. Choose the admin-server address.** Enter a LAN address that other machines
+can reach, not a loopback address. The example resolver is `192.168.1.3`.
+
+![Entering the admin server's listen address.](./quick-start/resolver/08-admin-listen-address.png)
+
+**9. Choose the admin-server port.** The conventional port is `4565`; accept it
+unless it conflicts with your network policy.
+
+![Entering the admin server's listen port.](./quick-start/resolver/09-admin-listen-port.png)
+
+**10. Create the first administrator.** Enter the name this administrator will
+use when authorizing enrollment and other CA operations.
+
+![Entering the first CA administrator's name.](./quick-start/resolver/10-root-admin-name.png)
+
+**11. Set the administrator password.** The password is masked while you type
+and is stored only as an Argon2 password verifier in the CA vault.
+
+![Entering the first CA administrator's password.](./quick-start/resolver/11-root-admin-password.png)
+
+**12. Continue to the resolver.** The CA is now installed.
+Press **Enter** to configure the resolver role on the same machine.
+
+![The CA setup is complete and resolver setup is next.](./quick-start/resolver/12-controller-complete.png)
+
+**13. Select TLS authentication.** This secures and authenticates data-plane
+connections between the resolver and its clients.
+
+![TLS selected as the resolver authentication scheme.](./quick-start/resolver/13-auth-scheme.png)
+
+**14. Name the resolver certificate.** Enter the resolver's DNS label. It is
+joined with the admin domain name to form the certificate name; this
+example becomes `resolver.local`.
+
+![Entering the resolver certificate name.](./quick-start/resolver/14-resolver-name.png)
+
+**15. Protect the resolver private key.** Choose **seal** when the machine has a
+supported TPM or Secure Enclave. Sealing binds the key to this machine while
+still allowing unattended service startup. Password protection is the
+portable fallback; **none** is suitable only for disposable systems.
+
+![Selecting private-key protection for the resolver.](./quick-start/resolver/15-key-protection.png)
+
+**16. Choose the resolver address.** Enter the reachable LAN address on which
+the resolver will accept data-plane connections.
+
+![Entering the resolver's listen address.](./quick-start/resolver/16-resolver-listen-address.png)
+
+**17. Choose the resolver port.** The conventional resolver port is `4564`.
+
+![Entering the resolver's listen port.](./quick-start/resolver/17-resolver-port.png)
+
+**18. Register the OS service.** Select **Yes** so the CA, resolver, and
+supporting components start automatically.
+
+![Registering the resolver installation as an OS service.](./quick-start/resolver/18-register-service.png)
+
+**19. Finish the install.** The result confirms that configuration was written
+and the service was registered. Dismiss it with any key.
+
+![The successful resolver-install result.](./quick-start/resolver/19-installed.png)
+
+**20. Check local status.** The TUI now shows the resolver as running and offers
+its local administrative operations.
+
+![The running resolver on the TUI Local tab.](./quick-start/resolver/20-status.png)
+
+### Join the workstation
+
+On the workstation, start the same TUI:
+
+```console
+netidx admin
+```
+
+**1. Start the installation.** Read the welcome message and press **Enter**.
+
+![The welcome message on the fresh workstation.](./quick-start/workstation/01-welcome.png)
+
+**2. Select Workstation.** A workstation combines a local `/local` resolver
+with a matching client configuration.
+
+![Workstation selected in the role list.](./quick-start/workstation/02-select-workstation.png)
+
+**3. Join the admin domain.** Select **Join an admin domain** rather than installing a
+standalone workstation.
+
+![Choosing to join an existing admin domain.](./quick-start/workstation/03-join-cluster.png)
+
+**4. Wait for LAN discovery.** The TUI searches for admin domains
+advertised on the local network.
+
+![Searching the LAN for a netidx admin domain.](./quick-start/workstation/04-searching.png)
+
+**5. Select the discovered admin domain.** The discovery result is only a candidate;
+the next screen performs the human trust check before anything sensitive is
+sent.
+
+![Selecting a discovered admin domain and viewing its CA glyph.](./quick-start/workstation/05-select-network.png)
+
+**6. Confirm the CA identity.** Compare both the glyph and
+grouped fingerprint with the copy recorded on the resolver. Reject the admin domain
+if either differs. Once accepted, the workstation pins all further setup to
+this exact CA.
+
+![Confirming the discovered admin domain's CA identity.](./quick-start/workstation/06-confirm-ca.png)
+
+**7. Choose the workstation certificate name.** This is the workstation's TLS
+identity. The example uses `eric.local`.
+
+![Entering the workstation's TLS certificate name.](./quick-start/workstation/07-tls-name.png)
+
+**8. Protect the workstation private key.** Choose hardware sealing when it is
+offered, password protection when portability is required, or **none** only for
+a disposable machine. This lab workstation did not offer hardware sealing.
+
+![Choosing private-key protection on the workstation.](./quick-start/workstation/08-key-protection.png)
+
+**9. Authorize enrollment now.** This walkthrough has a CA administrator at the
+workstation, so select **Yes**. It is safe to enter the administrator password
+because the CA identity was verified first. Select **No** when
+the administrator is elsewhere; the request will wait in the CA's
+Enrollment Queue for remote approval instead.
+
+![Choosing synchronous enrollment with an administrator present.](./quick-start/workstation/09-admin-present.png)
+
+**10. Choose the id-map groups.** The default `users` group is suitable for this
+example. The authorizing administrator's policy limits which groups may be
+assigned.
+
+![Assigning the workstation identity to the users group.](./quick-start/workstation/10-id-map-groups.png)
+
+**11. Enter the administrator name.** Use the administrator created on the
+resolver.
+
+![Entering the CA administrator name.](./quick-start/workstation/11-admin-name.png)
+
+**12. Enter the administrator password.** It is masked, used once against the
+already verified CA, and is never retained by the workstation.
+
+![Entering the CA administrator password.](./quick-start/workstation/12-admin-password.png)
+
+**13. Register the OS service.** Select **Yes** so the local resolver and client
+support services start automatically.
+
+![Registering the workstation as an OS service.](./quick-start/workstation/13-register-service.png)
+
+**14. Finish the install.** Dismiss the successful result with any key.
+
+![The successful workstation-install result.](./quick-start/workstation/14-installed.png)
+
+**15. Check local status.** The workstation is now running and enrolled in the
+TLS admin domain.
+
+![The running workstation on the TUI Local tab.](./quick-start/workstation/15-status.png)
+
+### Try the secure connection
+
+On the resolver machine, start a publisher and leave it running. Fresh resolver
+permissions give each authenticated identity full control under
+`/users/<identity>`; the resolver certificate created above is
+`resolver.local`:
+
+```console
+netidx publisher
+/users/resolver.local/quick-start/message|string|hello from the resolver
+```
+
+On the workstation, read it through the local resolver. The local resolver
+follows its configured parent to the network resolver, and the connection is
+authenticated with the certificate issued during enrollment:
+
+```console
+netidx subscriber -o /users/resolver.local/quick-start/message
+/users/resolver.local/quick-start/message|string|"hello from the resolver"
+```
+
+This single-resolver layout is intentionally small. A serious installation
+normally runs at least two resolver members per resolver cluster so they can be
+restarted one at a time without interrupting clients. Continue with
+[Administration](./administration/overview.md) for redundant resolver clusters,
+authorization, backup and recovery, and larger hierarchies. The admin plane is
+a provisioning and operations convenience; netidx's data plane also works with
+configuration files maintained entirely by other tools.
+
+If something goes wrong, rerun the relevant command with `RUST_LOG=debug` for
+detailed diagnostics.

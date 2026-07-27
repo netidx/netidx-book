@@ -120,30 +120,28 @@ tool will print nothing and exit.
 
 ## Add
 
-This is a low level debugging tool, and it's really not recommended
-unless you know exactly what you're doing. Using it could screw up
-subscriptions to whatever path you add for some time. That said, it's
-pretty simple,
+This is a low-level debugging tool for an anonymous resolver. It creates a
+resolver record without starting a publisher at the supplied address, so it
+can temporarily misdirect subscriptions. Do not use it as a deployment or
+administration mechanism.
 
 ```
 netidx resolver add /path/to/thing 192.168.0.5:5003
 ```
 
-This entry will time out after a while because no publisher is there
-to send heartbeats for it.
-
-Note this will not work if your system is kerberos enabled, because
-the resolver server checks that the publisher is actually listening on
-the address it claims to be listening on, and that obviously can't
-work in this case.
+The entry eventually expires because no publisher is present to renew it.
+Authenticated resolver modes (Local, Kerberos, and TLS) verify that the
+caller owns a publisher listener at the advertised address, so a fabricated
+entry like this is rejected.
 
 ## Remove
 
-This is actually worse than add in terms of danger, because you can
-remove published things without the publisher knowing you did it, and
-as a result you can make subscriptions fail until the publisher is
-restarted. It also doesn't work if you are using kerberos, so that's something.
+This is the corresponding low-level anonymous-mode debugging operation. It
+removes the named publisher record without coordinating with the publisher;
+an active publisher can register it again on a subsequent resolver update.
+Authenticated resolver modes require proof that the caller owns the supplied
+publisher listener, just as `add` does.
 
 ```
-netidx resolver remove /path/to/thing 192.168.0.5:5003`
+netidx resolver remove /path/to/thing 192.168.0.5:5003
 ```

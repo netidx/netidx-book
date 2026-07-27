@@ -1,25 +1,33 @@
 # The `netidx admin` Tool
 
-Every netidx install is shaped by a small handful of JSON files — the client
-config, the resolver-server config, a permissions file, and (for TLS
-deployments) some keys and certificates. You can write all of this by hand, and
-the [Configuration](./configuration.md) chapter shows you the schema, but in
-practice the supported way to stand up and run netidx is `netidx admin`.
+Every netidx install is shaped by a small handful of JSON files—the client
+config, resolver-server config, permissions, and, for TLS deployments, keys
+and certificates.
+
+**`netidx admin` is completely optional.** Resolvers, publishers, and
+subscribers neither require nor speak to it during normal data-plane
+operation. You may build and maintain a deployment entirely by editing those
+configuration files. The [Configuration](./configuration.md) chapter documents
+that interface.
+
+When you do choose the admin plane, `netidx admin` is the supported tool for
+generating those files, managing certificates, and coordinating changes across
+machines.
 
 It brings the whole admin plane together:
 
 - **templated installs** that lay down a self-consistent set of files for a
-  known role — workstation, network resolver, publisher host — and register
-  the OS service that brings the node up on boot,
+  known role—CA, workstation, network resolver, or publisher
+  host—and register the OS service that brings the node up on boot,
 - a **certificate authority** and an enrollment workflow for TLS deployments,
-- **remote cluster administration** — approving new members, editing
+- **remote administration** — approving new members, editing
   permissions, restarting a resolver — over the network, with no SSH, and
 - **editors** for the individual config files that validate before they save.
 
 This chapter is the map. The workflows themselves get their own chapters
 ([installing a role](./configuration.md), [TLS and the CA](./tls.md),
 [authorization](./authorization.md), [admin-plane security](./security.md), and
-[controller recovery](./backup_recovery.md)); here we cover the *shape* of the
+[CA recovery](./backup_recovery.md)); here we cover the *shape* of the
 tool and the two ways you drive it.
 
 ## Two faces, one program
@@ -31,10 +39,14 @@ a second-class citizen.
 
 **The TUI.** Run `netidx admin` with no subcommand and you get a full-screen
 terminal interface. This is the right choice for a human doing setup or
-day-to-day cluster administration: it discovers what's on your machine and your
+day-to-day administration: it discovers what's on your machine and your
 network, walks you through decisions, and shows you things a flag can't — like
 the identicon you match to approve a new member (below). It needs a real
 terminal.
+
+![The TUI's Local tab presents this machine's roles and operations. The
+Admin Domain tab provides the corresponding remote administrative
+view.](../quick-start/resolver/20-status.png)
 
 **The strict CLI.** Run `netidx admin <command> --flags…` and you get a
 non-interactive command that does exactly what you told it. It is *strict*:
@@ -45,7 +57,7 @@ blocking prompt or an inferred default would be a bug. Every command has an
 exhaustive `--help`; this book covers the common shapes and points you there
 for the full flag list.
 
-Use whichever fits: the TUI to learn the system and to run a cluster by hand,
+Use whichever fits: the TUI to learn the system and to run an admin domain by hand,
 the CLI to automate what you learned.
 
 ## The command map
@@ -53,37 +65,42 @@ the CLI to automate what you learned.
 ```
 netidx admin                     # no subcommand → interactive TUI
 
+  backup <path>                              # back up the installed role
+  restore <path>                             # restore it as a complete install
+
   workstation install|status|update|join     # a dev machine: local resolver + client
   resolver    install|status|update          # a network-facing resolver server
               add-parent                      #   attach under a parent by delegation
               list-delegations|approve-delegation|deny-delegation   # (as the parent admin)
   publisher   install|status|update          # a publisher host's client config
 
-  ca          init|issue|sign|inspect-csr    # a local certificate authority
+  ca          install                        # dedicated CA role
+              init|issue|sign|inspect-csr    # lower-level local CA operations
               queue|approve|deny              #   the enrollment queue
               issued|revoke                   #   issued certs + revocation (CRL)
               servers|remove-server           #   immutable admin-server inventory
-              backup|recover-controller       #   disaster recovery
-              reconcile-controller            #   retry address/map/CRL fanout
+              reconcile-ca                    #   retry address/map/CRL fanout
               admin                           #   CA admin keyslots (RBAC)
               auto-approve|recovery|external  #   automation + recovery credentials
               fingerprint|list
 
   login|logout                               # sealed reusable admin sessions
-  perms       show|edit                       # a cluster's permissions, remotely
-  discover                                    # find netidx networks on the LAN (mDNS)
+  perms       show|edit                       # a resolver cluster's permissions, remotely
+  discover                                    # find netidx admin domains on the LAN
   uninstall                                   # tear down config + OS service
 
-  component   client|resolver|perms|units    # low-level, single-component editors
+  component   client|resolver|perms          # low-level, single-component editors
               activation|server|tls|id-map|service
 ```
 
 Three things are worth pulling out of that map.
 
-The **role commands** (`workstation`, `resolver`, `publisher`) are the front
-door. `install` lays down a working node; `status` tells you what a host is and
-whether it is still in sync with its network; `update` reconciles it after the
-network has changed (say, a resolver was added to the cluster). See the
+The **role commands** (`ca install`, `workstation`, `resolver`, and
+`publisher`) are the front door. A CA may run on a dedicated
+machine with no resolver. If no CA exists, the first resolver install
+still creates one locally before installing the resolver. `status` tells you
+what a host is and whether it is still in sync with its admin domain; `update`
+reconciles it after the admin domain has changed. See the
 [Configuration](./configuration.md) chapter for a walk through an install.
 
 The **`ca` commands** are the certificate authority and the enrollment
@@ -106,17 +123,17 @@ the other hand, *can* be done remotely, subject to permissions.
 
 The TUI opens on one of two tabs.
 
-**Local** is about *this* machine: install a role, look at and control the
-services running here, and — if this host runs an admin server — manage its
+**Local** is about *this* machine: install or restore a role, back up the
+complete current install, look at and control the services running here, and —
+if this host runs an admin server — manage its
 admin roster and permissions over a local, no-password control socket (being
-the local superuser is authority enough on your own box). A controller also
-offers an online recovery backup here. On a fresh machine the TUI greets you
-and offers to install a role.
+the local superuser is authority enough on your own box). On a fresh machine
+the TUI offers either a role install or restore from a bundle.
 
-**Cluster** is about administering a netidx cluster *over the network*. It
-lists the clusters this machine knows about (each verified live by its CA
+**Admin Domain** is about administering a netidx admin domain *over the network*. It
+lists the admin domains this machine knows about (each verified live by its CA
 identity before it's shown), lets you discover more on the LAN, or connect to
-one by address. Once you're connected to a cluster's admin server you get a set
+one by address. Once you're connected to an admin domain's admin server you get a set
 of panels:
 
 - **Queue** — pending enrollment requests waiting for a human to approve.
@@ -124,23 +141,23 @@ of panels:
   parent you administer.
 - **Roster** — the CA's admin keyslots and their policies (RBAC).
 - **Admin Servers** — immutable server identities, current addresses, granted
-  roles and cluster placement; this is also where a dead satellite can be
-  force-removed and controller reconciliation retried.
+  roles and resolver cluster placement; this is also where a dead satellite can be
+  force-removed and CA reconciliation retried.
 - **Issued** — the certificates this CA has issued, with a revoke action.
-- **Perms** — a cluster level's permissions, edited in your `$EDITOR`.
-- **Services** — the resolvers (and other units) on a chosen cluster member,
+- **Perms** — a resolver cluster's permissions, edited in your `$EDITOR`.
+- **Services** — the resolvers (and other units) on a chosen admin server,
   with start / stop / restart.
 
-Everything the Cluster tab does is authenticated and authorized by the admin
+Everything the Admin Domain tab does is authenticated and authorized by the admin
 server; connecting to it does not require an account on the remote machine.
 The TUI logs in once and reuses a short-lived session, never retaining the
 administrator password after login succeeds. See
-[Admin-Plane Security](./security.md) for the controller-verification and
+[Admin-Plane Security](./security.md) for the CA-verification and
 session rules.
 
 Remote service control is always explicit. In particular, the admin plane does
 not restart resolver servers after a topology or configuration change. For a
-serious cluster, restart one member, wait its `delay-reads` period for
+serious deployment, restart one member, wait its `delay-reads` period for
 publishers to republish, verify it, and only then restart the next member.
 
 ## The glyph
@@ -158,9 +175,13 @@ attacker who can talk on your network still can't forge the glyph of a key they
 don't hold, so this one visual check is what bootstraps trust — everything
 after it is pinned to the confirmed fingerprint automatically.
 
-You'll see the same glyph when you first connect to a cluster (confirming the
+You'll see the same glyph when you first connect to an admin domain (confirming the
 CA's identity), and you can print any CA's glyph for out-of-band comparison with
 `netidx admin ca fingerprint` (optionally against a remote `ip:port`).
+
+![A discovered admin domain with its CA glyph. The colored 8×8 image is compared
+alongside the grouped fingerprint code shown during trust
+confirmation.](../quick-start/workstation/05-select-network.png)
 
 ## Teardown
 

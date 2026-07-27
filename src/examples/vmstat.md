@@ -152,11 +152,11 @@ netidx resolver list -w "${BASE}/**" | \
 Lets dissect this script,
 
 ```
-netidx resolve list -w "${BASE}/**"
+netidx resolver list -w "${BASE}/**"
 ```
 
 This lists everything under `/sys/vmstat` recursively, and instead of
-exiting after doing that, it keeps polling every second, and if a new
+exiting after doing that, it keeps polling every five seconds, and if a new
 thing shows up that matches the glob it lists the new thing. The
 output is just a list of paths, e.g.
 

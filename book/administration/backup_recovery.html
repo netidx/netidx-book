@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Controller Backup and Recovery - Introduction to Netidx</title>
+        <title>Backup and Restore - Introduction to Netidx</title>
 
 
         <!-- Custom HTML head -->
@@ -12,20 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-0392ca55.css">
-        <link rel="stylesheet" href="../css/chrome-fc474251.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -35,24 +36,12 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f0033bd4.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-102419d9.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
-    <div id="mdbook-help-container">
-        <div id="mdbook-help-popup">
-            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
-            <div>
-                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
-                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
-                <p>Press <kbd>?</kbd> to show this help</p>
-                <p>Press <kbd>Esc</kbd> to hide this help</p>
-            </div>
-        </div>
-    </div>
-    <div id="mdbook-body-container">
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -81,59 +70,56 @@
             html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             let sidebar = null;
-            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
-                sidebar_toggle.checked = false;
             }
-            if (sidebar === 'visible') {
-                sidebar_toggle.checked = true;
-            } else {
-                html.classList.remove('sidebar-visible');
-            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
-        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
-            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <div id="mdbook-page-wrapper" class="page-wrapper">
+        <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="mdbook-menu-bar-hover-placeholder"></div>
-                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
                         </label>
-                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
                         </button>
-                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
-                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
                         </button>
                     </div>
 
@@ -141,226 +127,229 @@
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
-                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                            <i id="print-button" class="fa fa-print"></i>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="mdbook-search-wrapper" class="hidden">
-                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
-                        <div class="search-wrapper">
-                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
-                            <div class="spinner-wrapper">
-                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
-                            </div>
-                        </div>
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
-                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
-                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
-                        <ul id="mdbook-searchresults">
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="mdbook-content" class="content">
+                <div id="content" class="content">
                     <main>
-                        <h1 id="controller-backup-and-recovery"><a class="header" href="#controller-backup-and-recovery">Controller Backup and Recovery</a></h1>
-<p>The controller’s ordinary serving key and autorenew credential are sealed to
-its machine. That is useful after a disk is copied or stolen, but it means a
-filesystem backup of the live host is not, by itself, a controller recovery
-plan. <code>netidx admin ca backup</code> creates the portable, signed bundle needed to
-move the CA to replacement hardware.</p>
-<p>Recovery preserves the home CA and immutable controller UUID. It creates new
-machine-sealed serving and autorenew credentials, revokes the superseded
-controller serving certificates, and updates the controller’s address. It does
-not attempt to reuse a key sealed to the failed machine.</p>
-<h2 id="prepare-before-an-incident"><a class="header" href="#prepare-before-an-incident">Prepare before an incident</a></h2>
-<p>When a CA is created, netidx creates a recovery vault slot and displays its
-password once. Store that password in an offline credential system under a
-different failure domain from the backup. Do not put it in the backup
-directory, the controller’s password manager, or the same envelope as the
-backup media.</p>
-<p>On a healthy controller, check the recovery state with:</p>
+                        <h1 id="backup-and-restore"><a class="header" href="#backup-and-restore">Backup and Restore</a></h1>
+<p>Backup and restore operate on the installed <strong>role</strong>, not on individual
+configuration files. The same two commands cover a workstation, publisher,
+resolver, dedicated CA, or a CA that also runs a resolver:</p>
+<pre><code class="language-console">netidx admin backup /srv/netidx-backups/office-2026-07-12
+netidx admin restore /srv/netidx-backups/office-2026-07-12
+</code></pre>
+<p>Restore is a special install. It puts the role back into working order,
+including configuration, activation units, machine credentials, and the OS
+service. When a replacement identity needs CA approval, restore runs the
+normal enrollment ceremony and waits for the administrator.</p>
+<p>A combined CA-and-resolver installation is one role for backup and
+restore purposes. Its bundle contains both components; restoring it recovers
+the CA first, starts it, and then re-enrolls the co-located resolver's
+disposable TLS identity against that recovered CA.</p>
+<p>The bare <code>netidx admin</code> TUI exposes <strong>Back Up This Install</strong> on every installed
+role. On a fresh machine, press <code>r</code> on the Local tab to restore a bundle.</p>
+<h2 id="take-a-backup"><a class="header" href="#take-a-backup">Take a backup</a></h2>
+<p>Run backup on the machine being protected. The target must be a new directory;
+netidx never overwrites an existing backup:</p>
+<pre><code class="language-console">netidx admin backup /srv/netidx-backups/office-2026-07-12
+</code></pre>
+<p>The bundle records:</p>
+<ul>
+<li>the installed role and any co-located components,</li>
+<li>the current client, resolver, permissions, id-map, and admin-server
+configuration,</li>
+<li>activation units and OS-service intent,</li>
+<li>the admin domain's pinned CA identity and an admin-server address, and</li>
+<li>which disposable machine credentials must be re-enrolled.</li>
+</ul>
+<p>Runtime sockets, locks, login sessions, temporary files, autorenew keytabs,
+and private keys sealed to the source machine are not backup assets. Copy the
+completed directory as a unit to protected off-host storage.</p>
+<h3 id="ca-consistency"><a class="header" href="#ca-consistency">CA consistency</a></h3>
+<p>A CA backup uses its protected local control socket. The CA
+briefly pauses durable mutations, captures its CA vault, certificate and CRL,
+issuance and revocation records, authoritative map, delegation state, audit
+material, and referenced role configuration into memory, then resumes service
+before writing the target.</p>
+<p>That CA snapshot has a versioned manifest signed by the CA key. The
+CA vault remains encrypted; possession of the bundle does not reveal the CA
+key without the separately stored recovery password.</p>
+<h2 id="prepare-ca-recovery"><a class="header" href="#prepare-ca-recovery">Prepare CA recovery</a></h2>
+<p>When a CA is created, netidx displays its recovery password once. Store it in
+an offline credential system under a different failure domain from the backup.
+Check that the recovery slot exists with:</p>
 <pre><code class="language-console">netidx admin ca recovery status
 </code></pre>
-<p><code>recovery slot: present</code> means an off-box password can unlock the CA vault.
-The on-box autorenew keytab is a separate recovery authority: while the
-original machine still works, it can rotate a lost or exposed recovery
-password without knowing the old one:</p>
+<p>While the original CA still works, a lost or exposed recovery password
+can be replaced locally:</p>
 <pre><code class="language-console">netidx admin ca recovery rotate
 </code></pre>
-<p>Record the newly printed password and retire the old copy immediately.</p>
-<h2 id="take-an-online-backup"><a class="header" href="#take-an-online-backup">Take an online backup</a></h2>
-<p>The backup RPC is local-only. Run it as root on the controller, or select
-<strong>Back Up Controller</strong> on the TUI’s Local tab. It travels over the protected
-local Unix control socket, not the network listener, so no administrator
-password or session is involved.</p>
-<p><img src="./tui-local-controller.png" alt="The Local tab offers controller backup alongside the other on-box CA operations."></p>
-<p>The target is a new directory on the controller host:</p>
-<pre><code class="language-console">netidx admin ca backup /srv/netidx-backups/controller-2026-07-12
+<p>Record the newly displayed password and retire the old copy.</p>
+<h2 id="restore-a-workstation-or-publisher"><a class="header" href="#restore-a-workstation-or-publisher">Restore a workstation or publisher</a></h2>
+<p>Install the same or a compatible netidx release on a clean replacement
+machine, copy the bundle to it, and run:</p>
+<pre><code class="language-console">netidx admin restore /srv/restore/workstation-2026-07-12
 </code></pre>
-<p>Relative CLI paths are made absolute. The daemon refuses to overwrite an
-existing target, place a backup inside the live CA directory, follow a symlink
-inside the CA tree, or back up a legacy plaintext CA key. It stages the bundle
-beside the target and publishes the completed directory atomically.</p>
-<p>The CA stays online. Durable controller mutations pause briefly while the
-daemon captures a point-in-time snapshot into memory; the potentially slow
-write to backup storage happens after that barrier is released. The command
-prints the CA fingerprint, controller UUID, network-map version, highest
-certificate serial, file/byte counts, and the SHA-256 of the manifest. Retain
-that output with the backup job record.</p>
-<p>After creation, copy the whole directory to protected off-host storage using
-the organisation’s normal backup tooling. Preserve modes and keep the
-directory as a unit. A practical policy has at least one offline or immutable
-copy, rotation independent of the controller host, and regular restore drills.</p>
-<h2 id="what-the-bundle-contains"><a class="header" href="#what-the-bundle-contains">What the bundle contains</a></h2>
-<p>The bundle is intentionally sufficient for CA recovery, not a disk image. It
-contains:</p>
+<p>Local, anonymous, and Kerberos configurations need no CA ceremony. Kerberos
+credentials managed by the site's realm remain an external dependency.</p>
+<p>For TLS, restore generates a fresh key on the replacement machine, protects it
+with the local TPM/Secure Enclave when available, and queues normal enrollment.
+The user's terminal shows the request code; an administrator sees the same
+identity and code in the CA queue. Network loss while waiting is harmless:
+repeat the restore command after connectivity returns. A byte-identical staged
+restore is resumed; different live configuration is never overwritten.</p>
+<p>The source machine's TLS certificate is retained only as restoration metadata.
+Its private key is not transplanted.</p>
+<h2 id="restore-a-resolver-satellite"><a class="header" href="#restore-a-resolver-satellite">Restore a resolver satellite</a></h2>
+<p>Run the same command:</p>
+<pre><code class="language-console">netidx admin restore /srv/restore/eu-resolver-2026-07-12
+</code></pre>
+<p>Restore first re-enrolls the resolver's data-plane identities. It then submits
+an admin-server replacement enrollment containing:</p>
 <ul>
-<li>the encrypted CA vault and CA certificate,</li>
-<li>issued-certificate records, revocation state, audit material, and the
-CA-authoritative network map,</li>
-<li><code>admin-server.json</code>,</li>
-<li>the controller’s id-map config when it has that role,</li>
-<li>a self-contained resolver config when it has that role (permission includes
-are resolved and folded into the captured file), and</li>
-<li><code>manifest.json</code>, per-file SHA-256 hashes, and <code>manifest.sig</code>, signed by the
-CA key.</li>
+<li>the requested roles,</li>
+<li>listen address,</li>
+<li>stable resolver cluster and base,</li>
+<li>resolver members, and</li>
+<li>the immutable UUID of the failed server being replaced.</li>
 </ul>
-<p>It deliberately excludes:</p>
-<ul>
-<li>the controller serving private key and its <code>server/</code> directory,</li>
-<li>TPM/Secure-Enclave sidecars and the autorenew keytab,</li>
-<li>administrator login sessions,</li>
-<li>the local control socket, locks, temporary files, and</li>
-<li>unrelated data-plane TLS identities stored elsewhere on the host.</li>
-</ul>
-<p>Possession of a bundle does not by itself expose the CA key: the vault remains
-encrypted. The separately stored recovery password is the portable credential
-that unlocks it. Protect both accordingly.</p>
-<h2 id="recover-onto-replacement-hardware"><a class="header" href="#recover-onto-replacement-hardware">Recover onto replacement hardware</a></h2>
-<h3 id="1-fence-the-old-controller"><a class="header" href="#1-fence-the-old-controller">1. Fence the old controller</a></h3>
-<p><strong>Before unlocking the backup, prove the old controller cannot return to the
-network.</strong> Power it off and remove its network access, revoke its cloud or
-hypervisor identity, or otherwise fence it using the infrastructure’s normal
-split-brain procedure.</p>
-<p>Recovery revokes old serving certificates, but a running old controller still
-holds CA authority and may be partitioned from the new CRL. Software on the
-replacement host cannot establish that the failed host is dead. Treat fencing
-as a mandatory prerequisite, not a cleanup step.</p>
-<h3 id="2-prepare-clean-destinations"><a class="header" href="#2-prepare-clean-destinations">2. Prepare clean destinations</a></h3>
-<p>Install the same netidx release on the replacement controller. Copy the backup
-directory to it without modifying its contents. Choose new paths for the CA
-and admin-server config; neither destination may already exist. Choose the
-new concrete admin listen address, including a non-standard port if used.</p>
-<p>The current admin protocol uses an exact epoch match, so all admin servers,
-clients used for recovery, and certificate renewal daemons must speak the same
-protocol version. Ordinary compatible release changes do not advance that
-epoch, but using the same release removes ambiguity during a recovery.</p>
-<h3 id="3-restore-and-rebind-offline"><a class="header" href="#3-restore-and-rebind-offline">3. Restore and rebind offline</a></h3>
-<p>Do not start the admin service yet. Run the recovery command locally on the
-replacement host:</p>
-<pre><code class="language-console">netidx admin ca recover-controller \
-  --backup /srv/restore/controller-2026-07-12 \
-  --ca-dir /etc/netidx/ca \
-  --config /etc/netidx/admin-server.json \
+<p>The approving administrator sees all of those facts in the CLI or TUI. On
+approval the CA grants a fresh server UUID in the same resolver cluster,
+removes the failed UUID, and immediately revokes every old serving certificate.
+The active CA cannot be replaced through this ceremony.</p>
+<p>If the CA cannot be found at the address recorded in the bundle, name
+a verified candidate explicitly:</p>
+<pre><code class="language-console">netidx admin restore /srv/restore/eu-resolver-2026-07-12 \
+  --admin-server CA.example.com:4565
+</code></pre>
+<p>No credential is sent until the candidate is verified against the backup's
+pinned CA identity and confirmed to be the active CA.</p>
+<h2 id="restore-a-ca"><a class="header" href="#restore-a-ca">Restore a CA</a></h2>
+<h3 id="1-fence-the-old-ca"><a class="header" href="#1-fence-the-old-ca">1. Fence the old CA</a></h3>
+<p>Before unlocking the backup, prove the old CA cannot return to the
+network. Power it off and remove its network access, revoke its cloud or
+hypervisor identity, or use the site's normal split-brain fencing procedure.</p>
+<p>Software on the replacement host cannot prove that the old machine is dead.
+Restore therefore requires an explicit attestation:</p>
+<pre><code class="language-text">--old-CA-fenced
+</code></pre>
+<h3 id="2-run-restore-on-a-clean-host"><a class="header" href="#2-run-restore-on-a-clean-host">2. Run restore on a clean host</a></h3>
+<p>When the replacement host keeps the old addresses, omit the address options.
+When its addresses change, supply both the CA address and the
+co-located resolver's advertised address. <code>--resolver-bind</code> is needed only
+when the resolver binds a different local interface address, such as behind
+NAT:</p>
+<pre><code class="language-console">netidx admin restore /srv/restore/CA-2026-07-12 \
+  --old-CA-fenced \
   --listen 10.0.0.20:4565 \
+  --resolver-listen 10.0.0.20:4564 \
+  --resolver-bind 10.0.0.20 \
   --recovery-password-stdin
 </code></pre>
-<p>Enter the recovery password on standard input. For automation, use
-<code>--recovery-password-file</code> with a short-lived, mode-0600 secret file supplied
-by the site’s secret manager; never place the password on the command line.</p>
-<p>This is an offline operation. It does not open the admin network listener or
-push a CRL. It first verifies the manifest signature against the bundled CA
-certificate, every file hash and type, the certificate issuance index, the CA
-fingerprint, controller UUID, and map version. Only a verified bundle is
-restored.</p>
-<p>Recovery then:</p>
+<p>The TUI asks for the replacement CA address and, when the bundle also
+contains a resolver, its advertised address and local bind IP. It detects the
+replacement host's interfaces just as installation does: the suggested IP and
+bind come from the current machine, while each port comes from the backup.
+Review the values when restoring behind NAT or inside a container.</p>
+<p>Use <code>--recovery-password-file</code> for automation with a short-lived mode-0600
+file supplied by the site's secret manager. Never place the password directly
+on the command line.</p>
+<p>Restore verifies the complete outer bundle and the signed CA snapshot
+before writing. It then:</p>
 <ol>
-<li>restores the CA and admin-server configuration,</li>
-<li>restores role files beside the admin config as
-<code>recovered-resolver.json</code> and <code>recovered-id-map.json</code> where applicable,</li>
-<li>validates the restored controller identity against the CA and network map,</li>
-<li>generates a new serving key and autorenew credential sealed to the
+<li>restores the CA and authoritative administrative state,</li>
+<li>verifies the CA fingerprint and CA UUID against the admin domain map,</li>
+<li>generates fresh CA serving and autorenew credentials sealed to the
 replacement machine,</li>
-<li>issues a new serving certificate for the same controller UUID,</li>
-<li>revokes all superseded controller serving certificates and re-signs the
-local CRL, and</li>
-<li>writes the new listen address and machine-local paths.</li>
+<li>issues a serving certificate carrying the same CA UUID,</li>
+<li>revokes all superseded CA serving certificates and republishes the
+CRL,</li>
+<li>relocates managed paths and updates the CA address,</li>
+<li>recreates and starts the recorded OS service, and</li>
+<li>re-enrolls any co-located resolver identities through the now-running
+CA, then reconciles the CA-owned resolver endpoint and hierarchy.</li>
 </ol>
-<p>If a mistyped recovery password stops the command after the pristine bundle
-has been restored, correct the password and repeat the same command. The
-restore recognizes that exact, unmodified intermediate state. It never treats
-an arbitrary existing CA or config directory as safe to overwrite.</p>
-<p><code>--insecure-no-tpm</code> exists for disposable test CAs. It writes the replacement
-serving and autorenew secrets in plaintext; using it in production turns every
-disk image and ordinary filesystem backup into CA key material.</p>
-<h3 id="4-start-through-the-normal-service-route"><a class="header" href="#4-start-through-the-normal-service-route">4. Start through the normal service route</a></h3>
-<p>After the command succeeds, start the system service in the usual way for that
-host. Recovery itself does not supervise or restart it.</p>
-<p>On startup the controller sends its UUID, new address, complete authoritative
-map, and current CRL to every registered node. Satellites validate the exact
-home CA and controller identity before persisting the new CA address, map, and
-CRL. Their periodic map refresh also rereads the controller address, so the
-controller can move without restarting every satellite.</p>
-<p>The startup fanout may be partial if a site is offline. Once the failed targets
-are reachable, repeat the idempotent reconciliation from an administrator
-workstation:</p>
-<pre><code class="language-console">netidx admin ca reconcile-controller \
+<p>For a combined CA-and-resolver restore, the resolver address change is
+one operation: restore updates the owned member in <code>resolver.json</code>, the local
+<code>client.json</code>, the install's bootstrap hint, and the authoritative admin domain map.
+The server UUID, resolver cluster UUID, placement, roles, and data-plane authentication
+do not change. The CA then pushes the updated topology to registered
+admin servers. A failed target is reported by server UUID and address, and
+repeating restore resumes the same idempotent reconciliation.</p>
+<p>The old CA identity is preserved because it is the admin domain's sole
+authority. All other machine identities are disposable and receive fresh
+keys.</p>
+<p>If the CA is an intermediate CA and its bundled certificate has
+expired, have the external PKI issue a fresh certificate for the preserved CA
+key, then include it in the same restore transaction:</p>
+<pre><code class="language-console">netidx admin restore /srv/restore/CA-2026-07-12 \
+  --old-CA-fenced \
+  --recovery-password-stdin \
+  --external-cert netidx-intermediate.pem \
+  --external-root corporate-root.pem
+</code></pre>
+<p>The replacement is accepted only when it carries the same CA key and chains to
+the already pinned external issuer.</p>
+<p><code>--insecure-no-tpm</code> exists for disposable test CAs. It writes replacement
+CA credentials in plaintext and is not appropriate for production.</p>
+<h3 id="3-reconcile-an-offline-site"><a class="header" href="#3-reconcile-an-offline-site">3. Reconcile an offline site</a></h3>
+<p>At startup the recovered CA sends its address, authoritative map, and
+current CRL to every registered server. Restore also reconciles resolver
+member and referral configuration when a co-located resolver moved. If a site
+is offline, repeat the idempotent reconciliation after it returns:</p>
+<pre><code class="language-console">netidx admin ca reconcile-CA \
   --server 10.0.0.20:4565 \
   --admin operations \
   --accept-glyph 'THE CONFIRMED GROUPED FINGERPRINT'
 </code></pre>
-<p>The command prints one operation ID and identifies each failed target by
-immutable server UUID and address. Repeating it is the supported manual retry;
-there is no automatic background job that can surprise an operator after a
-partition heals.</p>
-<h3 id="5-validate-and-finish-the-host-rebuild"><a class="header" href="#5-validate-and-finish-the-host-rebuild">5. Validate and finish the host rebuild</a></h3>
-<p>At minimum:</p>
-<ol>
-<li>compare <code>netidx admin ca fingerprint</code> with the recorded home-CA glyph,</li>
-<li>connect with the TUI or <code>netidx admin login</code> and inspect
-<code>netidx admin ca servers</code>,</li>
-<li>confirm the controller row has the original UUID and the new address,</li>
-<li>confirm the old controller serving certificates are revoked,</li>
-<li>verify one administrative read and one harmless, planned mutation at each
-reachable site,</li>
-<li>reconcile any targets reported by startup or the explicit command, and</li>
-<li>take a fresh backup of the recovered controller.</li>
-</ol>
-<p>Administrator sessions are not restored; operators log in again. Any other
-TLS identity co-located on the failed host had its own machine-sealed private
-key and must be re-enrolled. In particular, validate or re-enroll the local
-resolver and id-map data-plane identities before declaring the replacement
-host complete.</p>
-<h2 id="recovery-drills"><a class="header" href="#recovery-drills">Recovery drills</a></h2>
-<p>A backup is proven only by a restore test. A useful scheduled drill restores
-onto an isolated replacement VM, verifies the signed bundle, confirms the
-preserved CA fingerprint and controller UUID, and stops before allowing the
-test controller onto the production network. Record the netidx release,
-manifest digest, recovery duration, required infrastructure access, and every
-manual step. Destroy the restored test secrets when the drill is complete.</p>
+<p>The result identifies every target by immutable UUID and address. Topology
+reconciliation writes resolver configuration but never restarts a resolver.
+Use the normal rolling procedure: restart one resolver cluster member, wait its
+delay-reads interval for publishers to republish, then restart the next. There
+is no automatic delayed restart or background retry.</p>
+<h2 id="validate-and-drill"><a class="header" href="#validate-and-drill">Validate and drill</a></h2>
+<p>After any restore, verify the role's status, service state, and one normal data
+operation. After CA recovery also confirm the preserved CA glyph and
+CA UUID, inspect the admin-server roster, and check that superseded
+certificates are revoked.</p>
+<p>A backup is proven only by a restore drill. Periodically restore onto an
+isolated VM, record the release and manifest digest, exercise the required
+credential and approval paths, then destroy the test secrets.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                             <a rel="prev" href="../administration/security.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                                <i class="fa fa-angle-left"></i>
                             </a>
 
                             <a rel="next prefetch" href="../administration/configuration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                                <i class="fa fa-angle-right"></i>
                             </a>
 
                         <div style="clear: both"></div>
@@ -370,21 +359,16 @@ manual step. Destroy the restored test secrets when the drill is complete.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                     <a rel="prev" href="../administration/security.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                        <i class="fa fa-angle-left"></i>
                     </a>
 
                     <a rel="next prefetch" href="../administration/configuration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
-        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
-        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
-        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
-        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -393,16 +377,15 @@ manual step. Destroy the restored test secrets when the drill is complete.</p>
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-c22b7243.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-
 
 
     </div>

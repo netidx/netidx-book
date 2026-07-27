@@ -1,52 +1,62 @@
 # Running the Resolver Server
 
-As of this writing the resolver server only runs on Unix, and has only
-been extensively tested on Linux. There's no reason it couldn't run on
-Windows, it's just a matter of some work around group name resolution
-and service integration. Starting a resolver server is done from the
-`netidx` command line tool (`cargo install netidx-tools`). e.g.
+The resolver server runs on Linux, macOS, and Windows. A normal
+`netidx admin resolver install` writes an activation unit and the selected OS
+service starts the activation supervisor; running the resolver executable by
+hand is mainly useful for debugging.
 
-``` bash
-$ KRB5_KTNAME=FILE:/path/to/keytab \
-netidx resolver-server -c resolver.json
+```console
+netidx resolver-server \
+  --config /path/to/resolver.json \
+  --id 0 \
+  --delay-reads \
+  --foreground
 ```
 
-By default the server will daemonize, include `-f` to prevent that. If
-your cluster has multiple replica servers then you must pass `--id
-<index>` to specify which one you are starting, however since the
-default is 0 you can omit the id argument in the case where you only
-have 1 replica.
+`--id` selects the zero-based entry in `member_servers` and defaults to 0.
+On Unix, omitting `--foreground` daemonizes the process; on Windows the process
+already remains in the foreground.
 
-You can test that it's working by running,
+`--delay-reads` prevents the freshly started member from accepting read
+clients for one `writer_ttl`. This gives publishers time to republish the
+member's path table. Installer-generated resolver units include it by default.
 
-``` bash
-$ netidx resolver list /
+Test the resolver through the client config installed on that host:
+
+```console
+netidx resolver list /
 ```
 
-Which should print nothing (since you have nothing published), but
-should not error, and should run quickly. You can use the command line
-publisher and subscriber to further test. In my case I can do,
+An empty result is normal when nothing is published; an authentication,
+connection, or configuration error is not. For a small end-to-end check, keep
+this publisher running in one terminal:
 
-``` bash
-[eric@blackbird ~]$ netidx publisher \
-    --bind 192.168.0.0/24 \
-    --spn host/blackbird.ryu-oh.org@RYU-OH.ORG <<EOF
-/test|string|hello world
-EOF
+```console
+netidx publisher
+/users/YOUR-IDENTITY/test|string|hello world
 ```
 
-and then I can subscribe using
+Then subscribe from another:
 
-``` bash
-[eric@blackbird ~]$ netidx subscriber /test
-/test|string|hello world
+```console
+netidx subscriber /users/YOUR-IDENTITY/test
 ```
 
-you'll need to make sure you have permission, that you have a keytab
-you can read with that spn in it, and that the service principal
-exists etc. You may need to, for example, run the publisher and/or
-resolver server with
+Replace `YOUR-IDENTITY` with the authenticated name shown by your deployment.
+The default network-resolver permissions grant each user publish rights in
+that subtree. On a default workstation, `/local/test` is a convenient
+alternative.
 
-`KRB5_KTNAME=FILE:/somewhere/keytabs/live/krb5.keytab`
+The client config supplies the normal authentication choice. For Kerberos
+diagnostics, `KRB5_TRACE=/dev/stderr` shows GSSAPI/KDC activity; use
+`KRB5_KTNAME=FILE:/path/to/keytab` when a service keytab is outside the
+platform default. `RUST_LOG=debug` enables detailed netidx diagnostics for any
+authentication method.
 
-`KRB5_TRACE=/dev/stderr` can be useful in debugging kerberos issues.
+## Rolling restarts
+
+Resolver members do not replicate to one another. If a topology or member
+configuration change requires a restart, restart one member, wait for its
+`--delay-reads` warm-up to finish and verify it, then restart the next member.
+Do not restart every member at once. Permission-only changes reload live and do
+not require this procedure.

@@ -12,14 +12,14 @@ Core data-plane tools:
 - `netidx subscriber` — subscribe to values, print updates to stdout,
   optionally write or call RPCs from stdin.
 - `netidx resolver` — query and (carefully) edit the resolver server.
-- `netidx record` / `netidx record-client` — archive netidx values to
+- `netidx record` (Unix) / `netidx record-client` — archive netidx values to
   disk, replay history, compress and index archives.
 - `netidx container` — a persistent KV store that publishes its
   contents.
 - `netidx activation` — process supervisor that runs other
   netidx-facing services on demand or at startup.
 - `netidx stress` — load generator (publisher / subscriber /
-  channel_publisher / channel_subscriber).
+  channel-publisher / channel-subscriber).
 
 Configuration management (covered in
 [netidx admin](../administration/admin.md)):
@@ -36,11 +36,14 @@ Configuration management (covered in
 Other:
 
 - `netidx browser` — a built-in TUI browser for the namespace.
+- The separately installed GTK browser — the production graphical browser and
+  BScript GUI builder documented in the [GTK Browser](../browser/overview.md)
+  section.
 - `netidx wsproxy` — a WebSocket bridge so browsers can talk to
   netidx publishers directly.
 - `netidx resolver-server` — the resolver server itself (usually
   managed under activation, not invoked by hand).
-- `netidx id-map serve` — the id-mapper daemon (see the
+- `netidx id-map serve` — the Unix id-mapper daemon (see the
   [Id-Map Daemon](../administration/id_map.md) chapter).
 
 Every subcommand has an exhaustive `--help`; the chapters that

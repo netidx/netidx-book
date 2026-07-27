@@ -1,7 +1,8 @@
 # Browser
 
-NOTE: The gtk browser, and it's version of bscript, is deprecated. A
-new browser is being implemented that will replace it.
+This chapter documents the production GTK browser and its BScript-based GUI
+builder. The newer Atlas interface is still under development; until it
+replaces the GTK application, the workflows in this section remain current.
 
 The browser is a graphical tool that visualizes the contents of
 netidx, it allows users to navigate to places of interest, view data

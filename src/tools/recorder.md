@@ -1,6 +1,6 @@
 # Recorder
 
-The recorder subscribes to a set of paths defined by globs and
+The recorder (currently available on Unix) subscribes to a set of paths defined by globs and
 writes their values to a compact binary archive on disk. The same
 process can serve replay sessions over netidx — multiple
 simultaneous clients, each at their own start time, playback speed,
@@ -72,9 +72,9 @@ The config is a single JSON object. A current example
 
 ### Top-level
 
-- `archive_directory` — directory containing archive files. The file
-  currently being written is `current`; rotated files are named with
-  the rfc3339 timestamp at which they ended.
+- `archive_directory` — root directory containing one subdirectory per shard.
+  Within each shard directory, the file currently being written is `current`;
+  rotated files are named with the RFC 3339 timestamp at which they ended.
 - `archive_cmds` — shell hooks invoked at archive lifecycle events
   (optional; omit to disable). The value of each hook is a pair
   `[command, args]`. The literal string `{shard}` in any arg is
@@ -137,9 +137,9 @@ The config is a single JSON object. A current example
   replay sessions. Defaults 512 / 64.
 - `oneshot_data_limit` — maximum bytes a `oneshot` RPC may return
   in one call. Default 100 MiB.
-- `cluster_shards` — number of shards expected in this cluster
-  (0 for a single-process recorder). Playback is blocked until all
-  shards have joined.
+- `cluster_shards` — number of *other* recorder processes expected in this
+  playback cluster (0 for a single-process recorder). Playback is blocked
+  until that many peers have joined.
 - `cluster` — netidx subpath of `<base>` under which shards
   rendezvous. Default `cluster`. Override when running multiple
   recorder clusters under the same `base`.
@@ -169,7 +169,7 @@ defaults and returns its id:
 
 ```
 $ netidx subscriber <<EOF
-WRITE|/solar/archive/session|string|null
+WRITE|/solar/archive/session|null|null
 EOF
 /solar/archive/session|string|ef93a9dce21f40c49f5888e64964f93f
 ```

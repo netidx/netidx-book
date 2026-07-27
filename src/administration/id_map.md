@@ -3,14 +3,12 @@
 When the resolver authorises an operation it looks up the caller's
 *unix-style* identity — a uid, a primary gid, and a list of
 supplementary group names — and matches that against the entries in
-`perms.json`. For Kerberos and local-auth deployments the lookup
-follows the kernel's own user database via `/bin/id`, which is what
-the resolver runs by default (`id_map_type: Command`,
-`id_map_command: /bin/id`). For TLS, the principal is a certificate
+`perms.json`. The default platform mapper uses `/bin/id` on Unix and native
+account/local-group APIs on Windows. For TLS, the principal is a certificate
 SAN — a DNS name like `alice.example.com` or `mazikeen.local` — and
-`/bin/id` has nothing useful to say about it.
+the platform account database usually has nothing useful to say about it.
 
-The id-map daemon (`netidx id-map serve`) is the answer. It reads a
+On Unix, the id-map daemon (`netidx id-map serve`) is the answer. It reads a
 small JSON file mapping netidx names to uids, primary groups, and
 supplementary group memberships, and answers the resolver's lookup
 queries over a unix socket using the same `/bin/id`-style line format
@@ -27,17 +25,17 @@ Two fields in the resolver-server config:
 }
 ```
 
-`id_map_type` chooses between `Command` (default — exec `/bin/id`
-or whatever path you give), `Socket` (connect to the daemon at the
-given path), and `DoNotMap` (skip lookup entirely; every caller is
-treated as the bare SAN with no groups). `id_map_timeout` (default
-3600 s) controls how long the resolver caches successful lookups
-per caller.
+`id_map_type` chooses between `Command` (the platform default, or execute the
+program in `id_map_command`), `Socket` (connect to the Unix daemon at the
+given path), and `DoNotMap` (skip lookup entirely; every caller is treated as
+the bare SAN with no groups). `id_map_timeout` (default 3600 s) controls how
+long the resolver caches successful lookups per caller. Id-map sockets are not
+supported on Windows; its platform default mapper is native.
 
 `netidx admin resolver install --auth tls` writes this section for you
-and drops a matching `id-map.unit` so the daemon comes up alongside
+and, on Unix, drops a matching `id-map.unit` so the daemon comes up alongside
 the resolver under the activation supervisor. Pass `--no-id-map` to
-skip that and fall back to the platform `/bin/id`.
+skip that and use the platform mapper instead.
 
 ## The JSON schema
 

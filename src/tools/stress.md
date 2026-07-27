@@ -8,10 +8,10 @@ itself. It has four subcommands, all under `netidx stress`:
   subscriber.
 - `subscriber` — subscribe to every value published by `stress
   publisher` and print throughput statistics to stdout.
-- `channel_publisher` — publish a channel and serve every connecting
-  subscriber a steady stream of batches.
-- `channel_subscriber` — subscribe to a channel and report throughput
-  (or, with `--latency`, round-trip latency).
+- `channel-publisher` — publish a channel and echo batches from every
+  connecting client.
+- `channel-subscriber` — send batches through that echo service and report
+  throughput (or, with `--latency`, round-trip latency).
 
 ## `stress publisher`
 
@@ -44,19 +44,20 @@ Subscribes to every value matching `<base>/*/*` published by a
 `stress publisher` and reports throughput. Pair it with a publisher
 on the same `--base`.
 
-## `stress channel_publisher` / `stress channel_subscriber`
+## `stress channel-publisher` / `stress channel-subscriber`
 
-These use the netidx-protocols channel abstraction rather than
-plain pub/sub. Defaults to `--base /local/channel/bench`. The
-subscriber takes one positional argument — the batch size (default
-100) — and `--delay` (ms between batches). Pass `--latency` to
-measure round-trip latency instead of throughput.
+These use the netidx-protocols Pack channel abstraction rather than plain
+pub/sub. Both default to `--base /local/channel/bench`. The publisher echoes
+each received batch. The subscriber takes one positional argument—the batch
+size (default 100)—and `--delay` (milliseconds between batches). Pass
+`--latency` to wait for each echo and measure round-trip latency instead of
+maximizing throughput.
 
 ```
 # Throughput test: publisher in one shell, subscriber in another
-netidx stress channel_publisher --base /local/channel/bench
-netidx stress channel_subscriber --base /local/channel/bench
+netidx stress channel-publisher --base /local/channel/bench
+netidx stress channel-subscriber --base /local/channel/bench
 
 # Latency test
-netidx stress channel_subscriber --base /local/channel/bench --latency
+netidx stress channel-subscriber --base /local/channel/bench --latency
 ```

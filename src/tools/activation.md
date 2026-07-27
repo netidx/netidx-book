@@ -8,21 +8,21 @@ many kinds of services can thus be started on demand, and can shut
 down when no one is using them. This can save resources, and it can
 also simplify starting up all the "moving parts" of a complex service.
 
-In fact a convenient way to run netidx on both a server or a
-workstation is to configure all your netidx applications, including
-the resolver server, as activation units, and then start the
-activation server on startup with systemd. There are a number of
-benefits to this, including, single command start/stop of everything
-netidx, unified logs, unified setting of environment variables like
-RUST_LOG, and resource control via cgroups.
+A convenient way to run netidx on a server or workstation is to configure its
+applications, including the resolver, as activation units and let the
+platform's netidx service start the supervisor. This provides one control
+surface, consistent environment variables and logs, and platform process
+containment. The service integrates with systemd on Linux and launchd on
+macOS; Windows uses a per-user logon task and a windowless supervisor.
 
 ## Units
 
 Each managed process is configured with a unit file. Unit files live
 in a directory and must have the `.unit` suffix; anything else in the
 directory is ignored. The default search order is
-`~/.config/netidx/activation` first, then `/etc/netidx/activation` —
-the user-specific directory takes precedence when present.
+the platform user configuration directory first, then
+`/etc/netidx/activation` on Unix. Windows has no system-wide fallback. The
+user-specific directory takes precedence when present.
 
 Here is an example activation unit triggered on access to any path
 under `/local/music`
@@ -74,10 +74,10 @@ their function.
   - `working_directory`: Path to the directory where the executable will
     be started. default the working directory of the activation
     server.
-  - `uid`: The numeric user id to run the process as. default the uid of
-    the activation server.
-  - `gid`: The numeric group id to run the process as. default the gid
-    of the activation server.
+  - `uid`: On Unix, the numeric user id to run the process as. Defaults to
+    the supervisor's uid.
+  - `gid`: On Unix, the numeric group id to run the process as. Defaults to
+    the supervisor's gid. Windows rejects units that specify `uid` or `gid`.
   - `restart`: Yes, No, or RateLimited with an f64 number of seconds
     delay. Default `"RateLimited": 1.`.
   - `stdin`: The path to the file, pipe, etc that
@@ -98,40 +98,40 @@ their function.
     }
     ```
 
-## Signals
+## Reload and shutdown
 
-Sending `SIGHUP` to the running activation server will cause it to
-reread it's unit directory. This may trigger processes (for example a
-newly added OnStart process) to start up immediatly. If unit files are
-removed, their corresponding processes will be stopped upon unit
-directory reread. If process config properties are changed for an
-existing unit, any running process will NOT be restarted, however new
-configuration directives will take effect if the process dies and is
-triggered. For example if args is changed for a unit that is running,
-and it later dies and is triggered again it will be started with the
-new args.
+On Unix, `SIGHUP` reloads the unit directory. On every platform the local
+activation control endpoint provides the same reload operation. The admin
+TUI reloads after it adds, edits, or removes a unit. The lower-level
+`netidx admin component activation add|remove` commands only edit the unit
+files; reload or restart the supervisor separately when using them. A reload
+starts newly added `OnStart` units and stops units that were removed. Editing
+an existing unit does not restart its running process; the new configuration
+applies the next time that process starts.
 
-On receiving `SIGQUIT`, `SIGINT`, or `SIGTERM`, the activation server
-will stop all the processes it is managing before shutting down
-itself. Managed processes are first sent `SIGTERM`, but if they don't
-shut down within 30 seconds they are killed with `SIGKILL`.
+On Unix, `SIGQUIT`, `SIGINT`, or `SIGTERM` shuts down the supervisor; on
+Windows, Ctrl-C or Ctrl-Break does so in foreground mode. Managed processes
+first receive the platform's graceful shutdown signal (SIGTERM on Unix, a
+named shutdown event on Windows). Processes still running after 30 seconds are
+forcibly terminated. Windows also puts children in a Job Object so they are
+terminated if the supervisor exits unexpectedly.
 
 ## Args
 
-- `-f, --foreground`: don't daemonize
+- `-f, --foreground`: remain attached to the terminal. On Windows, omitting it
+  delegates to the sibling `netidx-activation.exe` background executable.
 - `-a, --auth`: auth mechanism — `anonymous`, `local`, `krb5`, or
   `tls`. Defaults to whatever the client config's `default_auth`
   is (so a workstation install rarely needs this).
 - `-b, --bind`: bind address.
 - `-c, --config`: path to the netidx client config
-- `--pid-file`: path to the pid file you want the activation server to
-  write. default no pid file.
+- `--pid-file`: Unix-only pid file; default none.
 - `--spn`: the spn of the activation server. only relevant if auth =
   krb5
 - `--identity`: TLS identity (for `-a tls`); defaults to the client
   config's `default_identity`.
-- `-u, --units`: the path to the directory containing unit
-  files. Defaults to `~/.config/netidx/activation` (or
-  `/etc/netidx/activation` if the user directory doesn't exist).
+- `-u, --units`: the path to the directory containing unit files. Defaults to
+  the platform user config directory, with `/etc/netidx/activation` as the
+  Unix system fallback.
 - `--upn`: the upn to use when connecting to the resolver, only valid
   if auth = krb5. default the current user.
