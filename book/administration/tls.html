@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-44cf1a5b.js";
+            window.path_to_searchindex_js = "../searchindex-e7b4a530.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-a94e71ce.js"></script>
@@ -227,6 +227,7 @@ enrollment request. For example, start from:</p>
   --accept-glyph 'THE CONFIRMED GROUPED FINGERPRINT' \
   --help
 </code></pre>
+<p><img src="./tui-confirm-ca.png" alt="Confirming the CA before anything is sent. The dialog names the admin domain and the roles that CA holds; everything after this point pins to the glyph you accept here."></p>
 <p>The request waits in the CA’s Enrollment Queue. The enrollee and
 approver compare the request glyph out of band. An admin-server enrollment also
 shows its requested roles, listen address, resolver members, and requested
@@ -248,6 +249,7 @@ passes password material through <code>--key-password-file</code> or
 <code>--key-password-stdin</code>, never as an argument. Sealing is the production default
 when supported because copying a disk or config directory does not copy a
 usable key.</p>
+<p><img src="./tui-key-protection.png" alt="The key-protection choice. This host has no TPM, so only password and none are offered — seal appears on a machine that can provide it."></p>
 <p>The CA is different from an ordinary leaf. Its private key lives in an
 encrypted keyslot vault. The CA’s autorenew credential is sealed to
 the machine, while a separately stored recovery password is the portable
@@ -288,6 +290,19 @@ authoritative revocation state.</p>
 <pre><code class="language-console">netidx admin ca issued --help
 netidx admin ca revoke --help
 </code></pre>
+<p><img src="./tui-issued-certificates.png" alt="The Issued Certificates panel. Each row is a serial, a certificate name, an expiry, and the leading group of that certificate’s own glyph; the detail pane shows the full glyph for the selected row."></p>
+<p>Revocation is glyph-gated and irreversible, and the TUI says so before it acts.
+It then prompts for a short reason, which is recorded with the revocation.</p>
+<p><img src="./tui-revoke-confirm.png" alt="The revoke confirmation, naming the serial and what revoking it does."></p>
+<h3 id="one-live-certificate-per-name"><a class="header" href="#one-live-certificate-per-name">One live certificate per name</a></h3>
+<p>A CA will not issue a second unexpired certificate for a name that already has
+one. Reinstalling a node under its old name therefore fails until the old
+certificate is revoked — the refusal names the existing serial, its dates, and
+its glyph so you can confirm you are about to revoke the right one.</p>
+<p><img src="./tui-refused-live-cert.png" alt="Enrollment refused because an unexpired certificate already exists for that name."></p>
+<p>This is why a teardown that only wipes a node’s local configuration is not a
+clean teardown: the CA still holds the node’s live certificate. Revoke it from
+the Issued Certificates panel first, then reinstall.</p>
 <h2 id="existing-organisational-pki"><a class="header" href="#existing-organisational-pki">Existing organisational PKI</a></h2>
 <p>The netidx CA can run as an intermediate beneath an existing organisational
 root. For a human installation, the TUI carries the complete two-phase
@@ -379,6 +394,22 @@ admin-domain-map grant agree.</p>
         <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
         <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
         <script>

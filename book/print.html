@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-44cf1a5b.js";
+            window.path_to_searchindex_js = "searchindex-e7b4a530.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-a94e71ce.js"></script>
@@ -261,7 +261,7 @@ example becomes <code>resolver.netidx.test</code>.</p>
 <p><strong>15. Protect the resolver private key.</strong> Choose <strong>seal</strong> when the machine has a
 supported TPM or Secure Enclave. Sealing binds the key to this machine while
 still allowing unattended service startup. Password protection is the
-portable fallback; <strong>none</strong> is suitable only for disposable systems.</p>
+portable fallback. <strong>none</strong> stores the private key in plain text on disk.</p>
 <p><img src="quick-start/resolver/15-key-protection.png" alt="Selecting private-key protection for the resolver."></p>
 <p><strong>16. Choose the resolver address.</strong> Enter the reachable LAN address on which
 the resolver will accept data-plane connections.</p>
@@ -277,7 +277,7 @@ and the service was registered. Dismiss it with any key.</p>
 <p><strong>20. Check local status.</strong> The TUI now shows the resolver as running and offers
 its local administrative operations.</p>
 <p><img src="quick-start/resolver/20-status.png" alt="The running resolver on the TUI Local tab."></p>
-<h3 id="join-the-workstation"><a class="header" href="#join-the-workstation">Join the workstation</a></h3>
+<h3 id="join-a-workstation"><a class="header" href="#join-a-workstation">Join a workstation</a></h3>
 <p>On the workstation, start the same TUI:</p>
 <pre><code class="language-console">netidx admin
 </code></pre>
@@ -303,8 +303,9 @@ identity, defaulted from the machine’s name. The example uses
 <code>root.netidx.test</code>.</p>
 <p><img src="quick-start/workstation/06-tls-name.png" alt="Entering the workstation’s TLS certificate name."></p>
 <p><strong>7. Protect the workstation private key.</strong> Choose hardware sealing when it is
-offered, password protection when portability is required, or <strong>none</strong> only for
-a disposable machine. This lab workstation did not offer hardware sealing.</p>
+offered, password protection when portability is required, or <strong>none</strong> to store
+the private key in plain text. This lab workstation did not offer hardware
+sealing.</p>
 <p><img src="quick-start/workstation/07-key-protection.png" alt="Choosing private-key protection on the workstation."></p>
 <p><strong>8. Enroll without an administrator present.</strong> Select <strong>No</strong>. The
 administrator is at the resolver rather than at this machine, so the request
@@ -367,9 +368,9 @@ authenticated with the certificate issued during enrollment:</p>
 <pre><code class="language-console">netidx subscriber -o /users/resolver.netidx.test/quick-start/message
 /users/resolver.netidx.test/quick-start/message|string|"hello from the resolver"
 </code></pre>
-<p>This single-resolver layout is intentionally small. A serious installation
-normally runs at least two resolver members per resolver cluster so they can be
-restarted one at a time without interrupting clients. Continue with
+<p>This single-resolver layout is intentionally small. A serious
+installation normally runs at least two resolver members per
+resolver cluster on different machines for redundency. Continue with
 <a href="#administration">Administration</a> for redundant resolver clusters,
 authorization, backup and recovery, and larger hierarchies. The admin plane is
 a provisioning and operations convenience; netidx’s data plane also works with
@@ -759,6 +760,7 @@ force-removed and CA reconciliation retried.</li>
 <li><strong>Services</strong> — the resolvers (and other units) on a chosen admin server,
 with start / stop / restart.</li>
 </ul>
+<p><img src="administration/tui-panel-menu.png" alt="The panels available once connected to an admin domain’s admin server. The title bar names the admin domain and the administrator you authenticated as."></p>
 <p>Everything the Admin Domain tab does is authenticated and authorized by the admin
 server; connecting to it does not require an account on the remote machine.
 The TUI logs in once and reuses a short-lived session, never retaining the
@@ -1577,6 +1579,7 @@ enrollment request. For example, start from:</p>
   --accept-glyph 'THE CONFIRMED GROUPED FINGERPRINT' \
   --help
 </code></pre>
+<p><img src="administration/tui-confirm-ca.png" alt="Confirming the CA before anything is sent. The dialog names the admin domain and the roles that CA holds; everything after this point pins to the glyph you accept here."></p>
 <p>The request waits in the CA’s Enrollment Queue. The enrollee and
 approver compare the request glyph out of band. An admin-server enrollment also
 shows its requested roles, listen address, resolver members, and requested
@@ -1598,6 +1601,7 @@ passes password material through <code>--key-password-file</code> or
 <code>--key-password-stdin</code>, never as an argument. Sealing is the production default
 when supported because copying a disk or config directory does not copy a
 usable key.</p>
+<p><img src="administration/tui-key-protection.png" alt="The key-protection choice. This host has no TPM, so only password and none are offered — seal appears on a machine that can provide it."></p>
 <p>The CA is different from an ordinary leaf. Its private key lives in an
 encrypted keyslot vault. The CA’s autorenew credential is sealed to
 the machine, while a separately stored recovery password is the portable
@@ -1638,6 +1642,19 @@ authoritative revocation state.</p>
 <pre><code class="language-console">netidx admin ca issued --help
 netidx admin ca revoke --help
 </code></pre>
+<p><img src="administration/tui-issued-certificates.png" alt="The Issued Certificates panel. Each row is a serial, a certificate name, an expiry, and the leading group of that certificate’s own glyph; the detail pane shows the full glyph for the selected row."></p>
+<p>Revocation is glyph-gated and irreversible, and the TUI says so before it acts.
+It then prompts for a short reason, which is recorded with the revocation.</p>
+<p><img src="administration/tui-revoke-confirm.png" alt="The revoke confirmation, naming the serial and what revoking it does."></p>
+<h3 id="one-live-certificate-per-name"><a class="header" href="#one-live-certificate-per-name">One live certificate per name</a></h3>
+<p>A CA will not issue a second unexpired certificate for a name that already has
+one. Reinstalling a node under its old name therefore fails until the old
+certificate is revoked — the refusal names the existing serial, its dates, and
+its glyph so you can confirm you are about to revoke the right one.</p>
+<p><img src="administration/tui-refused-live-cert.png" alt="Enrollment refused because an unexpired certificate already exists for that name."></p>
+<p>This is why a teardown that only wipes a node’s local configuration is not a
+clean teardown: the CA still holds the node’s live certificate. Revoke it from
+the Issued Certificates panel first, then reinstall.</p>
 <h2 id="existing-organisational-pki"><a class="header" href="#existing-organisational-pki">Existing organisational PKI</a></h2>
 <p>The netidx CA can run as an intermediate beneath an existing organisational
 root. For a human installation, the TUI carries the complete two-phase
@@ -1724,6 +1741,17 @@ supported on Windows; its platform default mapper is native.</p>
 and, on Unix, drops a matching <code>id-map.unit</code> so the daemon comes up alongside
 the resolver under the activation supervisor. Pass <code>--no-id-map</code> to
 skip that and use the platform mapper instead.</p>
+<p>A Kerberos install asks which source to use, because a Kerberos principal —
+unlike a certificate SAN — may well be a real account the platform can resolve:</p>
+<p><img src="administration/tui-id-map-source.png" alt="Choosing the id-map source during a Kerberos resolver install."></p>
+<p>Answer <code>platform</code> only if you have a site identity manager (SSSD, FreeIPA, AD)
+that resolves fully-qualified principals; the mapper runs <code>id user@REALM</code>, so without one every lookup fails and callers are denied. Answer
+<code>none</code> when you have no identity manager and want each principal treated as its
+own bare identity with no groups. The <a href="#default-seeded-permsjson">seeded
+permissions</a> still give every
+caller their own <code>&lt;base&gt;/users/&lt;principal&gt;</code> subtree, because that entry keys on
+the identity rather than on a group; the shared <code>users</code>-group grant is the part
+you lose.</p>
 <h2 id="the-json-schema"><a class="header" href="#the-json-schema">The JSON schema</a></h2>
 <p>The on-disk file is a single <code>IdMap</code> object with four keys:</p>
 <pre><code class="language-json">{
@@ -6080,6 +6108,22 @@ from the previous one.</p>
         <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
         <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
         <script>

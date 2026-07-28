@@ -133,7 +133,7 @@ example becomes `resolver.netidx.test`.
 **15. Protect the resolver private key.** Choose **seal** when the machine has a
 supported TPM or Secure Enclave. Sealing binds the key to this machine while
 still allowing unattended service startup. Password protection is the
-portable fallback; **none** is suitable only for disposable systems.
+portable fallback. **none** stores the private key in plain text on disk.
 
 ![Selecting private-key protection for the resolver.](./quick-start/resolver/15-key-protection.png)
 
@@ -161,7 +161,7 @@ its local administrative operations.
 
 ![The running resolver on the TUI Local tab.](./quick-start/resolver/20-status.png)
 
-### Join the workstation
+### Join a workstation
 
 On the workstation, start the same TUI:
 
@@ -203,8 +203,9 @@ identity, defaulted from the machine's name. The example uses
 ![Entering the workstation's TLS certificate name.](./quick-start/workstation/06-tls-name.png)
 
 **7. Protect the workstation private key.** Choose hardware sealing when it is
-offered, password protection when portability is required, or **none** only for
-a disposable machine. This lab workstation did not offer hardware sealing.
+offered, password protection when portability is required, or **none** to store
+the private key in plain text. This lab workstation did not offer hardware
+sealing.
 
 ![Choosing private-key protection on the workstation.](./quick-start/workstation/07-key-protection.png)
 
@@ -305,9 +306,9 @@ netidx subscriber -o /users/resolver.netidx.test/quick-start/message
 /users/resolver.netidx.test/quick-start/message|string|"hello from the resolver"
 ```
 
-This single-resolver layout is intentionally small. A serious installation
-normally runs at least two resolver members per resolver cluster so they can be
-restarted one at a time without interrupting clients. Continue with
+This single-resolver layout is intentionally small. A serious
+installation normally runs at least two resolver members per
+resolver cluster on different machines for redundency. Continue with
 [Administration](./administration/overview.md) for redundant resolver clusters,
 authorization, backup and recovery, and larger hierarchies. The admin plane is
 a provisioning and operations convenience; netidx's data plane also works with
