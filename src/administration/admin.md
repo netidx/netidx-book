@@ -148,6 +148,10 @@ of panels:
 - **Services** — the resolvers (and other units) on a chosen admin server,
   with start / stop / restart.
 
+![The panels available once connected to an admin domain's admin server. The
+title bar names the admin domain and the administrator you authenticated
+as.](./tui-panel-menu.png)
+
 Everything the Admin Domain tab does is authenticated and authorized by the admin
 server; connecting to it does not require an account on the remote machine.
 The TUI logs in once and reuses a short-lived session, never retaining the

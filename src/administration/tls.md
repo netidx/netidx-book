@@ -67,6 +67,10 @@ netidx admin workstation install \
   --help
 ```
 
+![Confirming the CA before anything is sent. The dialog names the admin domain
+and the roles that CA holds; everything after this point pins to the glyph you
+accept here.](./tui-confirm-ca.png)
+
 The request waits in the CA's Enrollment Queue. The enrollee and
 approver compare the request glyph out of band. An admin-server enrollment also
 shows its requested roles, listen address, resolver members, and requested
@@ -91,6 +95,10 @@ passes password material through `--key-password-file` or
 `--key-password-stdin`, never as an argument. Sealing is the production default
 when supported because copying a disk or config directory does not copy a
 usable key.
+
+![The key-protection choice. This host has no TPM, so only `password` and
+`none` are offered — `seal` appears on a machine that can provide
+it.](./tui-key-protection.png)
 
 The CA is different from an ordinary leaf. Its private key lives in an
 encrypted keyslot vault. The CA's autorenew credential is sealed to
@@ -142,6 +150,30 @@ Inspect and revoke from the TUI's **Issued Certificates** panel, or start with:
 netidx admin ca issued --help
 netidx admin ca revoke --help
 ```
+
+![The Issued Certificates panel. Each row is a serial, a certificate name, an
+expiry, and the leading group of that certificate's own glyph; the detail pane
+shows the full glyph for the selected row.](./tui-issued-certificates.png)
+
+Revocation is glyph-gated and irreversible, and the TUI says so before it acts.
+It then prompts for a short reason, which is recorded with the revocation.
+
+![The revoke confirmation, naming the serial and what revoking it
+does.](./tui-revoke-confirm.png)
+
+### One live certificate per name
+
+A CA will not issue a second unexpired certificate for a name that already has
+one. Reinstalling a node under its old name therefore fails until the old
+certificate is revoked — the refusal names the existing serial, its dates, and
+its glyph so you can confirm you are about to revoke the right one.
+
+![Enrollment refused because an unexpired certificate already exists for that
+name.](./tui-refused-live-cert.png)
+
+This is why a teardown that only wipes a node's local configuration is not a
+clean teardown: the CA still holds the node's live certificate. Revoke it from
+the Issued Certificates panel first, then reinstall.
 
 ## Existing organisational PKI
 

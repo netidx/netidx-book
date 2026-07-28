@@ -37,6 +37,22 @@ and, on Unix, drops a matching `id-map.unit` so the daemon comes up alongside
 the resolver under the activation supervisor. Pass `--no-id-map` to
 skip that and use the platform mapper instead.
 
+A Kerberos install asks which source to use, because a Kerberos principal —
+unlike a certificate SAN — may well be a real account the platform can resolve:
+
+![Choosing the id-map source during a Kerberos resolver
+install.](./tui-id-map-source.png)
+
+Answer `platform` only if you have a site identity manager (SSSD, FreeIPA, AD)
+that resolves fully-qualified principals; the mapper runs `id
+user@REALM`, so without one every lookup fails and callers are denied. Answer
+`none` when you have no identity manager and want each principal treated as its
+own bare identity with no groups. The [seeded
+permissions](./authorization.md#default-seeded-permsjson) still give every
+caller their own `<base>/users/<principal>` subtree, because that entry keys on
+the identity rather than on a group; the shared `users`-group grant is the part
+you lose.
+
 ## The JSON schema
 
 The on-disk file is a single `IdMap` object with four keys:
