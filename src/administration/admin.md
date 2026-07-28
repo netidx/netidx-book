@@ -181,7 +181,7 @@ CA's identity), and you can print any CA's glyph for out-of-band comparison with
 
 ![A discovered admin domain with its CA glyph. The colored 8×8 image is compared
 alongside the grouped fingerprint code shown during trust
-confirmation.](../quick-start/workstation/05-select-network.png)
+confirmation.](../quick-start/workstation/04-select-admin-domain.png)
 
 ## Teardown
 

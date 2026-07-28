@@ -65,7 +65,7 @@ press **Enter**.
 **3. Create the admin domain.** Select **Create a new admin domain (creates a
 CA)**. This creates the admin domain's one active CA on this resolver host.
 
-![Creating a new admin domain.](./quick-start/resolver/03-create-network.png)
+![Creating a new admin domain.](./quick-start/resolver/03-create-admin-domain.png)
 
 **4. Acknowledge the CA setup.** The installer explains that a new admin
 domain needs a certificate authority. Press **Enter**.
@@ -73,7 +73,7 @@ domain needs a certificate authority. Press **Enter**.
 ![The installer explains that it will create a CA.](./quick-start/resolver/04-ca-required.png)
 
 **5. Name the admin domain.** Enter the domain name under which this admin
-domain will be discovered. The example uses `local`.
+domain will be discovered. The example uses `netidx.test`.
 
 ![Entering the admin domain's domain name.](./quick-start/resolver/05-domain.png)
 
@@ -95,7 +95,7 @@ shown again.
 ![The one-time CA recovery-password screen.](./quick-start/resolver/07-recovery-password.png)
 
 **8. Choose the admin-server address.** Enter a LAN address that other machines
-can reach, not a loopback address. The example resolver is `192.168.1.3`.
+can reach, not a loopback address. The example resolver is `192.168.50.11`.
 
 ![Entering the admin server's listen address.](./quick-start/resolver/08-admin-listen-address.png)
 
@@ -117,7 +117,7 @@ and is stored only as an Argon2 password verifier in the CA vault.
 **12. Continue to the resolver.** The CA is now installed.
 Press **Enter** to configure the resolver role on the same machine.
 
-![The CA setup is complete and resolver setup is next.](./quick-start/resolver/12-controller-complete.png)
+![The CA setup is complete and resolver setup is next.](./quick-start/resolver/12-ca-complete.png)
 
 **13. Select TLS authentication.** This secures and authenticates data-plane
 connections between the resolver and its clients.
@@ -126,7 +126,7 @@ connections between the resolver and its clients.
 
 **14. Name the resolver certificate.** Enter the resolver's DNS label. It is
 joined with the admin domain name to form the certificate name; this
-example becomes `resolver.local`.
+example becomes `resolver.netidx.test`.
 
 ![Entering the resolver certificate name.](./quick-start/resolver/14-resolver-name.png)
 
@@ -178,88 +178,122 @@ with a matching client configuration.
 
 ![Workstation selected in the role list.](./quick-start/workstation/02-select-workstation.png)
 
-**3. Join the admin domain.** Select **Join an admin domain** rather than installing a
-standalone workstation.
+**3. Join the admin domain.** Select **Join an admin domain** rather than
+installing a standalone workstation.
 
-![Choosing to join an existing admin domain.](./quick-start/workstation/03-join-cluster.png)
+![Choosing to join an existing admin domain.](./quick-start/workstation/03-join-admin-domain.png)
 
-**4. Wait for LAN discovery.** The TUI searches for admin domains
-advertised on the local network.
+**4. Select the discovered admin domain.** The TUI searches the local network
+and lists what it finds, with each candidate's CA glyph and fingerprint. A
+discovery result is only a candidate; nothing sensitive has been sent yet.
 
-![Searching the LAN for a netidx admin domain.](./quick-start/workstation/04-searching.png)
+![A discovered admin domain and its CA glyph.](./quick-start/workstation/04-select-admin-domain.png)
 
-**5. Select the discovered admin domain.** The discovery result is only a candidate;
-the next screen performs the human trust check before anything sensitive is
-sent.
+**5. Confirm the CA identity.** Compare both the glyph and grouped fingerprint
+with the copy recorded on the resolver in step 6. Reject the admin domain if
+either differs. Once accepted, the workstation pins all further setup to this
+exact CA.
 
-![Selecting a discovered admin domain and viewing its CA glyph.](./quick-start/workstation/05-select-network.png)
+![Confirming the discovered admin domain's CA identity.](./quick-start/workstation/05-confirm-ca.png)
 
-**6. Confirm the CA identity.** Compare both the glyph and
-grouped fingerprint with the copy recorded on the resolver. Reject the admin domain
-if either differs. Once accepted, the workstation pins all further setup to
-this exact CA.
+**6. Choose the workstation certificate name.** This is the workstation's TLS
+identity, defaulted from the machine's name. The example uses
+`root.netidx.test`.
 
-![Confirming the discovered admin domain's CA identity.](./quick-start/workstation/06-confirm-ca.png)
+![Entering the workstation's TLS certificate name.](./quick-start/workstation/06-tls-name.png)
 
-**7. Choose the workstation certificate name.** This is the workstation's TLS
-identity. The example uses `eric.local`.
-
-![Entering the workstation's TLS certificate name.](./quick-start/workstation/07-tls-name.png)
-
-**8. Protect the workstation private key.** Choose hardware sealing when it is
+**7. Protect the workstation private key.** Choose hardware sealing when it is
 offered, password protection when portability is required, or **none** only for
 a disposable machine. This lab workstation did not offer hardware sealing.
 
-![Choosing private-key protection on the workstation.](./quick-start/workstation/08-key-protection.png)
+![Choosing private-key protection on the workstation.](./quick-start/workstation/07-key-protection.png)
 
-**9. Authorize enrollment now.** This walkthrough has a CA administrator at the
-workstation, so select **Yes**. It is safe to enter the administrator password
-because the CA identity was verified first. Select **No** when
-the administrator is elsewhere; the request will wait in the CA's
-Enrollment Queue for remote approval instead.
+**8. Enroll without an administrator present.** Select **No**. The
+administrator is at the resolver rather than at this machine, so the request
+goes to the CA's enrollment queue for approval. Select **Yes** instead when you
+are sitting at the machine with the administrator password to hand; the TUI
+then asks for that password directly and skips the queue.
 
-![Choosing synchronous enrollment with an administrator present.](./quick-start/workstation/09-admin-present.png)
+![Choosing queued enrollment.](./quick-start/workstation/08-admin-present.png)
 
-**10. Choose the id-map groups.** The default `users` group is suitable for this
-example. The authorizing administrator's policy limits which groups may be
-assigned.
+**9. Send the verification code to the administrator.** The workstation now
+waits, displaying a code and a glyph derived from the key it just generated.
+Send them to the administrator over any channel you can both recognize each
+other on. The install blocks here until the request is approved.
 
-![Assigning the workstation identity to the users group.](./quick-start/workstation/10-id-map-groups.png)
+![The queued enrollment request and its verification code.](./quick-start/workstation/09-queued.png)
 
-**11. Enter the administrator name.** Use the administrator created on the
-resolver.
+#### Approve the enrollment
 
-![Entering the CA administrator name.](./quick-start/workstation/11-admin-name.png)
+Leave the workstation waiting and return to the resolver, where the
+administrator approves the request.
 
-**12. Enter the administrator password.** It is masked, used once against the
-already verified CA, and is never retained by the workstation.
+**a. Open the Admin Domain tab.** Press **Tab** to switch tabs. The admin
+domain this machine hosts is listed with its CA glyph.
 
-![Entering the CA administrator password.](./quick-start/workstation/12-admin-password.png)
+![The Admin Domain tab listing the local admin domain.](./quick-start/approve/01-admin-domains-tab.png)
 
-**13. Register the OS service.** Select **Yes** so the local resolver and client
+**b. Authenticate as an administrator.** Press **Enter** to connect, then enter
+the administrator name created in step 10 of the resolver install.
+
+![Entering the administrator name.](./quick-start/approve/02-admin-name.png)
+
+**c. Enter the administrator password.**
+
+![Entering the administrator password.](./quick-start/approve/03-admin-password.png)
+
+**d. Open the Enrollment Queue.** It is the first entry in the panel list.
+
+![The connected admin panel menu.](./quick-start/approve/04-panel-menu.png)
+
+**e. Read the pending request.** The queue shows the requested name, the role,
+and the same glyph and code the workstation is displaying.
+
+![The pending enrollment request with its glyph and code.](./quick-start/approve/05-enrollment-queue.png)
+
+**f. Compare, then approve.** Press **a**. The confirmation repeats the code and
+glyph. Approve only if they match what the workstation operator sent you. This
+comparison is the whole security of enrollment: it is what stops an attacker
+who can reach the network from having a certificate issued to them.
+
+![Confirming the enrollment against the code sent out of band.](./quick-start/approve/06-approve-confirm.png)
+
+**g. Assign id-map groups.** The default `users` group suits this example. Your
+own administrator policy caps which groups you may assign.
+
+![Assigning the new identity to the users group.](./quick-start/approve/07-id-map-groups.png)
+
+**h. The certificate is issued.** The workstation, still waiting, receives it
+and continues.
+
+![The approved enrollment.](./quick-start/approve/08-approved.png)
+
+#### Finish on the workstation
+
+**10. Register the OS service.** Select **Yes** so the local resolver and client
 support services start automatically.
 
-![Registering the workstation as an OS service.](./quick-start/workstation/13-register-service.png)
+![Registering the workstation as an OS service.](./quick-start/workstation/10-register-service.png)
 
-**14. Finish the install.** Dismiss the successful result with any key.
+**11. Finish the install.** Dismiss the successful result with any key.
 
-![The successful workstation-install result.](./quick-start/workstation/14-installed.png)
+![The successful workstation-install result.](./quick-start/workstation/11-installed.png)
 
-**15. Check local status.** The workstation is now running and enrolled in the
+**12. Check local status.** The workstation is now running and enrolled in the
 TLS admin domain.
 
-![The running workstation on the TUI Local tab.](./quick-start/workstation/15-status.png)
+![The running workstation on the TUI Local tab.](./quick-start/workstation/12-status.png)
 
 ### Try the secure connection
 
 On the resolver machine, start a publisher and leave it running. Fresh resolver
 permissions give each authenticated identity full control under
 `/users/<identity>`; the resolver certificate created above is
-`resolver.local`:
+`resolver.netidx.test`:
 
 ```console
 netidx publisher
-/users/resolver.local/quick-start/message|string|hello from the resolver
+/users/resolver.netidx.test/quick-start/message|string|hello from the resolver
 ```
 
 On the workstation, read it through the local resolver. The local resolver
@@ -267,8 +301,8 @@ follows its configured parent to the network resolver, and the connection is
 authenticated with the certificate issued during enrollment:
 
 ```console
-netidx subscriber -o /users/resolver.local/quick-start/message
-/users/resolver.local/quick-start/message|string|"hello from the resolver"
+netidx subscriber -o /users/resolver.netidx.test/quick-start/message
+/users/resolver.netidx.test/quick-start/message|string|"hello from the resolver"
 ```
 
 This single-resolver layout is intentionally small. A serious installation
