@@ -1,0 +1,30 @@
+[38;2;0;0;0m[48;2;199;199;199m┌[1m Set Up This Machine [0m[38;2;0;0;0m[48;2;199;199;199m─┐┌[1m Workstation [0m[38;2;0;0;0m[48;2;199;199;199m─────────────────────────────────────────────────────────────┐
+│  CA                  ││Turn this machine into a full netidx node: a local resolver serving a     │
+│[1m[38;2;255;255;255m[48;2;170;0;0m▸ Workstation         [0m[38;2;0;0;0m[48;2;199;199;199m││/local namespace plus a matching client. Join an existing admin domain to │
+│  Resolver            ││enroll a TLS identity, or run standalone. The usual choice for a laptop or│
+│  Publisher           ││desktop.                                                                  │
+│  Restore from Backup ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+│                      ││                                                                          │
+└[38;2;88;88;88m Enter · p preview [38;2;0;0;0m───┘└──────────────────────────────────────────────────────────────────────────┘
+[1m[38;2;205;212;228m[48;2;0;40;120m ↑/↓[0m[38;2;205;212;228m[48;2;0;40;120m navigate  [1mq[0m[38;2;205;212;228m[48;2;0;40;120m quit
